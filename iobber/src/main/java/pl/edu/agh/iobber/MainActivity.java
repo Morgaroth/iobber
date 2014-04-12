@@ -1,22 +1,23 @@
 package pl.edu.agh.iobber;
 
 import android.app.Activity;
-import android.support.v7.app.ActionBarActivity;
-import android.support.v7.app.ActionBar;
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.content.Context;
-import android.os.Build;
-import android.os.Bundle;
-import android.view.Gravity;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.support.v4.widget.DrawerLayout;
-import android.widget.ArrayAdapter;
+import android.view.inputmethod.EditorInfo;
+import android.widget.EditText;
 import android.widget.TextView;
+
+import java.util.logging.Logger;
 
 public class MainActivity extends ActionBarActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
@@ -39,6 +40,7 @@ public class MainActivity extends ActionBarActivity
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
         mTitle = getTitle();
+
 
         // Set up the drawer.
         mNavigationDrawerFragment.setUp(
@@ -129,11 +131,35 @@ public class MainActivity extends ActionBarActivity
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                Bundle savedInstanceState) {
+                                 Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-            TextView textView = (TextView) rootView.findViewById(R.id.section_label);
-            textView.setText(Integer.toString(getArguments().getInt(ARG_SECTION_NUMBER)));
+//            TextView textView = (TextView) rootView.findViewById(R.id.section_label);
+//            textView.setText(Integer.toString(getArguments().getInt(ARG_SECTION_NUMBER)));
+
+            // TODO akcja na wciśnięcie entera podczas pisania
+
+            ((EditText) rootView.findViewById(R.id.chatLine)).setOnEditorActionListener(
+                    new EditText.OnEditorActionListener() {
+                        @Override
+                        public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                            Logger.getLogger(MainActivity.class.getName()).info("used event=" + event);
+                            if (isActionSend(actionId, event)) {
+                                sendMessage(v.getText());
+                                clearEditText();
+                                return true;
+                            }
+                            return false;
+                        }
+                    });
             return rootView;
+        }
+
+        private void clearEditText() {
+            // TODO wyczyszczenie okienka do pisania
+        }
+
+        private void sendMessage(CharSequence text) {
+            // TODO logika od wysyłania wiadomośći
         }
 
         @Override
@@ -142,6 +168,14 @@ public class MainActivity extends ActionBarActivity
             ((MainActivity) activity).onSectionAttached(
                     getArguments().getInt(ARG_SECTION_NUMBER));
         }
+    }
+
+    private static boolean isActionSend(int actionId, KeyEvent event) {
+        return actionId == EditorInfo.IME_ACTION_SEARCH ||
+                actionId == EditorInfo.IME_ACTION_DONE ||
+                actionId == EditorInfo.IME_ACTION_SEND ||
+                event.getAction() == KeyEvent.ACTION_DOWN &&
+                        event.getKeyCode() == KeyEvent.KEYCODE_ENTER;
     }
 
 }

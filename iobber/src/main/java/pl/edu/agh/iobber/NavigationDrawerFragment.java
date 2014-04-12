@@ -11,6 +11,7 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -80,7 +81,7 @@ public class NavigationDrawerFragment extends Fragment {
     }
 
     @Override
-    public void onActivityCreated (Bundle savedInstanceState) {
+    public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         // Indicate that this fragment would like to influence the set of actions in the action bar.
         setHasOptionsMenu(true);
@@ -88,7 +89,7 @@ public class NavigationDrawerFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState) {
+                             Bundle savedInstanceState) {
         mDrawerListView = (ListView) inflater.inflate(
                 R.layout.fragment_navigation_drawer, container, false);
         mDrawerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -125,7 +126,7 @@ public class NavigationDrawerFragment extends Fragment {
         mDrawerLayout = drawerLayout;
 
         // set a custom shadow that overlays the main content when the drawer opens
-        mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
+        mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.END);
         // set up the drawer's list view with items and click listener
 
         ActionBar actionBar = getActionBar();
@@ -168,6 +169,18 @@ public class NavigationDrawerFragment extends Fragment {
                 }
 
                 getActivity().supportInvalidateOptionsMenu(); // calls onPrepareOptionsMenu()
+            }
+
+            @Override
+            public boolean onOptionsItemSelected(MenuItem item) {
+                if (item != null && item.getItemId() == android.R.id.home) {
+                    if (mDrawerLayout.isDrawerOpen(Gravity.RIGHT)) {
+                        mDrawerLayout.closeDrawer(Gravity.RIGHT);
+                    } else {
+                        mDrawerLayout.openDrawer(Gravity.RIGHT);
+                    }
+                }
+                return false;
             }
         };
 
