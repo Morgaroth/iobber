@@ -98,7 +98,7 @@ public class LoginFragment extends Fragment {
         try {
             User loggedUser = User.login(new Credentials(nick, password));
             logger.info("logged user: " + loggedUser + ", starting new activity");
-            // TODO start new activity with boundled data
+            mListener.userLogged(loggedUser);
         } catch (UserNotExistsException e) {
             nickField.clearComposingText();
             passwordField.clearComposingText();
@@ -134,7 +134,7 @@ public class LoginFragment extends Fragment {
     }
 
     public interface OnFragmentInteractionListener {
-        public void onFragmentInteraction(Uri uri);
+        public void userLogged(User user);
     }
 
 

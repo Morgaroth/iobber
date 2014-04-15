@@ -1,13 +1,15 @@
 package pl.edu.agh.iobber.core;
 
 
+import java.io.Serializable;
+
 import pl.edu.agh.iobber.core.exceptions.YetAnotherException;
 import pl.edu.agh.iobber.core.exceptions.KurwaZapomnialemZaimplementowac;
 import pl.edu.agh.iobber.core.exceptions.ServerNotFoundException;
 import pl.edu.agh.iobber.core.exceptions.UserNotExistsException;
 import pl.edu.agh.iobber.core.exceptions.WrongPasswordException;
 
-public class User {
+public class User implements Serializable {
 
     public static User login(Credentials credentials) throws UserNotExistsException, ServerNotFoundException, YetAnotherException, WrongPasswordException {
         // TODO implementacja
