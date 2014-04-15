@@ -5,24 +5,26 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Button;
+
+import java.util.logging.Logger;
+
+import static java.lang.String.format;
 
 public class LoginActivity extends ActionBarActivity implements LoginFragment.OnFragmentInteractionListener {
-
+    private Logger logger = Logger.getLogger(LoginActivity.class.getSimpleName());
 
     private LoginFragment loginFragment;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        logger.info(format("onCreate"));
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.login, menu);
         return true;
     }
@@ -41,6 +43,6 @@ public class LoginActivity extends ActionBarActivity implements LoginFragment.On
 
     @Override
     public void onFragmentInteraction(Uri uri) {
-
+        logger.info("uri " + uri);
     }
 }

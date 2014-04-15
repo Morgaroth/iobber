@@ -16,5 +16,9 @@
     <string name="Login">Login</string>
 
     <string name="hello_world">Hello world!</string>
+    <string name="Password_cannot_be_empty">Password cannot be empty!</string>
+    <string name="Wrong_password">Wrong password</string>
+    <string name="User_not_exists">User not exists</string>
+    <string name="Nick_cannot_be_empty">Nick cannot be empty!</string>
 
 </resources>
