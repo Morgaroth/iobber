@@ -34,13 +34,13 @@ public class XMPPManagerApplication extends Application{
         SharedPreferences sharedPreferences = getSharedPreferences(PREF, 0);
 
         String server = sharedPreferences.getString("SERVER", "");
-        int port = sharedPreferences.getInt("PORT", 0);
-        boolean authenticationSASL = sharedPreferences.getInt("AUTH", 0) > 0 ? true : false;
+        int port = Integer.parseInt(sharedPreferences.getString("PORT", "0"));
+        boolean authenticationSASL = sharedPreferences.getString("SASLAUTH", "NO").equals("YES")  ? true : false;
         String login = sharedPreferences.getString("LOGIN", "");
         String name, service;
         if(login.contains("@")){
-            name = login.split("@")[0];
-            service = login.split("@")[1];
+            name = login.split("@")[0].trim();
+            service = login.split("@")[1].trim();
         }else{
             name = login;
             service = "";
@@ -63,7 +63,7 @@ public class XMPPManagerApplication extends Application{
         SharedPreferences sharedPreferences = getSharedPreferences(PREF, 0);
         String password = sharedPreferences.getString("PASSWORD", "");
         String login = sharedPreferences.getString("LOGIN", "");
-        String name = login.split("@")[0];
+        String name = login.split("@")[0].trim();
         try {
             xmppConnection.login(name, password);
         } catch (XMPPException e) {

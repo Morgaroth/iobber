@@ -60,7 +60,7 @@ public class LoginActivity extends ActionBarActivity implements LoginFragment.On
         shEditor.putString("LOGIN", user.getValue("LOGIN"));
         shEditor.putString("PASSWORD", user.getValue("PASSWORD"));
         shEditor.putString("SERVER", user.getValue("SERVER"));
-        shEditor.putInt("PORT", Integer.parseInt(user.getValue("PORT")));
+        shEditor.putString("PORT", user.getValue("PORT"));
         shEditor.putString("SASLAUTH", user.getValue("SASLAUTH"));
         shEditor.commit();
 
