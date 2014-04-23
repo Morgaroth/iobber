@@ -1,6 +1,7 @@
 package pl.edu.agh.iobber;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -19,7 +20,7 @@ import static java.lang.String.format;
  */
 public class LoginActivity extends ActionBarActivity implements LoginFragment.OnFragmentInteractionListener {
     private Logger logger = Logger.getLogger(LoginActivity.class.getSimpleName());
-
+    private static final String PREF = "SharedLogInPreferences";
     private LoginFragment loginFragment;
 
     public static final int LOGIN_REQUEST = 1;
@@ -53,7 +54,16 @@ public class LoginActivity extends ActionBarActivity implements LoginFragment.On
     @Override
     public void userLogged(User user) {
         Intent returnIntent = new Intent();
-        returnIntent.putExtra(USER, user);
+
+        SharedPreferences sharedPreferences = getSharedPreferences(PREF, 0);
+        SharedPreferences.Editor shEditor = sharedPreferences.edit();
+        shEditor.putString("LOGIN", user.getValue("LOGIN"));
+        shEditor.putString("PASSWORD", user.getValue("PASSWORD"));
+        shEditor.putString("SERVER", user.getValue("SERVER"));
+        shEditor.putInt("PORT", Integer.parseInt(user.getValue("PORT")));
+        shEditor.putString("SASLAUTH", user.getValue("SASLAUTH"));
+        shEditor.commit();
+
         setResult(RESULT_OK, returnIntent);
         finish();
     }

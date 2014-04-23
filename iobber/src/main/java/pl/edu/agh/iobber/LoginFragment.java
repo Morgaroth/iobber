@@ -2,6 +2,7 @@ package pl.edu.agh.iobber;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -12,6 +13,7 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -32,7 +34,7 @@ import static pl.edu.agh.iobber.R.string.*;
 public class LoginFragment extends Fragment {
 
     private Logger logger = Logger.getLogger(LoginFragment.class.getSimpleName());
-
+    private static final String PREF = "SharedLogInPreferences";
     private OnFragmentInteractionListener mListener;
 
     public LoginFragment() {
@@ -85,35 +87,39 @@ public class LoginFragment extends Fragment {
     private void tryLogin(final View inflate) {
         EditText nickField = ((EditText) inflate.findViewById(R.id.login_login_edit));
         String nick = nickField.getText().toString();
+
         EditText passwordField = ((EditText) inflate.findViewById(R.id.login_password_edit));
         String password = passwordField.getText().toString();
+
+        EditText serverField = ((EditText) inflate.findViewById(R.id.login_server_edit));
+        String server = serverField.getText().toString();
+
+        EditText portField = ((EditText) inflate.findViewById(R.id.login_port_edit));
+
+        CheckBox sASLAuth = (CheckBox) inflate.findViewById(R.id.SASLAuth);
+        boolean sASLAuthChecked = sASLAuth.isChecked();
+
         if (nick == null || nick.equals("")) {
             Toast.makeText(getActivity(), Nick_cannot_be_empty, LENGTH_SHORT).show();
             return;
         } else if (password == null || password.equals("")) {
             Toast.makeText(getActivity(), Password_cannot_be_empty, LENGTH_SHORT).show();
             return;
-        }
-        logger.info(format("try login with credentials \"%s\" and \"%s\"", nick, password));
-        try {
-            User loggedUser = User.login(new Credentials(nick, password));
-            logger.info("logged user: " + loggedUser + ", starting new activity");
-            mListener.userLogged(loggedUser);
-        } catch (UserNotExistsException e) {
-            nickField.clearComposingText();
-            passwordField.clearComposingText();
-            logger.info(format("user %s not exists", nick));
-            Toast.makeText(getActivity(), User_not_exists, LENGTH_SHORT).show();
-        } catch (ServerNotFoundException e) {
-            logger.info("server not found");
-            Toast.makeText(getActivity(), "server not exists", LENGTH_SHORT).show();
-        } catch (WrongPasswordException e) {
-            passwordField.clearComposingText();
-            logger.info(format("wrong password(%s) for user %s", password, nick));
-            Toast.makeText(getActivity(), Wrong_password, LENGTH_SHORT).show();
-        } catch (YetAnotherException e) {
-            e.printStackTrace();
-        }
+        }else if (server == null || server.equals("")){
+            Toast.makeText(getActivity(), Server_cannot_be_empty, LENGTH_SHORT).show();
+            return;
+        }else if (portField.getText().toString()== null || portField.getText().toString().equals("")){
+            Toast.makeText(getActivity(), Port_cannot_be_empty, LENGTH_SHORT).show();
+            return;
+        }//tu dalej
+        User user = new User();
+        user.setValue("LOGIN", nick);
+        user.setValue("PASSWORD", password);
+        user.setValue("PORT", portField.getText().toString());
+        user.setValue("SERVER", server);
+        user.setValue("SASLAUTH", sASLAuth.isChecked() ? "YES" : "NO");
+
+        mListener.userLogged(user);
     }
 
     @Override

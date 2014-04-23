@@ -15,9 +15,52 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="@string/name"
+            android:text="@string/Server"
+            android:textSize="8dp"
             android:gravity="center_horizontal"
-            android:layout_marginBottom="10dp" />
+            android:layout_marginBottom="0dp" />
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/login_server_edit"
+            android:gravity="center_horizontal"
+            android:inputType="text"
+            android:layout_marginTop="0dp"
+            android:layout_marginBottom="0dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="@string/Port"
+            android:textSize="8dp"
+            android:gravity="center_horizontal"
+            android:layout_marginBottom="0dp" />
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/login_port_edit"
+            android:gravity="center_horizontal"
+            android:inputType="text"
+            android:layout_marginTop="0dp"
+            android:layout_marginBottom="0dp" />
+
+        <CheckBox
+            android:id="@+id/SASLAuth"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/SASLAuthentication" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="@string/name"
+            android:textSize="8dp"
+            android:gravity="center_horizontal"
+            android:layout_marginBottom="0dp" />
 
         <EditText
             android:layout_width="match_parent"
@@ -25,17 +68,18 @@
             android:id="@+id/login_login_edit"
             android:gravity="center_horizontal"
             android:inputType="text"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp" />
+            android:layout_marginTop="0dp"
+            android:layout_marginBottom="0dp" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:text="@string/Password"
+            android:textSize="8dp"
             android:gravity="center_horizontal"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp" />
+            android:layout_marginTop="0dp"
+            android:layout_marginBottom="0dp" />
 
         <EditText
             android:layout_width="match_parent"
@@ -44,14 +88,14 @@
             android:ems="10"
             android:id="@+id/login_password_edit"
             android:gravity="center_horizontal"
-            android:layout_marginBottom="10dp"
-            android:layout_marginTop="10dp" />
+            android:layout_marginBottom="0dp"
+            android:layout_marginTop="0dp" />
 
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/Login"
             android:id="@+id/login_login_button"
-            android:layout_marginTop="10dp" />
+            android:layout_marginTop="0dp" />
     </LinearLayout>
 </FrameLayout>

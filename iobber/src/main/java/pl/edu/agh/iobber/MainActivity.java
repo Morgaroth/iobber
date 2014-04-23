@@ -2,6 +2,7 @@ package pl.edu.agh.iobber;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -27,6 +28,11 @@ import static pl.edu.agh.iobber.LoginActivity.USER;
 import java.util.logging.Logger;
 
 import pl.edu.agh.iobber.core.User;
+import pl.edu.agh.iobber.core.XMPPManagerApplication;
+import pl.edu.agh.iobber.core.exceptions.InternetNotFoundException;
+import pl.edu.agh.iobber.core.exceptions.NotConnectedToTheServerException;
+import pl.edu.agh.iobber.core.exceptions.ServerNotFoundException;
+import pl.edu.agh.iobber.core.exceptions.UserNotExistsException;
 
 public class MainActivity extends ActionBarActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
@@ -34,32 +40,62 @@ public class MainActivity extends ActionBarActivity
 
     private Logger logger = Logger.getLogger(MainActivity.class.getSimpleName());
     private NavigationDrawerFragment mNavigationDrawerFragment;
-
+    private static final String PREF = "SharedLogInPreferences";
     private CharSequence mTitle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        logIn();
+    }
+
+    private void logIn(){
         if (isLoggedUser()) {
-            setUpContent(getLoggedUser());
+            getLoggedUser();
+            setUpContent();
         } else {
             Intent i = new Intent(this, LoginActivity.class);
             startActivityForResult(i, LOGIN_REQUEST);
         }
     }
 
-    private User getLoggedUser() {
-        // TODO wymyślić w jaki sposób będzie przechowywany zalogowany użytkownik i tutaj go ładować, jego albo coś, to będzie wystarczać do interakcji
-        return null;
+    /**
+     * zwraca cos
+     * @return
+     */
+    private void getLoggedUser() {
+        XMPPManagerApplication xm = (XMPPManagerApplication)getApplication();
+        try {
+            xm.connectToServer();
+            xm.loginToServer();
+        } catch (InternetNotFoundException e) {
+            Toast.makeText(this, new String(getResources().getString(R.string.Internet_not_found)), Toast.LENGTH_LONG).show();
+            logOut();
+        } catch (ServerNotFoundException e) {
+            Toast.makeText(this, new String(getResources().getString(R.string.Server_not_found)), Toast.LENGTH_LONG).show();
+            logOut();
+        }catch (UserNotExistsException e) {
+            Toast.makeText(this, new String(getResources().getString(R.string.User_not_exsist)), Toast.LENGTH_LONG).show();
+            logOut();
+        } catch (NotConnectedToTheServerException e) {
+            Toast.makeText(this, new String(getResources().getString(R.string.Server_not_connect)), Toast.LENGTH_LONG).show();
+            logOut();
+        }
     }
 
-    private void setUpContent(User loggedUser) {
+    private void logOut(){
+        SharedPreferences sharedPreferences = getSharedPreferences(PREF, 0);
+        SharedPreferences.Editor shEditor = sharedPreferences.edit();
+        shEditor.remove("LOGIN");
+        shEditor.commit();
+    }
+
+    private void setUpContent() {
         setContentView(R.layout.activity_main);
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
         mTitle = getTitle();
-
 
         // Set up the drawer.
         mNavigationDrawerFragment.setUp(
@@ -68,19 +104,23 @@ public class MainActivity extends ActionBarActivity
     }
 
     private boolean isLoggedUser() {
-        return false;
+        SharedPreferences sharedPreferences = getSharedPreferences(PREF, 0);
+        return sharedPreferences.contains("LOGIN");
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == LOGIN_REQUEST) {
             if (resultCode == RESULT_OK) {
-                User loggedUser = (User) data.getSerializableExtra(USER);
-                logger.info(format("LoginActivity results OK with user %s", loggedUser));
-                setUpContent(loggedUser);
+                //User loggedUser = (User) data.getSerializableExtra(USER);
+                //logger.info(format("LoginActivity results OK with user %s", loggedUser));
+                logger.info(format("LoginActivity results OK"));
+                getLoggedUser();
+                setUpContent();
             }
             if (resultCode == RESULT_CANCELED) {
                 logger.info("Login activity results CANCELLED !");
+                logIn();
                 Toast.makeText(this, "login cancelled!", Toast.LENGTH_LONG).show();
             }
         }
@@ -110,6 +150,7 @@ public class MainActivity extends ActionBarActivity
                 break;
             case 3:
                 mTitle = getString(R.string.title_section3);
+                logOut();
                 break;
         }
     }
