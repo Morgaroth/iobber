@@ -14,6 +14,9 @@ import pl.edu.agh.iobber.core.User;
 
 import static java.lang.String.format;
 
+/**
+ * Ala ma ktoa
+ */
 public class LoginActivity extends ActionBarActivity implements LoginFragment.OnFragmentInteractionListener {
     private Logger logger = Logger.getLogger(LoginActivity.class.getSimpleName());
 
