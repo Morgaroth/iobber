@@ -1,49 +1,94 @@
 package pl.edu.agh.iobber;
 
 import android.app.Activity;
-import android.support.v7.app.ActionBarActivity;
-import android.support.v7.app.ActionBar;
+import android.content.Intent;
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.content.Context;
-import android.os.Build;
-import android.os.Bundle;
-import android.view.Gravity;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.support.v4.widget.DrawerLayout;
-import android.widget.ArrayAdapter;
+import android.view.inputmethod.EditorInfo;
+import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import static java.lang.String.format;
+import static pl.edu.agh.iobber.LoginActivity.LOGIN_REQUEST;
+import static pl.edu.agh.iobber.LoginActivity.USER;
+
+
+import java.util.logging.Logger;
+
+import pl.edu.agh.iobber.core.User;
 
 public class MainActivity extends ActionBarActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
 
-    /**
-     * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
-     */
+
+    private Logger logger = Logger.getLogger(MainActivity.class.getSimpleName());
     private NavigationDrawerFragment mNavigationDrawerFragment;
 
-    /**
-     * Used to store the last screen title. For use in {@link #restoreActionBar()}.
-     */
     private CharSequence mTitle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (isLoggedUser()) {
+            setUpContent(getLoggedUser());
+        } else {
+            Intent i = new Intent(this, LoginActivity.class);
+            startActivityForResult(i, LOGIN_REQUEST);
+        }
+    }
+
+    private User getLoggedUser() {
+        // TODO wymyślić w jaki sposób będzie przechowywany zalogowany użytkownik i tutaj go ładować, jego albo coś, to będzie wystarczać do interakcji
+        return null;
+    }
+
+    private void setUpContent(User loggedUser) {
         setContentView(R.layout.activity_main);
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
         mTitle = getTitle();
 
+
         // Set up the drawer.
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
+    }
+
+    private boolean isLoggedUser() {
+        return false;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == LOGIN_REQUEST) {
+            if (resultCode == RESULT_OK) {
+                User loggedUser = (User) data.getSerializableExtra(USER);
+                logger.info(format("LoginActivity results OK with user %s", loggedUser));
+                setUpContent(loggedUser);
+            }
+            if (resultCode == RESULT_CANCELED) {
+                logger.info("Login activity results CANCELLED !");
+                Toast.makeText(this, "login cancelled!", Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        //No call for super(). Bug on API Level > 11.
     }
 
     @Override
@@ -79,13 +124,15 @@ public class MainActivity extends ActionBarActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        if (!mNavigationDrawerFragment.isDrawerOpen()) {
-            // Only show items in the action bar relevant to this screen
-            // if the drawer is not showing. Otherwise, let the drawer
-            // decide what to show in the action bar.
-            getMenuInflater().inflate(R.menu.main, menu);
-            restoreActionBar();
-            return true;
+        if (mNavigationDrawerFragment != null) {
+            if (!mNavigationDrawerFragment.isDrawerOpen()) {
+                // Only show items in the action bar relevant to this screen
+                // if the drawer is not showing. Otherwise, let the drawer
+                // decide what to show in the action bar.
+                getMenuInflater().inflate(R.menu.main, menu);
+                restoreActionBar();
+                return true;
+            }
         }
         return super.onCreateOptionsMenu(menu);
     }
@@ -129,11 +176,35 @@ public class MainActivity extends ActionBarActivity
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                Bundle savedInstanceState) {
+                                 Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-            TextView textView = (TextView) rootView.findViewById(R.id.section_label);
-            textView.setText(Integer.toString(getArguments().getInt(ARG_SECTION_NUMBER)));
+//            TextView textView = (TextView) rootView.findViewById(R.id.section_label);
+//            textView.setText(Integer.toString(getArguments().getInt(ARG_SECTION_NUMBER)));
+
+            // TODO akcja na wciśnięcie entera podczas pisania
+
+            ((EditText) rootView.findViewById(R.id.chatLine)).setOnEditorActionListener(
+                    new EditText.OnEditorActionListener() {
+                        @Override
+                        public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                            Logger.getLogger(MainActivity.class.getName()).info("used event=" + event);
+                            if (isActionSend(actionId, event)) {
+                                sendMessage(v.getText());
+                                clearEditText();
+                                return true;
+                            }
+                            return false;
+                        }
+                    });
             return rootView;
+        }
+
+        private void clearEditText() {
+            // TODO wyczyszczenie okienka do pisania
+        }
+
+        private void sendMessage(CharSequence text) {
+            // TODO logika od wysyłania wiadomośći
         }
 
         @Override
@@ -142,6 +213,14 @@ public class MainActivity extends ActionBarActivity
             ((MainActivity) activity).onSectionAttached(
                     getArguments().getInt(ARG_SECTION_NUMBER));
         }
+    }
+
+    private static boolean isActionSend(int actionId, KeyEvent event) {
+        return actionId == EditorInfo.IME_ACTION_SEARCH ||
+                actionId == EditorInfo.IME_ACTION_DONE ||
+                actionId == EditorInfo.IME_ACTION_SEND ||
+                event.getAction() == KeyEvent.ACTION_DOWN &&
+                        event.getKeyCode() == KeyEvent.KEYCODE_ENTER;
     }
 
 }
