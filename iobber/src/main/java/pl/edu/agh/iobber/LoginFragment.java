@@ -94,8 +94,6 @@ public class LoginFragment extends Fragment {
         EditText serverField = ((EditText) inflate.findViewById(R.id.login_server_edit));
         String server = serverField.getText().toString();
 
-        EditText portField = ((EditText) inflate.findViewById(R.id.login_port_edit));
-
         CheckBox sASLAuth = (CheckBox) inflate.findViewById(R.id.SASLAuth);
         boolean sASLAuthChecked = sASLAuth.isChecked();
 
@@ -108,14 +106,11 @@ public class LoginFragment extends Fragment {
         }else if (server == null || server.equals("")){
             Toast.makeText(getActivity(), Server_cannot_be_empty, LENGTH_SHORT).show();
             return;
-        }else if (portField.getText().toString()== null || portField.getText().toString().equals("")){
-            Toast.makeText(getActivity(), Port_cannot_be_empty, LENGTH_SHORT).show();
-            return;
-        }//tu dalej
+        }
         User user = new User();
         user.setValue("LOGIN", nick);
         user.setValue("PASSWORD", password);
-        user.setValue("PORT", portField.getText().toString());
+        user.setValue("PORT", String.valueOf(5222));
         user.setValue("SERVER", server);
         user.setValue("SASLAUTH", sASLAuth.isChecked() ? "YES" : "NO");
 

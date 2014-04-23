@@ -38,9 +38,13 @@ public class XMPPManagerApplication extends Application{
         boolean authenticationSASL = sharedPreferences.getInt("AUTH", 0) > 0 ? true : false;
         String login = sharedPreferences.getString("LOGIN", "");
         String name, service;
-        name = login.split("@")[0];
-        service = login.split("@")[1];
-
+        if(login.contains("@")){
+            name = login.split("@")[0];
+            service = login.split("@")[1];
+        }else{
+            name = login;
+            service = "";
+        }
         connectionConfiguration = new ConnectionConfiguration(server, port, service);
         connectionConfiguration.setReconnectionAllowed(true);
         connectionConfiguration.setSASLAuthenticationEnabled(authenticationSASL);
