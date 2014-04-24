@@ -31,7 +31,7 @@ public class XMPPManager{
     }
 
     public void setContext(Context context) {
-        XMPPManager.context = context;
+        this.context = context;
     }
 
     public void connectToServer() throws InternetNotFoundException, ServerNotFoundException {
@@ -50,9 +50,9 @@ public class XMPPManager{
         name = login.split("@")[0];
         service = login.split("@")[1];
 
-        connectionConfiguration = new ConnectionConfiguration(server, port, service);
+        connectionConfiguration = new ConnectionConfiguration("jabber.agh.edu.pl", 5222, "student.agh.edu.pl");
         connectionConfiguration.setReconnectionAllowed(true);
-        connectionConfiguration.setSASLAuthenticationEnabled(authenticationSASL);
+        connectionConfiguration.setSASLAuthenticationEnabled(true);
         xmppConnection = new XMPPConnection(connectionConfiguration);
         try {
             xmppConnection.connect();
@@ -69,7 +69,7 @@ public class XMPPManager{
         String login = user.getValue("LOGIN");
         String name = login.split("@")[0];
         try {
-            xmppConnection.login(name, password);
+            xmppConnection.login("klusek", "fotidep");
         } catch (XMPPException e) {
             throw new UserNotExistsException();
         }

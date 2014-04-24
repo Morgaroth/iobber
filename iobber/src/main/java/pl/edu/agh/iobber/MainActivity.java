@@ -62,7 +62,7 @@ public class MainActivity extends ActionBarActivity
     private LoggedUser tryLogInUser() {
         //LoggedUser loggedUser = new LoggedUser(user);
         XMPPManager xmppManager = new XMPPManager(user);
-    xmppManager.setContext(this);
+        xmppManager.setContext(this);
         try {
 
             xmppManager.connectToServer();
@@ -125,7 +125,8 @@ public class MainActivity extends ActionBarActivity
                 user = (User) data.getSerializableExtra("USER");
                 logger.info(format("LoginActivity results OK"));
                 LoggedUser loggedUser = tryLogInUser();
-                setUpContent(loggedUser);
+                //setUpContent(loggedUser);
+                Toast.makeText(this, new String("Hurra"), Toast.LENGTH_LONG).show();
             }
             if (resultCode == RESULT_CANCELED) {
                 logger.info("Login activity results CANCELLED !");
