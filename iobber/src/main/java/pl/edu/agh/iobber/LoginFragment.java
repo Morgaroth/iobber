@@ -2,8 +2,6 @@ package pl.edu.agh.iobber;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.KeyEvent;
@@ -20,15 +18,9 @@ import android.widget.Toast;
 
 import java.util.logging.Logger;
 
-import pl.edu.agh.iobber.core.exceptions.YetAnotherException;
-import pl.edu.agh.iobber.core.Credentials;
-import pl.edu.agh.iobber.core.exceptions.ServerNotFoundException;
 import pl.edu.agh.iobber.core.User;
-import pl.edu.agh.iobber.core.exceptions.UserNotExistsException;
-import pl.edu.agh.iobber.core.exceptions.WrongPasswordException;
 
 import static android.widget.Toast.LENGTH_SHORT;
-import static java.lang.String.format;
 import static pl.edu.agh.iobber.R.string.*;
 
 public class LoginFragment extends Fragment {

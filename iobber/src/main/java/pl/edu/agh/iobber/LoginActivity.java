@@ -54,16 +54,7 @@ public class LoginActivity extends ActionBarActivity implements LoginFragment.On
     @Override
     public void userLogged(User user) {
         Intent returnIntent = new Intent();
-
-        SharedPreferences sharedPreferences = getSharedPreferences(PREF, 0);
-        SharedPreferences.Editor shEditor = sharedPreferences.edit();
-        shEditor.putString("LOGIN", user.getValue("LOGIN"));
-        shEditor.putString("PASSWORD", user.getValue("PASSWORD"));
-        shEditor.putString("SERVER", user.getValue("SERVER"));
-        shEditor.putString("PORT", user.getValue("PORT"));
-        shEditor.putString("SASLAUTH", user.getValue("SASLAUTH"));
-        shEditor.commit();
-
+        returnIntent.putExtra("USER", user);
         setResult(RESULT_OK, returnIntent);
         finish();
     }

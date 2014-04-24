@@ -32,5 +32,6 @@
     <string name="SASLAuthentication">AuthenticationSASL</string>
     <string name="Login_cancelled">Login cancelled!</string>
     <string name="couldnt_log_in">Couldn\'t log in</string>
+    <string name="Cannot_logout">Can not logout</string>
 
 </resources>
