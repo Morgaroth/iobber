@@ -23,9 +23,7 @@ import pl.edu.agh.iobber.core.User;
 import static android.widget.Toast.LENGTH_SHORT;
 import static pl.edu.agh.iobber.R.string.Nick_cannot_be_empty;
 import static pl.edu.agh.iobber.R.string.Password_cannot_be_empty;
-import static pl.edu.agh.iobber.R.string.Port_cannot_be_empty;
 import static pl.edu.agh.iobber.R.string.Server_cannot_be_empty;
-import static pl.edu.agh.iobber.R.string.*;
 
 public class LoginFragment extends Fragment {
 
@@ -100,10 +98,7 @@ public class LoginFragment extends Fragment {
         } else if (server == null || server.equals("")) {
             Toast.makeText(getActivity(), Server_cannot_be_empty, LENGTH_SHORT).show();
             return;
-        }else if (portField.getText().toString()== null || portField.getText().toString().equals("")){
-            Toast.makeText(getActivity(), Port_cannot_be_empty, LENGTH_SHORT).show();
-            return;
-        }//tu dalej
+        }
         User user = new User();
         user.setValue("LOGIN", nick);
         user.setValue("PASSWORD", password);
