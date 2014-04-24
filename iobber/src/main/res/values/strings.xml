@@ -14,11 +14,24 @@
     <string name="name">Name</string>
     <string name="Password">Password</string>
     <string name="Login">Login</string>
+    <string name="Server">Server</string>
+    <string name="Port">Port</string>
 
     <string name="hello_world">Hello world!</string>
     <string name="Password_cannot_be_empty">Password cannot be empty!</string>
     <string name="Wrong_password">Wrong password</string>
     <string name="User_not_exists">User not exists</string>
     <string name="Nick_cannot_be_empty">Nick cannot be empty!</string>
+    <string name="Server_cannot_be_empty">Server_cannot_be_empty!</string>
+    <string name="Port_cannot_be_empty">Port_cannot_be_empty!</string>
+
+    <string name="Internet_not_found">Not connected</string>
+    <string name="Server_not_found">Server not found</string>
+    <string name="User_not_exsist">User does not exsist</string>
+    <string name="Server_not_connect">Server not connected</string>
+    <string name="SASLAuthentication">AuthenticationSASL</string>
+    <string name="Login_cancelled">Login cancelled!</string>
+    <string name="couldnt_log_in">Couldn\'t log in</string>
+    <string name="new_conversation">New conversation</string>
 
 </resources>

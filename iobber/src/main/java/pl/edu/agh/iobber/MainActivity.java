@@ -1,32 +1,23 @@
 package pl.edu.agh.iobber;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
-import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
-import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
-
-import static java.lang.String.format;
-import static pl.edu.agh.iobber.LoginActivity.LOGIN_REQUEST;
-import static pl.edu.agh.iobber.LoginActivity.USER;
-
 
 import java.util.logging.Logger;
 
 import pl.edu.agh.iobber.core.User;
+import pl.edu.agh.iobber.core.exceptions.KurwaZapomnialemZaimplementowac;
+
+import static java.lang.String.format;
+import static pl.edu.agh.iobber.LoginActivity.LOGIN_REQUEST;
+import static pl.edu.agh.iobber.LoginActivity.USER;
 
 public class MainActivity extends ActionBarActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
@@ -37,9 +28,21 @@ public class MainActivity extends ActionBarActivity
 
     private CharSequence mTitle;
 
+    private static boolean isActionSend(int actionId, KeyEvent event) {
+        return actionId == EditorInfo.IME_ACTION_SEARCH ||
+                actionId == EditorInfo.IME_ACTION_DONE ||
+                actionId == EditorInfo.IME_ACTION_SEND ||
+                event.getAction() == KeyEvent.ACTION_DOWN &&
+                        event.getKeyCode() == KeyEvent.KEYCODE_ENTER;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        logIn();
+    }
+
+    private void logIn() {
         if (isLoggedUser()) {
             setUpContent(getLoggedUser());
         } else {
@@ -121,7 +124,6 @@ public class MainActivity extends ActionBarActivity
         actionBar.setTitle(mTitle);
     }
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         if (mNavigationDrawerFragment != null) {
@@ -139,88 +141,101 @@ public class MainActivity extends ActionBarActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
+        switch (item.getItemId()) {
+            case R.id.action_settings:
+                logger.info("clicked settings action button");
+                return true;
+            case R.id.action_example:
+                logger.info("clicked example action button");
+                return true;
+            case R.id.action_new_conversation:
+                logger.info("clicked new conversation action button");
+                startNewConversation();
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    /**
-     * A placeholder fragment containing a simple view.
-     */
-    public static class PlaceholderFragment extends Fragment {
-        /**
-         * The fragment argument representing the section number for this
-         * fragment.
-         */
-        private static final String ARG_SECTION_NUMBER = "section_number";
+    private void startNewConversation() {
+        final EditText input = new EditText(MainActivity.this);
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT);
+        input.setLayoutParams(lp);
+        new AlertDialog.Builder(this)
+                .setView(input)
+                .setTitle("z kim?")
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        Editable oponent = input.getText();
+                        logger.info("user typed oponent " + oponent);
+                        Conversation conversation = loggedUser.startConversation(oponent);
+                        loadConversation(conversation.getName());
+                    }
+                })
+                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        // do nothing
+                    }
+                })
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .show();
+        throw new KurwaZapomnialemZaimplementowac();
+    }
 
-        /**
-         * Returns a new instance of this fragment for the given section
-         * number.
-         */
-        public static PlaceholderFragment newInstance(int sectionNumber) {
-            PlaceholderFragment fragment = new PlaceholderFragment();
-            Bundle args = new Bundle();
-            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-            fragment.setArguments(args);
-            return fragment;
-        }
+    @Override
+    public void onNavigationDrawerItemSelected(String title) {
+        loadConversation(title);
+    }
 
-        public PlaceholderFragment() {
-        }
+    private void loadConversation(String title) {
+        ConversationFragment conversation = getConversationOrNew(title);
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction()
+                .replace(R.id.container, conversation)
+                .commit();
+    }
 
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 //            TextView textView = (TextView) rootView.findViewById(R.id.section_label);
 //            textView.setText(Integer.toString(getArguments().getInt(ARG_SECTION_NUMBER)));
 
-            // TODO akcja na wciśnięcie entera podczas pisania
+        // TODO akcja na wciśnięcie entera podczas pisania
 
-            ((EditText) rootView.findViewById(R.id.chatLine)).setOnEditorActionListener(
-                    new EditText.OnEditorActionListener() {
-                        @Override
-                        public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                            Logger.getLogger(MainActivity.class.getName()).info("used event=" + event);
-                            if (isActionSend(actionId, event)) {
-                                sendMessage(v.getText());
-                                clearEditText();
-                                return true;
-                            }
-                            return false;
+        ((EditText) rootView.findViewById(R.id.chatLine)).setOnEditorActionListener(
+                new EditText.OnEditorActionListener() {
+                    @Override
+                    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                        Logger.getLogger(MainActivity.class.getName()).info("used event=" + event);
+                        if (isActionSend(actionId, event)) {
+                            sendMessage(v.getText());
+                            clearEditText();
+                            return true;
                         }
-                    });
-            return rootView;
+                        return false;
+                    }
+                }
+        );
+        return rootView;
         }
 
-        private void clearEditText() {
-            // TODO wyczyszczenie okienka do pisania
+    private void clearEditText() {
+        // TODO wyczyszczenie okienka do pisania
         }
 
-        private void sendMessage(CharSequence text) {
-            // TODO logika od wysyłania wiadomośći
-        }
-
-        @Override
-        public void onAttach(Activity activity) {
-            super.onAttach(activity);
-            ((MainActivity) activity).onSectionAttached(
-                    getArguments().getInt(ARG_SECTION_NUMBER));
+    private void sendMessage(CharSequence text) {
+        // TODO logika od wysyłania wiadomośći
         }
     }
 
-    private static boolean isActionSend(int actionId, KeyEvent event) {
-        return actionId == EditorInfo.IME_ACTION_SEARCH ||
-                actionId == EditorInfo.IME_ACTION_DONE ||
-                actionId == EditorInfo.IME_ACTION_SEND ||
-                event.getAction() == KeyEvent.ACTION_DOWN &&
-                        event.getKeyCode() == KeyEvent.KEYCODE_ENTER;
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        ((MainActivity) activity).onSectionAttached(
+                getArguments().getInt(ARG_SECTION_NUMBER));
     }
 
 }
