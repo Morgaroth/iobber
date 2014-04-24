@@ -14,12 +14,15 @@ import pl.edu.agh.iobber.core.exceptions.InternetNotFoundException;
 import pl.edu.agh.iobber.core.exceptions.NotConnectedToTheServerException;
 import pl.edu.agh.iobber.core.exceptions.ServerNotFoundException;
 import pl.edu.agh.iobber.core.exceptions.UserNotExistsException;
-import pl.edu.agh.iobber.core.exceptions.WrongPasswordException;
 
 public class XMPPManagerApplication extends Application{
 
+    public static final String SERVER = "SERVER";
+    public static final String PORT = "PORT";
+    public static final String AUTH = "AUTH";
+    public static final String LOGIN = "LOGIN";
+    public static final String PASSWORD = "PASSWORD";
     private static final String PREF = "SharedLogInPreferences";
-
     private XMPPConnection xmppConnection;
     private ConnectionConfiguration connectionConfiguration;
 
@@ -27,16 +30,16 @@ public class XMPPManagerApplication extends Application{
         ConnectivityManager cm = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo niWIFI = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
         NetworkInfo niMOBILE = cm.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
-        if((niMOBILE.isConnected() == false) && (niWIFI.isConnected() == false)){
+        if ((!niMOBILE.isConnected()) && (!niWIFI.isConnected())) {
             throw new InternetNotFoundException();
         }
 
         SharedPreferences sharedPreferences = getSharedPreferences(PREF, 0);
 
-        String server = sharedPreferences.getString("SERVER", "");
-        int port = sharedPreferences.getInt("PORT", 0);
-        boolean authenticationSASL = sharedPreferences.getInt("AUTH", 0) > 0 ? true : false;
-        String login = sharedPreferences.getString("LOGIN", "");
+        String server = sharedPreferences.getString(SERVER, "");
+        int port = sharedPreferences.getInt(PORT, 0);
+        boolean authenticationSASL = sharedPreferences.getInt(AUTH, 0) > 0;
+        String login = sharedPreferences.getString(LOGIN, "");
         String name, service;
         name = login.split("@")[0];
         service = login.split("@")[1];
@@ -57,8 +60,8 @@ public class XMPPManagerApplication extends Application{
             throw new NotConnectedToTheServerException();
         }
         SharedPreferences sharedPreferences = getSharedPreferences(PREF, 0);
-        String password = sharedPreferences.getString("PASSWORD", "");
-        String login = sharedPreferences.getString("LOGIN", "");
+        String password = sharedPreferences.getString(PASSWORD, "");
+        String login = sharedPreferences.getString(LOGIN, "");
         String name = login.split("@")[0];
         try {
             xmppConnection.login(name, password);
@@ -73,5 +76,9 @@ public class XMPPManagerApplication extends Application{
 
     public void closeConnection(){
         xmppConnection.disconnect();
+    }
+
+    public void sendMessage() {
+
     }
 }

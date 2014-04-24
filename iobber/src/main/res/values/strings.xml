@@ -30,5 +30,7 @@
     <string name="User_not_exsist">User does not exsist</string>
     <string name="Server_not_connect">Server not connected</string>
     <string name="SASLAuthentication">AuthenticationSASL</string>
+    <string name="Login_cancelled">Login cancelled!</string>
+    <string name="couldnt_log_in">Couldn\'t log in</string>
 
 </resources>
