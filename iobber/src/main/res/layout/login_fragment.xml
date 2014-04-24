@@ -29,24 +29,6 @@
             android:layout_marginTop="0dp"
             android:layout_marginBottom="0dp" />
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="@string/Port"
-            android:textSize="8dp"
-            android:gravity="center_horizontal"
-            android:layout_marginBottom="0dp" />
-
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/login_port_edit"
-            android:gravity="center_horizontal"
-            android:inputType="text"
-            android:layout_marginTop="0dp"
-            android:layout_marginBottom="0dp" />
-
         <CheckBox
             android:id="@+id/SASLAuth"
             android:layout_width="wrap_content"

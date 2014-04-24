@@ -1,5 +1,6 @@
 package pl.edu.agh.iobber.core;
 
+import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 
@@ -22,13 +23,22 @@ public class LoggedUser {
     private XMPPConnection alboCosInnegoCoDostaniePoZalogowaniuCzegoMozeUzywacDoZarzadzaniaSwoimKontem;
     private Collection<Conversation> activeConversations;
 
-    public LoggedUser(XMPPConnection alboCosInnegoCoDostaniePoZalogowaniuCzegoMozeUzywacDoZarzadzaniaSwoimKontem) {
-        this.alboCosInnegoCoDostaniePoZalogowaniuCzegoMozeUzywacDoZarzadzaniaSwoimKontem = alboCosInnegoCoDostaniePoZalogowaniuCzegoMozeUzywacDoZarzadzaniaSwoimKontem;
-    }
-    // TODO zwracanie obiektu który będzie prezentował zalogowanego użytkownika
+    private User user;
+    private XMPPConnection xmppConnection;
+    private boolean logged;
 
-    void logout() throws IObberException, XMPPException {
-        throw new KurwaZapomnialemZaimplementowac();
+    public LoggedUser(User user, XMPPConnection xmppConnection) {
+        this.user = user;
+        this.xmppConnection = xmppConnection;
+        logged = false;
+    }
+
+    public void logout() throws IObberException, XMPPException {
+        xmppConnection.disconnect();
+    }
+
+    public boolean isLogged(){
+        return logged;
     }
 
     public Collection<Conversation> getActiveConversations() {

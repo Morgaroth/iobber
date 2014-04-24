@@ -18,12 +18,16 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import org.jivesoftware.smack.XMPPException;
+
 import java.util.Map;
 import java.util.logging.Logger;
 
 import pl.edu.agh.iobber.core.Conversation;
 import pl.edu.agh.iobber.core.LoggedUser;
-import pl.edu.agh.iobber.core.XMPPManagerApplication;
+import pl.edu.agh.iobber.core.User;
+import pl.edu.agh.iobber.core.XMPPManager;
+import pl.edu.agh.iobber.core.exceptions.IObberException;
 import pl.edu.agh.iobber.core.exceptions.InternetNotFoundException;
 import pl.edu.agh.iobber.core.exceptions.KurwaZapomnialemZaimplementowac;
 import pl.edu.agh.iobber.core.exceptions.NotConnectedToTheServerException;
@@ -42,6 +46,7 @@ public class MainActivity extends ActionBarActivity
     private NavigationDrawerFragment mNavigationDrawerFragment;
     private CharSequence mTitle;
     private LoggedUser loggedUser;
+    private User user;
     private Map<String, ConversationFragment> conversationsCache;
 
     private static boolean isActionSend(int actionId, KeyEvent event) {
@@ -55,17 +60,15 @@ public class MainActivity extends ActionBarActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        this.user = null;
+        this.loggedUser = null;
         logIn();
     }
 
     private void logIn() {
-        if (isLoggedUser()) {
+        if (isUser()) {
             LoggedUser loggedUser = tryLogInUser();
-            if (loggedUser != null) {
-                setUpContent(loggedUser);
-            } else {
-                Toast.makeText(this, R.string.couldnt_log_in, Toast.LENGTH_LONG).show();
-            }
+            setUpContent(loggedUser);
         } else {
             Intent i = new Intent(this, LoginActivity.class);
             startActivityForResult(i, LOGIN_REQUEST);
@@ -73,12 +76,14 @@ public class MainActivity extends ActionBarActivity
     }
 
     private LoggedUser tryLogInUser() {
-        XMPPManagerApplication xm = (XMPPManagerApplication) getApplication();
+        //LoggedUser loggedUser = new LoggedUser(user);
+        XMPPManager xmppManager = new XMPPManager(user);
+    xmppManager.setContext(this);
         try {
-            xm.connectToServer();
-            xm.loginToServer();
-            // TODO zwracanie obiektu który będzie prezentował zalogowanego użytkownika
-            throw new KurwaZapomnialemZaimplementowac();
+
+            xmppManager.connectToServer();
+            xmppManager.loginToServer();
+
         } catch (InternetNotFoundException e) {
             Toast.makeText(this, R.string.Internet_not_found, Toast.LENGTH_LONG).show();
             logOut();
@@ -92,15 +97,19 @@ public class MainActivity extends ActionBarActivity
             Toast.makeText(this, R.string.Server_not_connect, Toast.LENGTH_LONG).show();
             logOut();
         }
-        // TODO zaimplementowac
-        throw new KurwaZapomnialemZaimplementowac();
+        return new LoggedUser(user, xmppManager.getXMPPConnection());
     }
 
     private void logOut() {
-        SharedPreferences sharedPreferences = getSharedPreferences(PREF, 0);
-        SharedPreferences.Editor shEditor = sharedPreferences.edit();
-        shEditor.remove("LOGIN");
-        shEditor.commit();
+        try {
+            loggedUser.logout();
+            user = null;
+            logIn();
+        } catch (IObberException e) {
+            Toast.makeText(this, R.string.Cannot_logout, Toast.LENGTH_LONG).show();
+        } catch (XMPPException e) {
+            Toast.makeText(this, R.string.Cannot_logout, Toast.LENGTH_LONG).show();
+        }
     }
 
     private void setUpContent(LoggedUser loggedUser) {
@@ -118,17 +127,18 @@ public class MainActivity extends ActionBarActivity
                 loggedUser.getActiveConversations());
     }
 
-    private boolean isLoggedUser() {
-        SharedPreferences sharedPreferences = getSharedPreferences(PREF, 0);
-        return sharedPreferences.contains("LOGIN");
+    private boolean isUser() {
+        if(user == null){
+            return false;
+        }
+        return true;
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == LOGIN_REQUEST) {
             if (resultCode == RESULT_OK) {
-                //User loggedUser = (User) data.getSerializableExtra(USER);
-                //logger.info(format("LoginActivity results OK with user %s", loggedUser));
+                user = (User) data.getSerializableExtra("USER");
                 logger.info(format("LoginActivity results OK"));
                 LoggedUser loggedUser = tryLogInUser();
                 setUpContent(loggedUser);
