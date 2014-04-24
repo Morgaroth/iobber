@@ -1,8 +1,6 @@
 package pl.edu.agh.iobber.core;
 
-import android.app.Application;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
@@ -10,21 +8,19 @@ import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 
-import pl.edu.agh.iobber.GlobalVars;
 import pl.edu.agh.iobber.core.exceptions.InternetNotFoundException;
 import pl.edu.agh.iobber.core.exceptions.NotConnectedToTheServerException;
 import pl.edu.agh.iobber.core.exceptions.ServerNotFoundException;
 import pl.edu.agh.iobber.core.exceptions.UserNotExistsException;
-import pl.edu.agh.iobber.core.exceptions.WrongPasswordException;
 
 public class XMPPManager{
 
 
-
+    public static final String PORT = "PORT";
+    private static Context context;
     private XMPPConnection xmppConnection;
     private ConnectionConfiguration connectionConfiguration;
     private User user;
-    private static Context context;
 
     public XMPPManager(User user){
         this.user = user;
@@ -42,7 +38,7 @@ public class XMPPManager{
             throw new InternetNotFoundException();
         }
         String server = user.getValue("SERVER");
-        int port = Integer.parseInt(user.getValue("PORT"));
+        int port = Integer.parseInt(user.getValue(PORT));
         boolean authenticationSASL = user.getValue("SASLAUTH").equals("TAK") ? true : false;
         String login = user.getValue("LOGIN");
 
