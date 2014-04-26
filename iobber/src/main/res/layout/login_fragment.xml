@@ -54,7 +54,7 @@
             android:layout_marginTop="0dp"
             android:gravity="center_horizontal"
             android:inputType="text"
-            android:text="klusek@agh.edu.pl" />
+            android:text="\@student.agh.edu.pl" />
 
         <TextView
             android:layout_width="match_parent"

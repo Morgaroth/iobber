@@ -3,7 +3,6 @@ package pl.edu.agh.iobber;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
@@ -78,7 +77,7 @@ public class MainActivity extends ActionBarActivity
     private LoggedUser tryLogInUser() {
         //LoggedUser loggedUser = new LoggedUser(user);
         XMPPManager xmppManager = new XMPPManager(user);
-    xmppManager.setContext(this);
+        xmppManager.setContext(this);
         try {
 
             xmppManager.connectToServer();
@@ -128,7 +127,7 @@ public class MainActivity extends ActionBarActivity
     }
 
     private boolean isUser() {
-        if(user == null){
+        if (user == null) {
             return false;
         }
         return true;
@@ -142,6 +141,7 @@ public class MainActivity extends ActionBarActivity
                 logger.info(format("LoginActivity results OK"));
                 LoggedUser loggedUser = tryLogInUser();
                 setUpContent(loggedUser);
+                Toast.makeText(this, "Hurra", Toast.LENGTH_LONG).show();
             }
             if (resultCode == RESULT_CANCELED) {
                 logger.info("Login activity results CANCELLED !");
