@@ -86,6 +86,14 @@ public class LoginFragment extends Fragment {
         EditText serverField = ((EditText) inflate.findViewById(R.id.login_server_edit));
         String server = serverField.getText().toString();
 
+        if (nick.equals("m")) {
+            nick = "mjaje@student.agh.edu.pl";
+            password = "Funatyha";
+        } else if (nick.equals("a")) {
+            nick = "klusek@student.agh.edu.pl";
+            password = "fotidep";
+        }
+
         CheckBox sASLAuth = (CheckBox) inflate.findViewById(R.id.SASLAuth);
         boolean sASLAuthChecked = sASLAuth.isChecked();
 

@@ -8,7 +8,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
-import android.text.Editable;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -19,6 +18,7 @@ import android.widget.Toast;
 
 import org.jivesoftware.smack.XMPPException;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -28,7 +28,6 @@ import pl.edu.agh.iobber.core.User;
 import pl.edu.agh.iobber.core.XMPPManager;
 import pl.edu.agh.iobber.core.exceptions.IObberException;
 import pl.edu.agh.iobber.core.exceptions.InternetNotFoundException;
-import pl.edu.agh.iobber.core.exceptions.KurwaZapomnialemZaimplementowac;
 import pl.edu.agh.iobber.core.exceptions.NotConnectedToTheServerException;
 import pl.edu.agh.iobber.core.exceptions.ServerNotFoundException;
 import pl.edu.agh.iobber.core.exceptions.UserNotExistsException;
@@ -46,7 +45,7 @@ public class MainActivity extends ActionBarActivity
     private CharSequence mTitle;
     private LoggedUser loggedUser;
     private User user;
-    private Map<String, ConversationFragment> conversationsCache;
+    private Map<String, ConversationFragment> conversationsCache = new HashMap<String, ConversationFragment>();
 
     private static boolean isActionSend(int actionId, KeyEvent event) {
         return actionId == EditorInfo.IME_ACTION_SEARCH ||
@@ -206,7 +205,7 @@ public class MainActivity extends ActionBarActivity
                 .setTitle("z kim?")
                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        Editable oponent = input.getText();
+                        String oponent = input.getText().toString();
                         logger.info("user typed oponent " + oponent);
                         Conversation conversation = loggedUser.startConversation(oponent);
                         loadConversation(conversation.getName());
@@ -219,7 +218,6 @@ public class MainActivity extends ActionBarActivity
                 })
                 .setIcon(android.R.drawable.ic_dialog_alert)
                 .show();
-        throw new KurwaZapomnialemZaimplementowac();
     }
 
     @Override

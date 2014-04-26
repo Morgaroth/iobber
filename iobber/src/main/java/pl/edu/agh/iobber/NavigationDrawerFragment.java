@@ -23,6 +23,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 
 import pl.edu.agh.iobber.core.Conversation;
@@ -45,7 +46,7 @@ public class NavigationDrawerFragment extends Fragment {
     private int mCurrentSelectedPosition = 0;
     private boolean mFromSavedInstanceState;
     private boolean userKnowAboutDrawer;
-    private List<String> conversationsList;
+    private List<String> conversationsList = new LinkedList<String>();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

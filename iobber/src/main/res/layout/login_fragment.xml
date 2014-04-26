@@ -6,7 +6,7 @@
     tools:context="pl.edu.agh.iobber.LoginFragment">
 
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:orientation="vertical">
@@ -14,16 +14,18 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:layout_marginBottom="0dp"
             android:gravity="center_horizontal"
             android:text="@string/Server"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textSize="8dp" />
+            android:textSize="13dp" />
 
         <EditText
             android:id="@+id/login_server_edit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:layout_marginBottom="0dp"
             android:layout_marginTop="0dp"
             android:gravity="center_horizontal"
@@ -34,53 +36,57 @@
             android:id="@+id/SASLAuth"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:checked="true"
             android:text="@string/SASLAuthentication" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:layout_marginBottom="0dp"
             android:gravity="center_horizontal"
             android:text="@string/name"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textSize="8dp" />
+            android:textSize="13dp" />
 
         <EditText
             android:id="@+id/login_login_edit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:layout_marginBottom="0dp"
             android:layout_marginTop="0dp"
             android:gravity="center_horizontal"
-            android:inputType="text"
-            android:text="\@student.agh.edu.pl" />
+            android:inputType="text" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:layout_marginBottom="0dp"
             android:layout_marginTop="0dp"
             android:gravity="center_horizontal"
             android:text="@string/Password"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textSize="8dp" />
+            android:textSize="13dp" />
 
         <EditText
             android:id="@+id/login_password_edit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:layout_marginBottom="0dp"
             android:layout_marginTop="0dp"
             android:ems="10"
             android:gravity="center_horizontal"
-            android:inputType="textPassword"
-            android:text="fotidep" />
+            android:inputType="textPassword" />
 
         <Button
             android:id="@+id/login_login_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:layout_marginTop="0dp"
             android:text="@string/Login" />
     </LinearLayout>

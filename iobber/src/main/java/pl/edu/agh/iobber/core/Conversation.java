@@ -15,6 +15,10 @@ public class Conversation {
     private String name;
     private Chat chat;
 
+    public Conversation(String title) {
+        name = title;
+    }
+
     public String getName() {
         return name;
     }

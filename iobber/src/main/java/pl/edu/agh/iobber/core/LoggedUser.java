@@ -1,14 +1,13 @@
 package pl.edu.agh.iobber.core;
 
-import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.logging.Logger;
 
 import pl.edu.agh.iobber.core.exceptions.IObberException;
-import pl.edu.agh.iobber.core.exceptions.KurwaZapomnialemZaimplementowac;
 
 // TODO wskazówki
 
@@ -21,7 +20,7 @@ public class LoggedUser {
     private Logger logger = Logger.getLogger(LoggedUser.class.getSimpleName());
 
     private XMPPConnection alboCosInnegoCoDostaniePoZalogowaniuCzegoMozeUzywacDoZarzadzaniaSwoimKontem;
-    private Collection<Conversation> activeConversations;
+    private HashMap<String, Conversation> activeConversations = new HashMap<String, Conversation>();
 
     private User user;
     private XMPPConnection xmppConnection;
@@ -37,19 +36,22 @@ public class LoggedUser {
         xmppConnection.disconnect();
     }
 
-    public boolean isLogged(){
+    public boolean isLogged() {
         return logged;
     }
 
     public Collection<Conversation> getActiveConversations() {
-        return activeConversations;
+        return activeConversations.values();
     }
 
     public Conversation getConversation(String title) {
-        throw new KurwaZapomnialemZaimplementowac();
+        return activeConversations.get(title);
     }
 
-    public Conversation startConversation(Object... arguments) {
-        throw new KurwaZapomnialemZaimplementowac();
+    public Conversation startConversation(String title, Object... arguments) {
+        // TODO tu brakuje połaczenia z serwerem, ustalenia rozmowy itd
+        Conversation conversation = new Conversation(title);
+        activeConversations.put(title, conversation);
+        return conversation;
     }
 }
