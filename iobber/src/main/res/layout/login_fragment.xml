@@ -27,13 +27,15 @@
             android:gravity="center_horizontal"
             android:inputType="text"
             android:layout_marginTop="0dp"
-            android:layout_marginBottom="0dp" />
+            android:layout_marginBottom="0dp"
+            android:text="jabber.agh.edu.pl" />
 
         <CheckBox
             android:id="@+id/SASLAuth"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/SASLAuthentication" />
+            android:text="@string/SASLAuthentication"
+            android:checked="true" />
 
         <TextView
             android:layout_width="match_parent"
@@ -51,7 +53,8 @@
             android:gravity="center_horizontal"
             android:inputType="text"
             android:layout_marginTop="0dp"
-            android:layout_marginBottom="0dp" />
+            android:layout_marginBottom="0dp"
+            android:text="\@student.agh.edu.pl" />
 
         <TextView
             android:layout_width="match_parent"

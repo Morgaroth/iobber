@@ -125,8 +125,8 @@ public class MainActivity extends ActionBarActivity
                 user = (User) data.getSerializableExtra("USER");
                 logger.info(format("LoginActivity results OK"));
                 LoggedUser loggedUser = tryLogInUser();
-                //setUpContent(loggedUser);
-                Toast.makeText(this, new String("Hurra"), Toast.LENGTH_LONG).show();
+                setUpContent(loggedUser);
+                Toast.makeText(this, "Hurra", Toast.LENGTH_LONG).show();
             }
             if (resultCode == RESULT_CANCELED) {
                 logger.info("Login activity results CANCELLED !");
