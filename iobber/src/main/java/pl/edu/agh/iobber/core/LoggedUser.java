@@ -25,9 +25,11 @@ public class LoggedUser {
     private User user;
     private XMPPConnection xmppConnection;
     private boolean logged;
+    private String ID;
 
-    public LoggedUser(User user, XMPPConnection xmppConnection) {
+    public LoggedUser(User user, String ID, XMPPConnection xmppConnection) {
         this.user = user;
+        this.ID = ID;
         this.xmppConnection = xmppConnection;
         logged = false;
     }
@@ -53,5 +55,13 @@ public class LoggedUser {
         Conversation conversation = new Conversation(title);
         activeConversations.put(title, conversation);
         return conversation;
+    }
+
+    public String getID() {
+        return ID;
+    }
+
+    public void setID(String ID) {
+        this.ID = ID;
     }
 }

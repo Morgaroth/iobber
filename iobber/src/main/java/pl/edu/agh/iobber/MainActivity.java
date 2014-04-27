@@ -14,21 +14,13 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import org.jivesoftware.smack.XMPPException;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 
 import pl.edu.agh.iobber.core.Conversation;
 import pl.edu.agh.iobber.core.LoggedUser;
-import pl.edu.agh.iobber.core.User;
 import pl.edu.agh.iobber.core.XMPPManager;
-import pl.edu.agh.iobber.core.exceptions.IObberException;
-import pl.edu.agh.iobber.core.exceptions.InternetNotFoundException;
-import pl.edu.agh.iobber.core.exceptions.NotConnectedToTheServerException;
-import pl.edu.agh.iobber.core.exceptions.ServerNotFoundException;
-import pl.edu.agh.iobber.core.exceptions.UserNotExistsException;
 
 import static java.lang.String.format;
 import static pl.edu.agh.iobber.LoginActivity.LOGIN_REQUEST;
@@ -37,71 +29,39 @@ public class MainActivity extends ActionBarActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks, ContactListFragment.OnFragmentInteractionListener {
 
 
+    public static final String LOGGED_USER = "LOGGED_USER";
     private static final String PREF = "SharedLogInPreferences";
     private Logger logger = Logger.getLogger(MainActivity.class.getSimpleName());
     private NavigationDrawerFragment navigationDrawerFragment;
     private CharSequence mTitle;
     private LoggedUser loggedUser;
-    private User user;
     private Map<String, ConversationFragment> conversationsCache = new HashMap<String, ConversationFragment>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        this.user = null;
-        this.loggedUser = null;
-        logIn();
-    }
 
-    private void logIn() {
-        if (isUser()) {
-            logInAndSetup();
+        LoggedUser user;
+        if (savedInstanceState != null && (user = getLoggedUserOrNull(savedInstanceState)) != null) {
+            logger.info(format("user %s recognized from bundle", user.getID()));
+            loggedUser = user;
+            setUpContent();
         } else {
             Intent i = new Intent(this, LoginActivity.class);
             startActivityForResult(i, LOGIN_REQUEST);
         }
     }
 
-    private LoggedUser tryLogInUser(User user) {
-        XMPPManager xmppManager = new XMPPManager(user);
-        xmppManager.setContext(this);
-        try {
-            xmppManager.connectToServer();
-            xmppManager.loginToServer();
-            this.user = user;
-            return new LoggedUser(this.user, xmppManager.getXMPPConnection());
-        } catch (InternetNotFoundException e) {
-            Toast.makeText(this, R.string.Internet_not_found, Toast.LENGTH_LONG).show();
-            logOut();
-        } catch (ServerNotFoundException e) {
-            Toast.makeText(this, R.string.Server_not_found, Toast.LENGTH_LONG).show();
-            logOut();
-        } catch (UserNotExistsException e) {
-            Toast.makeText(this, R.string.User_not_exsist, Toast.LENGTH_LONG).show();
-            logOut();
-        } catch (NotConnectedToTheServerException e) {
-            Toast.makeText(this, R.string.Server_not_connect, Toast.LENGTH_LONG).show();
-            logOut();
+    private LoggedUser getLoggedUserOrNull(Bundle savedInstanceState) {
+        boolean isLogged = savedInstanceState.containsKey(LOGGED_USER);
+        if (isLogged) {
+            String userID = savedInstanceState.getString(LOGGED_USER);
+            return loadUserFromID(userID);
         }
         return null;
     }
 
-    private void logOut() {
-        try {
-            if (loggedUser != null) {
-                loggedUser.logout();
-                user = null;
-            }
-            logIn();
-        } catch (IObberException e) {
-            Toast.makeText(this, R.string.Cannot_logout, Toast.LENGTH_LONG).show();
-        } catch (XMPPException e) {
-            Toast.makeText(this, R.string.Cannot_logout, Toast.LENGTH_LONG).show();
-        }
-    }
-
-    private void setUpContent(LoggedUser loggedUser) {
-        this.loggedUser = loggedUser;
+    private void setUpContent() {
         setContentView(R.layout.activity_main);
 
         navigationDrawerFragment = (NavigationDrawerFragment)
@@ -115,35 +75,36 @@ public class MainActivity extends ActionBarActivity
                 loggedUser.getActiveConversations());
     }
 
-    private boolean isUser() {
-        return user != null;
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == LOGIN_REQUEST) {
             if (resultCode == RESULT_OK) {
-                user = (User) data.getSerializableExtra("USER");
+                String userID = data.getStringExtra(LoginActivity.USER);
+                loggedUser = loadUserFromID(userID);
+                setUpContent();
                 logger.info(format("LoginActivity results OK"));
-                logInAndSetup();
                 Toast.makeText(this, "Hurra", Toast.LENGTH_LONG).show();
             }
             if (resultCode == RESULT_CANCELED) {
                 logger.info("Login activity results CANCELLED !");
-                logIn();
+                // TODO przejscie do jakiegoś pierwszego ekranu
                 Toast.makeText(this, R.string.Login_cancelled, Toast.LENGTH_LONG).show();
             }
         }
     }
 
-    private void logInAndSetup() {
-        LoggedUser loggedUser = tryLogInUser(user);
-        setUpContent(loggedUser);
+    private LoggedUser loadUserFromID(String userID) {
+        // TODO sprawdzać, czy na pewno udało się wczytać, czy istnieje itd
+        return XMPPManager.getLoggedUser(userID);
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         //No call for super(). Bug on API Level > 11.
+        if (loggedUser != null) {
+            logger.info(format("main activity save user %s in bundle", loggedUser.getID()));
+            outState.putString(LOGGED_USER, loggedUser.getID());
+        }
     }
 
     public void restoreActionBar() {
@@ -237,7 +198,7 @@ public class MainActivity extends ActionBarActivity
     }
 
     @Override
-    public void onFragmentInteraction(String id) {
-
+    public void onFragmentInteraction(int id) {
+        logger.info("user typed contact on position " + id);
     }
 }

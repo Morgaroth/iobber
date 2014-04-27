@@ -9,11 +9,10 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import pl.edu.agh.iobber.dummy.DummyContent;
-
 public class ContactListFragment extends ListFragment {
 
     private OnFragmentInteractionListener mListener;
+    private ArrayAdapter<String> adapter;
 
     public ContactListFragment() {
     }
@@ -23,14 +22,13 @@ public class ContactListFragment extends ListFragment {
         super.onCreate(savedInstanceState);
 
         String[] array = new String[]{"mietek", "wacek", "leonidas"};
-
-        setAdapter(array);
-
+        adapter = new ArrayAdapter<String>(getActivity(),
+                android.R.layout.simple_list_item_1, array);
+        updateAdapter(array);
     }
 
-    private void setAdapter(String[] array) {
-        setListAdapter(new ArrayAdapter<String>(getActivity(),
-                android.R.layout.simple_list_item_1, array));
+    private void updateAdapter(String[] array) {
+        setListAdapter(adapter);
     }
 
     @Override
@@ -64,14 +62,14 @@ public class ContactListFragment extends ListFragment {
         if (null != mListener) {
             // Notify the active callbacks interface (the activity, if the
             // fragment is attached to one) that an item has been selected.
-            mListener.onFragmentInteraction(DummyContent.ITEMS.get(position).id);
+            mListener.onFragmentInteraction(position);
         }
     }
 
 
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
-        public void onFragmentInteraction(String id);
+        public void onFragmentInteraction(int id);
     }
 
 }

@@ -8,12 +8,11 @@ import android.view.MenuItem;
 
 import java.util.logging.Logger;
 
-import pl.edu.agh.iobber.core.User;
-
 import static java.lang.String.format;
 
 public class LoginActivity extends ActionBarActivity implements LoginFragment.OnFragmentInteractionListener {
     public static final int LOGIN_REQUEST = 1;
+    public static final String USER = "USER";
     private Logger logger = Logger.getLogger(LoginActivity.class.getSimpleName());
 
     @Override
@@ -42,9 +41,9 @@ public class LoginActivity extends ActionBarActivity implements LoginFragment.On
     }
 
     @Override
-    public void userLogged(User user) {
+    public void userLogged(String user) {
         Intent returnIntent = new Intent();
-        returnIntent.putExtra("USER", user);
+        returnIntent.putExtra(USER, user);
         setResult(RESULT_OK, returnIntent);
         finish();
     }

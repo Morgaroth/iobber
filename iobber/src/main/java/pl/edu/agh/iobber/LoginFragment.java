@@ -18,7 +18,13 @@ import android.widget.Toast;
 
 import java.util.logging.Logger;
 
+import pl.edu.agh.iobber.core.LoggedUser;
 import pl.edu.agh.iobber.core.User;
+import pl.edu.agh.iobber.core.XMPPManager;
+import pl.edu.agh.iobber.core.exceptions.InternetNotFoundException;
+import pl.edu.agh.iobber.core.exceptions.NotConnectedToTheServerException;
+import pl.edu.agh.iobber.core.exceptions.ServerNotFoundException;
+import pl.edu.agh.iobber.core.exceptions.UserNotExistsException;
 
 import static android.widget.Toast.LENGTH_SHORT;
 import static pl.edu.agh.iobber.R.string.Nick_cannot_be_empty;
@@ -108,14 +114,21 @@ public class LoginFragment extends Fragment {
             Toast.makeText(getActivity(), Server_cannot_be_empty, LENGTH_SHORT).show();
             return;
         }
-        User user = new User();
-        user.setValue("LOGIN", nick);
-        user.setValue("PASSWORD", password);
-        user.setValue("PORT", String.valueOf(5222));
-        user.setValue("SERVER", server);
-        user.setValue("SASLAUTH", sASLAuth.isChecked() ? "YES" : "NO");
 
-        mListener.userLogged(user);
+        User user = new User().login(nick).password(password).port("5222").serverAddress(server).sslEnable(sASLAuthChecked);
+
+        try {
+            LoggedUser loggedUser = XMPPManager.loginUser(user);
+            mListener.userLogged(loggedUser.getID());
+        } catch (InternetNotFoundException e) {
+            Toast.makeText(getActivity(), R.string.Internet_not_found, Toast.LENGTH_LONG).show();
+        } catch (ServerNotFoundException e) {
+            Toast.makeText(getActivity(), R.string.Server_not_found, Toast.LENGTH_LONG).show();
+        } catch (UserNotExistsException e) {
+            Toast.makeText(getActivity(), R.string.User_not_exsist, Toast.LENGTH_LONG).show();
+        } catch (NotConnectedToTheServerException e) {
+            Toast.makeText(getActivity(), R.string.Server_not_connect, Toast.LENGTH_LONG).show();
+        }
     }
 
     @Override
@@ -142,7 +155,6 @@ public class LoginFragment extends Fragment {
 
 
     public interface OnFragmentInteractionListener {
-        public void userLogged(User user);
+        public void userLogged(String user);
     }
-
 }
