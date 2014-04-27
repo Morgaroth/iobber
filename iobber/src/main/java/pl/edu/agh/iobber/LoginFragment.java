@@ -31,7 +31,7 @@ public class LoginFragment extends Fragment {
     private Logger logger = Logger.getLogger(LoginFragment.class.getSimpleName());
     private OnFragmentInteractionListener mListener;
 
-    public LoginFragment() {
+    private LoginFragment() {
     }
 
     public static LoginFragment newInstance() {

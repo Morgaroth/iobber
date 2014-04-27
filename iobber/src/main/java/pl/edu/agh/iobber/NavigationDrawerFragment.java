@@ -82,13 +82,17 @@ public class NavigationDrawerFragment extends Fragment {
             }
         });
 
+        updateListAdapter();
+        return mDrawerListView;
+    }
+
+    private void updateListAdapter() {
         mDrawerListView.setAdapter(new ArrayAdapter<String>(
                 getActionBar().getThemedContext(),
                 android.R.layout.simple_list_item_1,
                 android.R.id.text1,
                 conversationsList.toArray(new String[0])
         ));
-        return mDrawerListView;
     }
 
     public boolean isDrawerOpen() {
@@ -248,6 +252,11 @@ public class NavigationDrawerFragment extends Fragment {
 
     private ActionBar getActionBar() {
         return ((ActionBarActivity) getActivity()).getSupportActionBar();
+    }
+
+    public void addConversationToList(Conversation conversation) {
+        conversationsList.add(conversation.getName());
+        updateListAdapter();
     }
 
     public static interface NavigationDrawerCallbacks {

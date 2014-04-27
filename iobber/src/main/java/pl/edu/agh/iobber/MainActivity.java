@@ -41,7 +41,7 @@ public class MainActivity extends ActionBarActivity
 
     private static final String PREF = "SharedLogInPreferences";
     private Logger logger = Logger.getLogger(MainActivity.class.getSimpleName());
-    private NavigationDrawerFragment mNavigationDrawerFragment;
+    private NavigationDrawerFragment navigationDrawerFragment;
     private CharSequence mTitle;
     private LoggedUser loggedUser;
     private User user;
@@ -100,8 +100,10 @@ public class MainActivity extends ActionBarActivity
 
     private void logOut() {
         try {
-            loggedUser.logout();
-            user = null;
+            if (loggedUser != null) {
+                loggedUser.logout();
+                user = null;
+            }
             logIn();
         } catch (IObberException e) {
             Toast.makeText(this, R.string.Cannot_logout, Toast.LENGTH_LONG).show();
@@ -114,22 +116,19 @@ public class MainActivity extends ActionBarActivity
         this.loggedUser = loggedUser;
         setContentView(R.layout.activity_main);
 
-        mNavigationDrawerFragment = (NavigationDrawerFragment)
+        navigationDrawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
         mTitle = getTitle();
 
         // Set up the drawer.
-        mNavigationDrawerFragment.setUp(
+        navigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout),
                 loggedUser.getActiveConversations());
     }
 
     private boolean isUser() {
-        if (user == null) {
-            return false;
-        }
-        return true;
+        return user != null;
     }
 
     @Override
@@ -164,8 +163,8 @@ public class MainActivity extends ActionBarActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        if (mNavigationDrawerFragment != null) {
-            if (!mNavigationDrawerFragment.isDrawerOpen()) {
+        if (navigationDrawerFragment != null) {
+            if (!navigationDrawerFragment.isDrawerOpen()) {
                 // Only show items in the action bar relevant to this screen
                 // if the drawer is not showing. Otherwise, let the drawer
                 // decide what to show in the action bar.
@@ -208,6 +207,7 @@ public class MainActivity extends ActionBarActivity
                         String oponent = input.getText().toString();
                         logger.info("user typed oponent " + oponent);
                         Conversation conversation = loggedUser.startConversation(oponent);
+                        saveConversation(conversation);
                         loadConversation(conversation.getName());
                     }
                 })
@@ -218,6 +218,10 @@ public class MainActivity extends ActionBarActivity
                 })
                 .setIcon(android.R.drawable.ic_dialog_alert)
                 .show();
+    }
+
+    private void saveConversation(Conversation conversation) {
+        navigationDrawerFragment.addConversationToList(conversation);
     }
 
     @Override
