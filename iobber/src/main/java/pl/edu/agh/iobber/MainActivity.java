@@ -8,10 +8,8 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -36,7 +34,7 @@ import static java.lang.String.format;
 import static pl.edu.agh.iobber.LoginActivity.LOGIN_REQUEST;
 
 public class MainActivity extends ActionBarActivity
-        implements NavigationDrawerFragment.NavigationDrawerCallbacks {
+        implements NavigationDrawerFragment.NavigationDrawerCallbacks, ContactListFragment.OnFragmentInteractionListener {
 
 
     private static final String PREF = "SharedLogInPreferences";
@@ -46,14 +44,6 @@ public class MainActivity extends ActionBarActivity
     private LoggedUser loggedUser;
     private User user;
     private Map<String, ConversationFragment> conversationsCache = new HashMap<String, ConversationFragment>();
-
-    private static boolean isActionSend(int actionId, KeyEvent event) {
-        return actionId == EditorInfo.IME_ACTION_SEARCH ||
-                actionId == EditorInfo.IME_ACTION_DONE ||
-                actionId == EditorInfo.IME_ACTION_SEND ||
-                event.getAction() == KeyEvent.ACTION_DOWN &&
-                        event.getKeyCode() == KeyEvent.KEYCODE_ENTER;
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,23 +55,21 @@ public class MainActivity extends ActionBarActivity
 
     private void logIn() {
         if (isUser()) {
-            LoggedUser loggedUser = tryLogInUser();
-            setUpContent(loggedUser);
+            logInAndSetup();
         } else {
             Intent i = new Intent(this, LoginActivity.class);
             startActivityForResult(i, LOGIN_REQUEST);
         }
     }
 
-    private LoggedUser tryLogInUser() {
-        //LoggedUser loggedUser = new LoggedUser(user);
+    private LoggedUser tryLogInUser(User user) {
         XMPPManager xmppManager = new XMPPManager(user);
         xmppManager.setContext(this);
         try {
-
             xmppManager.connectToServer();
             xmppManager.loginToServer();
-
+            this.user = user;
+            return new LoggedUser(this.user, xmppManager.getXMPPConnection());
         } catch (InternetNotFoundException e) {
             Toast.makeText(this, R.string.Internet_not_found, Toast.LENGTH_LONG).show();
             logOut();
@@ -95,7 +83,7 @@ public class MainActivity extends ActionBarActivity
             Toast.makeText(this, R.string.Server_not_connect, Toast.LENGTH_LONG).show();
             logOut();
         }
-        return new LoggedUser(user, xmppManager.getXMPPConnection());
+        return null;
     }
 
     private void logOut() {
@@ -137,8 +125,7 @@ public class MainActivity extends ActionBarActivity
             if (resultCode == RESULT_OK) {
                 user = (User) data.getSerializableExtra("USER");
                 logger.info(format("LoginActivity results OK"));
-                LoggedUser loggedUser = tryLogInUser();
-                setUpContent(loggedUser);
+                logInAndSetup();
                 Toast.makeText(this, "Hurra", Toast.LENGTH_LONG).show();
             }
             if (resultCode == RESULT_CANCELED) {
@@ -147,6 +134,11 @@ public class MainActivity extends ActionBarActivity
                 Toast.makeText(this, R.string.Login_cancelled, Toast.LENGTH_LONG).show();
             }
         }
+    }
+
+    private void logInAndSetup() {
+        LoggedUser loggedUser = tryLogInUser(user);
+        setUpContent(loggedUser);
     }
 
     @Override
@@ -244,4 +236,8 @@ public class MainActivity extends ActionBarActivity
         return conversationsCache.get(title);
     }
 
+    @Override
+    public void onFragmentInteraction(String id) {
+
+    }
 }

@@ -27,11 +27,14 @@ import static pl.edu.agh.iobber.R.string.Server_cannot_be_empty;
 
 public class LoginFragment extends Fragment {
 
-    private static final String PREF = "SharedLogInPreferences";
     private Logger logger = Logger.getLogger(LoginFragment.class.getSimpleName());
     private OnFragmentInteractionListener mListener;
 
-    private LoginFragment() {
+    /**
+     * @deprecated use factory method LoginFragment.newInstance instead
+     */
+    @Deprecated
+    public LoginFragment() {
     }
 
     public static LoginFragment newInstance() {
@@ -67,14 +70,12 @@ public class LoginFragment extends Fragment {
         return inflate;
     }
 
-
     private boolean isDoneAction(int actionId, KeyEvent event) {
         return actionId == EditorInfo.IME_ACTION_DONE ||
                 actionId == EditorInfo.IME_ACTION_SEND ||
                 event.getAction() == KeyEvent.ACTION_DOWN &&
                         event.getKeyCode() == KeyEvent.KEYCODE_ENTER;
     }
-
 
     private void tryLogin(final View inflate) {
         EditText nickField = ((EditText) inflate.findViewById(R.id.login_login_edit));

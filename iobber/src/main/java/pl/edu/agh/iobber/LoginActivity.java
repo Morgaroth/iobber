@@ -1,13 +1,10 @@
 package pl.edu.agh.iobber;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.net.Uri;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Button;
 
 import java.util.logging.Logger;
 
@@ -15,16 +12,9 @@ import pl.edu.agh.iobber.core.User;
 
 import static java.lang.String.format;
 
-/**
- * Ala ma ktoa
- */
 public class LoginActivity extends ActionBarActivity implements LoginFragment.OnFragmentInteractionListener {
-    private Logger logger = Logger.getLogger(LoginActivity.class.getSimpleName());
-    private static final String PREF = "SharedLogInPreferences";
-    private LoginFragment loginFragment;
-
     public static final int LOGIN_REQUEST = 1;
-    public static final String USER = "USER_DATA";
+    private Logger logger = Logger.getLogger(LoginActivity.class.getSimpleName());
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
