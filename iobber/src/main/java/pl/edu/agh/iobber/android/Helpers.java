@@ -1,4 +1,4 @@
-package pl.edu.agh.iobber;
+package pl.edu.agh.iobber.android;
 
 import android.support.v4.widget.DrawerLayout;
 import android.view.Gravity;
@@ -14,8 +14,8 @@ public class Helpers {
     public static void closeDrawerCorrectly(DrawerLayout mDrawerLayout) {
         if (mDrawerLayout.isDrawerOpen(Gravity.RIGHT)) {
             mDrawerLayout.closeDrawer(Gravity.RIGHT);
-        } else {
-            mDrawerLayout.openDrawer(Gravity.LEFT);
+        } else if (mDrawerLayout.isDrawerOpen(Gravity.LEFT)) {
+            mDrawerLayout.closeDrawer(Gravity.LEFT);
         }
     }
 }

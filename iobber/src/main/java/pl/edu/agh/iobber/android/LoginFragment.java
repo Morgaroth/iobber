@@ -1,4 +1,4 @@
-package pl.edu.agh.iobber;
+package pl.edu.agh.iobber.android;
 
 import android.app.Activity;
 import android.content.Context;
@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import java.util.logging.Logger;
 
+import pl.edu.agh.iobber.R;
 import pl.edu.agh.iobber.core.LoggedUser;
 import pl.edu.agh.iobber.core.User;
 import pl.edu.agh.iobber.core.XMPPManager;

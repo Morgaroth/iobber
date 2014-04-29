@@ -1,4 +1,4 @@
-package pl.edu.agh.iobber;
+package pl.edu.agh.iobber.android;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -7,6 +7,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import java.util.logging.Logger;
+
+import pl.edu.agh.iobber.R;
 
 import static java.lang.String.format;
 

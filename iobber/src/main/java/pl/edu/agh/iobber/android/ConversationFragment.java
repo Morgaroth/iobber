@@ -1,4 +1,4 @@
-package pl.edu.agh.iobber;
+package pl.edu.agh.iobber.android;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -11,24 +11,25 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import org.jivesoftware.smack.Chat;
-import org.jivesoftware.smack.XMPPException;
-
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import pl.edu.agh.iobber.R;
+import pl.edu.agh.iobber.core.Conversation;
+import pl.edu.agh.iobber.core.exceptions.IObberException;
 
 import static java.lang.String.format;
 
 public class ConversationFragment extends Fragment {
 
-    private final Chat chatDelegate;
+    private final Conversation delegate;
     private Logger logger = Logger.getLogger(ConversationFragment.class.getSimpleName());
 
-    public ConversationFragment(Chat chat) {
-        this.chatDelegate = chat;
+    public ConversationFragment(Conversation conversation) {
+        this.delegate = conversation;
     }
 
-    public static ConversationFragment newInstance(Chat chat) {
+    public static ConversationFragment newInstance(Conversation chat) {
         ConversationFragment fragment = new ConversationFragment(chat);
         Bundle args = new Bundle();
 //        args.putInt(ARG_SECTION_NUMBER, sectionNumber);
@@ -45,9 +46,16 @@ public class ConversationFragment extends Fragment {
     }
 
     @Override
+    public String toString() {
+        return "ConversationFragment{" +
+                "delegate=" + delegate +
+                '}';
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        logger.info("creating view for chat " + chatDelegate);
+        logger.info("creating view for chat " + delegate);
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
         EditText messageEditor = (EditText) rootView.findViewById(R.id.chatLine);
@@ -75,8 +83,8 @@ public class ConversationFragment extends Fragment {
     private void sendMessage(CharSequence text) {
         try {
             logger.info(format("sending message \"%s\"", text));
-            chatDelegate.sendMessage(text.toString());
-        } catch (XMPPException e) {
+            delegate.sendMessage(text.toString());
+        } catch (IObberException e) {
             logger.log(Level.SEVERE, "error sending message", e);
         }
     }

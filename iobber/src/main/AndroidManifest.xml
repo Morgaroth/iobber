@@ -6,13 +6,13 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
-        android:name=".GlobalVars"
+        android:name=".android.GlobalVars"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
         <activity
-            android:name="pl.edu.agh.iobber.MainActivity"
+            android:name=".android.MainActivity"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -21,7 +21,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="pl.edu.agh.iobber.LoginActivity"
+            android:name=".android.LoginActivity"
             android:label="@string/title_activity_login" />
     </application>
 

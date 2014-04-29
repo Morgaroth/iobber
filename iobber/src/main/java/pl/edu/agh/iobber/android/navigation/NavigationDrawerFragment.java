@@ -1,4 +1,4 @@
-package pl.edu.agh.iobber;
+package pl.edu.agh.iobber.android.navigation;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
@@ -18,7 +18,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -26,9 +25,11 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
+import pl.edu.agh.iobber.R;
 import pl.edu.agh.iobber.core.Conversation;
+import pl.morgaroth.utils.LazyListAdapter;
 
-import static pl.edu.agh.iobber.Helpers.closeDrawerCorrectly;
+import static pl.edu.agh.iobber.android.Helpers.closeDrawerCorrectly;
 
 public class NavigationDrawerFragment extends Fragment {
 
@@ -46,7 +47,8 @@ public class NavigationDrawerFragment extends Fragment {
     private int mCurrentSelectedPosition = 0;
     private boolean mFromSavedInstanceState;
     private boolean userKnowAboutDrawer;
-    private List<String> conversationsList = new LinkedList<String>();
+    private List<Conversation> conversationsList = new LinkedList<Conversation>();
+    private LazyListAdapter<Conversation> adapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -87,12 +89,11 @@ public class NavigationDrawerFragment extends Fragment {
     }
 
     private void updateListAdapter() {
-        mDrawerListView.setAdapter(new ArrayAdapter<String>(
-                getActionBar().getThemedContext(),
-                android.R.layout.simple_list_item_1,
-                android.R.id.text1,
-                conversationsList.toArray(new String[0])
-        ));
+        if (adapter == null) {
+            adapter = new NavigationListAdapter(getActionBar().getThemedContext());
+            mDrawerListView.setAdapter(adapter);
+        }
+        adapter.updateContent(conversationsList);
     }
 
     public boolean isDrawerOpen() {
@@ -104,7 +105,7 @@ public class NavigationDrawerFragment extends Fragment {
         mDrawerLayout = drawerLayout;
 
         for (Conversation conversation : values) {
-            conversationsList.add(conversation.getName());
+            conversationsList.add(conversation);
         }
 
         // set a custom shadow that overlays the main content when the drawer opens
@@ -184,7 +185,7 @@ public class NavigationDrawerFragment extends Fragment {
             mDrawerLayout.closeDrawer(mFragmentContainerView);
         }
         if (mCallbacks != null) {
-            mCallbacks.onNavigationDrawerItemSelected(conversationsList.get(position));
+            mCallbacks.onNavigationDrawerItemSelected(conversationsList.get(position).getName());
         }
     }
 
@@ -222,7 +223,7 @@ public class NavigationDrawerFragment extends Fragment {
         // If the drawer is open, show the global app actions in the action bar. See also
         // showGlobalContextActionBar, which controls the top-left area of the action bar.
         if (mDrawerLayout != null && isDrawerOpen()) {
-            inflater.inflate(R.menu.global, menu);
+            inflater.inflate(R.menu.navigation_drawer_action_bar, menu);
             showGlobalContextActionBar();
         }
         super.onCreateOptionsMenu(menu, inflater);
@@ -255,7 +256,7 @@ public class NavigationDrawerFragment extends Fragment {
     }
 
     public void addConversationToList(Conversation conversation) {
-        conversationsList.add(conversation.getName());
+        conversationsList.add(conversation);
         updateListAdapter();
     }
 

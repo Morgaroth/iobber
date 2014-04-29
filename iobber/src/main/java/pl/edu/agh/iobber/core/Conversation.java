@@ -4,6 +4,8 @@ import org.jivesoftware.smack.Chat;
 
 import java.util.logging.Logger;
 
+import pl.edu.agh.iobber.core.exceptions.IObberException;
+
 // TODO wskazówki
 
 /**
@@ -25,6 +27,17 @@ public class Conversation {
 
     public Chat getChat() {
         return chat;
+    }
+
+    @Override
+    public String toString() {
+        return "Conversation{" +
+                "name='" + name + '\'' +
+                '}';
+    }
+
+    public void sendMessage(String text) throws IObberException {
+
     }
     // TODO dekorator na Chat z smackapi, może coś więcej będziemy dokładać, jakieś metody chociaż, nie wiem, zobaczy sie
 }

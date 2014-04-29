@@ -34,5 +34,6 @@
     <string name="couldnt_log_in">Couldn\'t log in</string>
     <string name="Cannot_logout">Can not logout</string>
     <string name="new_conversation">New conversation</string>
+    <string name="avatar">avatar</string>
 
 </resources>

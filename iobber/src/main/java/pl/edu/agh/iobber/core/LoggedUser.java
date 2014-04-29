@@ -3,8 +3,10 @@ package pl.edu.agh.iobber.core;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.logging.Logger;
 
 import pl.edu.agh.iobber.core.exceptions.IObberException;
@@ -26,6 +28,7 @@ public class LoggedUser {
     private XMPPConnection xmppConnection;
     private boolean logged;
     private String ID;
+    private List<Contact> contacts = Arrays.asList(new Contact("mietek"), new Contact("wacek"), new Contact("leonidas"));
 
     public LoggedUser(User user, String ID, XMPPConnection xmppConnection) {
         this.user = user;
@@ -50,7 +53,7 @@ public class LoggedUser {
         return activeConversations.get(title);
     }
 
-    public Conversation startConversation(String title, Object... arguments) {
+    public Conversation startConversation(String title, List<Contact> others) {
         // TODO tu brakuje połaczenia z serwerem, ustalenia rozmowy itd
         Conversation conversation = new Conversation(title);
         activeConversations.put(title, conversation);
@@ -63,5 +66,20 @@ public class LoggedUser {
 
     public void setID(String ID) {
         this.ID = ID;
+    }
+
+    public Conversation startConversation(Contact contact) {
+        // TODO tu brakuje połaczenia z serwerem, ustalenia rozmowy itd
+        Conversation conversation = new Conversation(contact.getName());
+        activeConversations.put(contact.getName(), conversation);
+        return conversation;
+    }
+
+    public List<Contact> getContacts() {
+        return contacts;
+    }
+
+    public void setContacts(List<Contact> contacts) {
+        this.contacts = contacts;
     }
 }
