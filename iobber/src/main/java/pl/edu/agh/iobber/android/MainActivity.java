@@ -18,6 +18,7 @@ import java.util.logging.Logger;
 
 import pl.edu.agh.iobber.R;
 import pl.edu.agh.iobber.android.contacts.ContactsFragment;
+import pl.edu.agh.iobber.android.conversation.ConversationFragment;
 import pl.edu.agh.iobber.android.navigation.NavigationDrawerFragment;
 import pl.edu.agh.iobber.core.Contact;
 import pl.edu.agh.iobber.core.Conversation;
