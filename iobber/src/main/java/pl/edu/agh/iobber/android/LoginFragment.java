@@ -24,6 +24,7 @@ import pl.edu.agh.iobber.core.User;
 import pl.edu.agh.iobber.core.XMPPManager;
 import pl.edu.agh.iobber.core.exceptions.InternetNotFoundException;
 import pl.edu.agh.iobber.core.exceptions.NotConnectedToTheServerException;
+import pl.edu.agh.iobber.core.exceptions.NotValidLoginException;
 import pl.edu.agh.iobber.core.exceptions.ServerNotFoundException;
 import pl.edu.agh.iobber.core.exceptions.UserNotExistsException;
 
@@ -129,6 +130,8 @@ public class LoginFragment extends Fragment {
             Toast.makeText(getActivity(), R.string.User_not_exsist, Toast.LENGTH_LONG).show();
         } catch (NotConnectedToTheServerException e) {
             Toast.makeText(getActivity(), R.string.Server_not_connect, Toast.LENGTH_LONG).show();
+        } catch (NotValidLoginException e){
+            Toast.makeText(getActivity(), R.string.Login_not_valid, Toast.LENGTH_LONG).show();
         }
     }
 
