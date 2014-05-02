@@ -12,17 +12,30 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.j256.ormlite.android.apptools.OpenHelperManager;
+import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
+
+import org.jivesoftware.smack.RosterListener;
+import org.jivesoftware.smack.packet.Presence;
+
+import java.sql.SQLException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 
 import pl.edu.agh.iobber.R;
+import pl.edu.agh.iobber.android.base.AndroidBaseManager;
+import pl.edu.agh.iobber.android.base.DatabaseHelper;
 import pl.edu.agh.iobber.android.contacts.ContactsFragment;
 import pl.edu.agh.iobber.android.navigation.NavigationDrawerFragment;
+import pl.edu.agh.iobber.core.AndroidMessageListener;
+import pl.edu.agh.iobber.core.AndroidRosterListener;
 import pl.edu.agh.iobber.core.Contact;
 import pl.edu.agh.iobber.core.Conversation;
 import pl.edu.agh.iobber.core.LoggedUser;
 import pl.edu.agh.iobber.core.XMPPManager;
+import pl.edu.agh.iobber.core.exceptions.NobodyLogInException;
 
 import static java.lang.String.format;
 import static pl.edu.agh.iobber.android.LoginActivity.LOGIN_REQUEST;
@@ -40,10 +53,17 @@ public class MainActivity extends ActionBarActivity
     private LoggedUser loggedUser;
     private Map<String, ConversationFragment> conversationsCache = new HashMap<String, ConversationFragment>();
     private boolean contactsLoaded = false;
+    private DatabaseHelper databaseHelper = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getHelper();
+        try {
+            XMPPManager.addBaseManager(new AndroidBaseManager(databaseHelper.getDao()));
+            XMPPManager.setRosterListener(new AndroidRosterListener());
+        } catch (SQLException e) {
+        }
 
         LoggedUser user;
         if (savedInstanceState != null && (user = getLoggedUserOrNull(savedInstanceState)) != null) {
@@ -56,6 +76,12 @@ public class MainActivity extends ActionBarActivity
         }
     }
 
+    private void getHelper() {
+        if (databaseHelper == null) {
+            databaseHelper = OpenHelperManager.getHelper(this, DatabaseHelper.class);
+        }
+    }
+
     private LoggedUser getLoggedUserOrNull(Bundle savedInstanceState) {
         boolean isLogged = savedInstanceState.containsKey(LOGGED_USER);
         if (isLogged) {
@@ -63,6 +89,15 @@ public class MainActivity extends ActionBarActivity
             return loadUserFromID(userID);
         }
         return null;
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (databaseHelper != null) {
+            OpenHelperManager.releaseHelper();
+            databaseHelper = null;
+        }
     }
 
     private void setUpContent() {
@@ -95,13 +130,14 @@ public class MainActivity extends ActionBarActivity
             if (resultCode == RESULT_CANCELED) {
                 logger.info("Login activity results CANCELLED !");
                 // TODO przejscie do jakiegoś pierwszego ekranu
+                //  TODO Czy to kiedy kolwiek nastąpi?
                 Toast.makeText(this, R.string.Login_cancelled, Toast.LENGTH_LONG).show();
             }
         }
     }
 
     private LoggedUser loadUserFromID(String userID) {
-        // TODO sprawdzać, czy na pewno udało się wczytać, czy istnieje itd
+        // sprawdzać, czy na pewno udało się wczytać, czy istnieje itd
         return XMPPManager.getLoggedUser(userID);
     }
 
@@ -212,7 +248,7 @@ public class MainActivity extends ActionBarActivity
     }
 
     private void startConversationWith(Contact contact) {
-        Conversation conversation = loggedUser.startConversation(contact);
+        Conversation conversation = loggedUser.startConversation(contact, new AndroidMessageListener());
         saveConversation(conversation);
         loadConversation(conversation.getName());
     }

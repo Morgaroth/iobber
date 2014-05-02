@@ -1,8 +1,14 @@
 package pl.edu.agh.iobber.core;
 
+import org.jivesoftware.smack.Chat;
+import org.jivesoftware.smack.ChatManager;
+import org.jivesoftware.smack.MessageListener;
+import org.jivesoftware.smack.Roster;
+import org.jivesoftware.smack.RosterEntry;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -21,20 +27,31 @@ import pl.edu.agh.iobber.core.exceptions.IObberException;
 public class LoggedUser {
     private Logger logger = Logger.getLogger(LoggedUser.class.getSimpleName());
 
-    private XMPPConnection alboCosInnegoCoDostaniePoZalogowaniuCzegoMozeUzywacDoZarzadzaniaSwoimKontem;
     private HashMap<String, Conversation> activeConversations = new HashMap<String, Conversation>();
 
     private User user;
     private XMPPConnection xmppConnection;
     private boolean logged;
     private String ID;
-    private List<Contact> contacts = Arrays.asList(new Contact("mietek"), new Contact("wacek"), new Contact("leonidas"));
+    //private List<Contact> contacts = Arrays.asList(new Contact("mietek"), new Contact("wacek"), new Contact("leonidas"), new Contact("Hania"));
+    private List<Contact> contacts;
 
     public LoggedUser(User user, String ID, XMPPConnection xmppConnection) {
         this.user = user;
         this.ID = ID;
         this.xmppConnection = xmppConnection;
         logged = false;
+        contacts = new ArrayList<Contact>();
+        getConctactFromServer();
+    }
+
+    private void getConctactFromServer(){
+        Roster roster = xmppConnection.getRoster();
+        for(RosterEntry rosterEntry : roster.getEntries()){
+            Contact contact = new Contact();
+            contact.setRosterEntry(rosterEntry);
+            contacts.add(contact);
+        }
     }
 
     public void logout() throws IObberException, XMPPException {
@@ -45,6 +62,10 @@ public class LoggedUser {
         return logged;
     }
 
+    public Roster getRoster(){
+        return xmppConnection.getRoster();
+    }
+
     public Collection<Conversation> getActiveConversations() {
         return activeConversations.values();
     }
@@ -53,9 +74,11 @@ public class LoggedUser {
         return activeConversations.get(title);
     }
 
-    public Conversation startConversation(String title, List<Contact> others) {
-        // TODO tu brakuje połaczenia z serwerem, ustalenia rozmowy itd
-        Conversation conversation = new Conversation(title);
+    public Conversation startConversation(String title, List<Contact> others, MessageListener messageListener) {
+        // TODO tu brakuje połaczenia z serwerem, ustalenia rozmowy itd.........
+        ChatManager chatManager = xmppConnection.getChatManager();
+        Chat chat = chatManager.createChat(title, messageListener);
+        Conversation conversation = new Conversation(title, chat);
         activeConversations.put(title, conversation);
         return conversation;
     }
@@ -68,9 +91,11 @@ public class LoggedUser {
         this.ID = ID;
     }
 
-    public Conversation startConversation(Contact contact) {
-        // TODO tu brakuje połaczenia z serwerem, ustalenia rozmowy itd
-        Conversation conversation = new Conversation(contact.getName());
+    public Conversation startConversation(Contact contact, MessageListener messageListener) {
+        ChatManager chatManager = xmppConnection.getChatManager();
+
+        Chat chat = chatManager.createChat(contact.getRosterEntry().getUser(), messageListener);
+        Conversation conversation = new Conversation(contact.getName(), chat);
         activeConversations.put(contact.getName(), conversation);
         return conversation;
     }

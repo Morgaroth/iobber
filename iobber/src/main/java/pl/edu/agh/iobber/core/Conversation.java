@@ -1,6 +1,7 @@
 package pl.edu.agh.iobber.core;
 
 import org.jivesoftware.smack.Chat;
+import org.jivesoftware.smack.XMPPException;
 
 import java.util.logging.Logger;
 
@@ -17,7 +18,8 @@ public class Conversation {
     private String name;
     private Chat chat;
 
-    public Conversation(String title) {
+    public Conversation(String title, Chat chat) {
+        this.chat = chat;
         name = title;
     }
 
@@ -36,8 +38,8 @@ public class Conversation {
                 '}';
     }
 
-    public void sendMessage(String text) throws IObberException {
-
+    public void sendMessage(String text) throws IObberException, XMPPException {
+        chat.sendMessage(text);
     }
     // TODO dekorator na Chat z smackapi, może coś więcej będziemy dokładać, jakieś metody chociaż, nie wiem, zobaczy sie
 }

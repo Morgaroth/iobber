@@ -11,6 +11,8 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import org.jivesoftware.smack.XMPPException;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -86,6 +88,8 @@ public class ConversationFragment extends Fragment {
             delegate.sendMessage(text.toString());
         } catch (IObberException e) {
             logger.log(Level.SEVERE, "error sending message", e);
+        } catch (XMPPException e) {
+            logger.log(Level.SEVERE, "Cannnot send a message", e);
         }
     }
 

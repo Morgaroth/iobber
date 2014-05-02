@@ -1,20 +1,39 @@
 package pl.edu.agh.iobber.core;
 
-public class Contact {
-    private final String name;
+import android.content.Context;
 
-    public Contact(String name) {
-        this.name = name;
+import org.jivesoftware.smack.RosterEntry;
+
+public class Contact {
+    private RosterEntry rosterEntry;
+
+    public Contact(){
+        rosterEntry = null;
     }
 
     public String getName() {
-        return name;
+        if(rosterEntry != null){
+            return rosterEntry.getUser();
+        }
+        return null;
+    }
+
+    public void setName(String name){
+        rosterEntry.setName(name);
+    }
+
+    public void setRosterEntry(RosterEntry rosterEntry){
+        this.rosterEntry = rosterEntry;
+    }
+
+    public RosterEntry getRosterEntry(){
+        return rosterEntry;
     }
 
     @Override
     public String toString() {
         return "Contact{" +
-                "name='" + name + '\'' +
+                "name='" + getName() + '\'' +
                 '}';
     }
 }

@@ -1,0 +1,36 @@
+#
+# generated on 2014/04/30 11:59:14
+#
+# --table-start--
+dataClass=pl.edu.agh.iobber.core.User
+tableName=users
+# --table-fields-start--
+# --field-start--
+fieldName=login
+columnName=login
+id=true
+useGetSet=true
+# --field-end--
+# --field-start--
+fieldName=password
+columnName=password
+useGetSet=true
+# --field-end--
+# --field-start--
+fieldName=port
+columnName=port
+useGetSet=true
+# --field-end--
+# --field-start--
+fieldName=serverAddress
+columnName=serverAddress
+useGetSet=true
+# --field-end--
+# --field-start--
+fieldName=sslEnable
+columnName=sslEnable
+useGetSet=true
+# --field-end--
+# --table-fields-end--
+# --table-end--
+#################################

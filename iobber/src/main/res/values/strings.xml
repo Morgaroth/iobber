@@ -35,5 +35,7 @@
     <string name="Cannot_logout">Can not logout</string>
     <string name="new_conversation">New conversation</string>
     <string name="avatar">avatar</string>
+    <string name="Login_not_valid">Login not valid</string>
+    <string name="Please_log_in">Please log in</string>
 
 </resources>
