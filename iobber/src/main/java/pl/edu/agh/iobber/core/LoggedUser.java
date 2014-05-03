@@ -9,7 +9,6 @@ import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -45,9 +44,9 @@ public class LoggedUser {
         getConctactFromServer();
     }
 
-    private void getConctactFromServer(){
+    private void getConctactFromServer() {
         Roster roster = xmppConnection.getRoster();
-        for(RosterEntry rosterEntry : roster.getEntries()){
+        for (RosterEntry rosterEntry : roster.getEntries()) {
             Contact contact = new Contact();
             contact.setRosterEntry(rosterEntry);
             contacts.add(contact);
@@ -62,7 +61,7 @@ public class LoggedUser {
         return logged;
     }
 
-    public Roster getRoster(){
+    public Roster getRoster() {
         return xmppConnection.getRoster();
     }
 
@@ -91,9 +90,10 @@ public class LoggedUser {
         this.ID = ID;
     }
 
-    public Conversation startConversation(Contact contact, MessageListener messageListener) {
+    public Conversation startConversation(Contact contact) {
         ChatManager chatManager = xmppConnection.getChatManager();
 
+        MessageListener messageListener = new MessageListenerAdapter(null);
         Chat chat = chatManager.createChat(contact.getRosterEntry().getUser(), messageListener);
         Conversation conversation = new Conversation(contact.getName(), chat);
         activeConversations.put(contact.getName(), conversation);

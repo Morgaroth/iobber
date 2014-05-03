@@ -2,13 +2,14 @@ package pl.edu.agh.iobber.android.conversation;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.support.v4.app.ListFragment;
+import android.support.v4.app.Fragment;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import org.jivesoftware.smack.XMPPException;
@@ -26,12 +27,13 @@ import pl.edu.agh.iobber.core.exceptions.IObberException;
 
 import static java.lang.String.format;
 
-public class ConversationFragment extends ListFragment implements MsgListener {
+public class ConversationFragment extends Fragment implements MsgListener {
 
     private final Conversation delegate;
     private Logger logger = Logger.getLogger(ConversationFragment.class.getSimpleName());
     private List<Msg> messages = new LinkedList<Msg>();
     private ConversationListAdapter adapter;
+    private ListView messagesListView;
 
     public ConversationFragment(Conversation conversation) {
         this.delegate = conversation;
@@ -78,6 +80,8 @@ public class ConversationFragment extends ListFragment implements MsgListener {
                     }
                 }
         );
+
+        messagesListView = (ListView) rootView.findViewById(R.id.listView);
         delegate.addMessageListener(this);
         return rootView;
     }
@@ -102,7 +106,7 @@ public class ConversationFragment extends ListFragment implements MsgListener {
      * @deprecated for test use only
      */
     @Deprecated
-    private void addMsgToListDirectly(String text){
+    private void addMsgToListDirectly(String text) {
         onMessage(new Msg(text));
     }
 
@@ -116,13 +120,14 @@ public class ConversationFragment extends ListFragment implements MsgListener {
 
     @Override
     public void onMessage(Msg message) {
+        logger.info(message + " received");
         addNewMessageToList(message);
     }
 
     private void addNewMessageToList(Msg message) {
         if (adapter == null) {
             adapter = new ConversationListAdapter(getActivity(), R.layout.conversation_list_item_layout);
-            setListAdapter(adapter);
+            messagesListView.setAdapter(adapter);
         }
         messages.add(message);
         adapter.updateContent(messages);

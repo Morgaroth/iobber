@@ -5,7 +5,6 @@ import org.jivesoftware.smack.XMPPException;
 
 import java.util.logging.Logger;
 
-import pl.edu.agh.iobber.android.conversation.ConversationFragment;
 import pl.edu.agh.iobber.core.exceptions.IObberException;
 
 import static java.lang.String.format;
@@ -47,6 +46,7 @@ public class Conversation {
     }
 
     public void addMessageListener(MsgListener msgListener) {
+        logger.info(format("msg listener %s added", msgListener));
         chat.addMessageListener(new MessageListenerAdapter(msgListener));
     }
 

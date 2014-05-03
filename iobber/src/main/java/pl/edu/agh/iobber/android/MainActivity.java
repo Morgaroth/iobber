@@ -13,13 +13,8 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.j256.ormlite.android.apptools.OpenHelperManager;
-import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
-
-import org.jivesoftware.smack.RosterListener;
-import org.jivesoftware.smack.packet.Presence;
 
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -30,13 +25,11 @@ import pl.edu.agh.iobber.android.base.DatabaseHelper;
 import pl.edu.agh.iobber.android.contacts.ContactsFragment;
 import pl.edu.agh.iobber.android.conversation.ConversationFragment;
 import pl.edu.agh.iobber.android.navigation.NavigationDrawerFragment;
-import pl.edu.agh.iobber.core.AndroidMessageListener;
 import pl.edu.agh.iobber.core.AndroidRosterListener;
 import pl.edu.agh.iobber.core.Contact;
 import pl.edu.agh.iobber.core.Conversation;
 import pl.edu.agh.iobber.core.LoggedUser;
 import pl.edu.agh.iobber.core.XMPPManager;
-import pl.edu.agh.iobber.core.exceptions.NobodyLogInException;
 
 import static java.lang.String.format;
 import static pl.edu.agh.iobber.android.LoginActivity.LOGIN_REQUEST;
@@ -249,7 +242,7 @@ public class MainActivity extends ActionBarActivity
     }
 
     private void startConversationWith(Contact contact) {
-        Conversation conversation = loggedUser.startConversation(contact, new AndroidMessageListener());
+        Conversation conversation = loggedUser.startConversation(contact);
         saveConversation(conversation);
         loadConversation(conversation.getName());
     }
