@@ -28,6 +28,7 @@ import pl.edu.agh.iobber.R;
 import pl.edu.agh.iobber.android.base.AndroidBaseManager;
 import pl.edu.agh.iobber.android.base.DatabaseHelper;
 import pl.edu.agh.iobber.android.contacts.ContactsFragment;
+import pl.edu.agh.iobber.android.conversation.ConversationFragment;
 import pl.edu.agh.iobber.android.navigation.NavigationDrawerFragment;
 import pl.edu.agh.iobber.core.AndroidMessageListener;
 import pl.edu.agh.iobber.core.AndroidRosterListener;

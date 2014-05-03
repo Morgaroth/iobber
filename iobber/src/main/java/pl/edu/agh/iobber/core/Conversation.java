@@ -5,7 +5,10 @@ import org.jivesoftware.smack.XMPPException;
 
 import java.util.logging.Logger;
 
+import pl.edu.agh.iobber.android.conversation.ConversationFragment;
 import pl.edu.agh.iobber.core.exceptions.IObberException;
+
+import static java.lang.String.format;
 
 // TODO wskazówki
 
@@ -40,6 +43,12 @@ public class Conversation {
 
     public void sendMessage(String text) throws IObberException, XMPPException {
         chat.sendMessage(text);
+        logger.info(format("wiadomość \"%s\" wysłano", text));
     }
+
+    public void addMessageListener(MsgListener msgListener) {
+        chat.addMessageListener(new MessageListenerAdapter(msgListener));
+    }
+
     // TODO dekorator na Chat z smackapi, może coś więcej będziemy dokładać, jakieś metody chociaż, nie wiem, zobaczy sie
 }
