@@ -93,7 +93,7 @@ public class ConversationFragment extends ListFragment implements MsgListener {
         try {
             logger.info(format("sending message \"%s\"", text));
             delegate.sendMessage(text.toString());
-            //addMsgToListDirectly(text.toString());
+            addMsgToListDirectly(text.toString());
         } catch (IObberException e) {
             logger.log(Level.SEVERE, "error sending message", e);
         } catch (XMPPException e) {
@@ -144,31 +144,4 @@ public class ConversationFragment extends ListFragment implements MsgListener {
             }
         });
     }
-//
-//    class PrivAdapter extends ArrayAdapter<Msg> {
-//        private Logger logger = Logger.getLogger(PrivAdapter.class.getSimpleName());
-//
-//        public PrivAdapter(Context context, List<Msg> objects) {
-//            super(context, android.R.layout.simple_list_item_1, objects);
-//            logger.info(format("CYCKI %s", objects));
-//        }
-//
-//
-//        @Override
-//        public View getView(int position, View convertView, ViewGroup parent) {
-//            View v = convertView;
-//            if (v == null) {
-//                LayoutInflater vi;
-//                vi = LayoutInflater.from(getContext());
-//                v = vi.inflate(R.layout.conversation_fragment_list_item_layout, null);
-//            }
-//
-//            logger.info(format("%s generate view for item %s", this, getItem(position)));
-//            TextView bodyView = (TextView) v.findViewById(R.id.conversation_list_item_body);
-//            bodyView.setText(getItem(position).getText());
-//
-//            return v;
-//        }
-//    }
-
 }
