@@ -2,12 +2,13 @@ package pl.edu.agh.iobber.android.conversation;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import android.support.v4.app.ListFragment;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.widget.AbsListView;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -27,13 +28,12 @@ import pl.edu.agh.iobber.core.exceptions.IObberException;
 
 import static java.lang.String.format;
 
-public class ConversationFragment extends Fragment implements MsgListener {
+public class ConversationFragment extends ListFragment implements MsgListener {
 
     private final Conversation delegate;
     private Logger logger = Logger.getLogger(ConversationFragment.class.getSimpleName());
     private List<Msg> messages = new LinkedList<Msg>();
     private ConversationListAdapter adapter;
-    private ListView messagesListView;
 
     public ConversationFragment(Conversation conversation) {
         this.delegate = conversation;
@@ -63,7 +63,7 @@ public class ConversationFragment extends Fragment implements MsgListener {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         logger.info("creating view for chat " + delegate);
-        View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+        View rootView = inflater.inflate(R.layout.conversation_fragment_layout, container, false);
 
         EditText messageEditor = (EditText) rootView.findViewById(R.id.chatLine);
         messageEditor.setOnEditorActionListener(
@@ -81,7 +81,6 @@ public class ConversationFragment extends Fragment implements MsgListener {
                 }
         );
 
-        messagesListView = (ListView) rootView.findViewById(R.id.listView);
         delegate.addMessageListener(this);
         return rootView;
     }
@@ -94,7 +93,7 @@ public class ConversationFragment extends Fragment implements MsgListener {
         try {
             logger.info(format("sending message \"%s\"", text));
             delegate.sendMessage(text.toString());
-
+            //addMsgToListDirectly(text.toString());
         } catch (IObberException e) {
             logger.log(Level.SEVERE, "error sending message", e);
         } catch (XMPPException e) {
@@ -120,16 +119,56 @@ public class ConversationFragment extends Fragment implements MsgListener {
 
     @Override
     public void onMessage(Msg message) {
-        logger.info(message + " received");
         addNewMessageToList(message);
+        logger.info(message + " received");
     }
 
     private void addNewMessageToList(Msg message) {
-        if (adapter == null) {
-            adapter = new ConversationListAdapter(getActivity(), R.layout.conversation_list_item_layout);
-            messagesListView.setAdapter(adapter);
-        }
         messages.add(message);
-        adapter.updateContent(messages);
+        updateAdapter();
     }
+
+    private void updateAdapter() {
+        final ListView view = getListView();
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (adapter == null) {
+                    adapter = new ConversationListAdapter(getActivity(), R.layout.conversation_fragment_list_item_layout);
+                    view.setTranscriptMode(AbsListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
+                    ConversationFragment.this.setListAdapter(adapter);
+                    logger.info("adapter for conversation created");
+                }
+                adapter.updateContent(messages);
+                logger.info("content updated " + messages);
+            }
+        });
+    }
+//
+//    class PrivAdapter extends ArrayAdapter<Msg> {
+//        private Logger logger = Logger.getLogger(PrivAdapter.class.getSimpleName());
+//
+//        public PrivAdapter(Context context, List<Msg> objects) {
+//            super(context, android.R.layout.simple_list_item_1, objects);
+//            logger.info(format("CYCKI %s", objects));
+//        }
+//
+//
+//        @Override
+//        public View getView(int position, View convertView, ViewGroup parent) {
+//            View v = convertView;
+//            if (v == null) {
+//                LayoutInflater vi;
+//                vi = LayoutInflater.from(getContext());
+//                v = vi.inflate(R.layout.conversation_fragment_list_item_layout, null);
+//            }
+//
+//            logger.info(format("%s generate view for item %s", this, getItem(position)));
+//            TextView bodyView = (TextView) v.findViewById(R.id.conversation_list_item_body);
+//            bodyView.setText(getItem(position).getText());
+//
+//            return v;
+//        }
+//    }
+
 }

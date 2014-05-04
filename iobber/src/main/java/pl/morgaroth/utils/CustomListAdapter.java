@@ -1,13 +1,18 @@
 package pl.morgaroth.utils;
 
 import android.content.Context;
+import android.database.DataSetObserver;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import java.util.List;
+import java.util.logging.Logger;
+
+import static java.lang.String.format;
 
 public abstract class CustomListAdapter<T> extends LazyListAdapter<T> {
+    private Logger logger = Logger.getLogger(CustomListAdapter.class.getSimpleName());
     private int itemResourceID;
 
     public CustomListAdapter(Context context, int itemLayoutId) {
@@ -33,4 +38,11 @@ public abstract class CustomListAdapter<T> extends LazyListAdapter<T> {
     }
 
     public abstract View fillItem(int position, View view, ViewGroup parent, T item);
+
+
+    @Override
+    public void registerDataSetObserver(DataSetObserver observer) {
+        super.registerDataSetObserver(observer);
+        logger.info(format("%s registered observer %s", this, observer));
+    }
 }

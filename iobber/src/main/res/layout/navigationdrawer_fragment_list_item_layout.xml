@@ -17,7 +17,7 @@
         android:textAlignment="gravity">
 
         <ImageView
-            android:id="@+id/navigation_drawer_item_image"
+            android:id="@+id/navigationdrawer_fragment_list_item_image"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/chat" />
@@ -31,7 +31,7 @@
         android:weightSum="8">
 
         <TextView
-            android:id="@+id/navigation_drawer_item_header"
+            android:id="@+id/navigationdrawer_fragment_list_item_header"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -41,7 +41,7 @@
             android:textColor="@android:color/black" />
 
         <TextView
-            android:id="@+id/navigation_drawer_item_more"
+            android:id="@+id/navigationdrawer_fragment_list_item_more"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
