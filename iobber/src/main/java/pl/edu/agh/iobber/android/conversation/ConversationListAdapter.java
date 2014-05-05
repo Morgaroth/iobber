@@ -15,19 +15,26 @@ import pl.morgaroth.utils.CustomListAdapter;
 public class ConversationListAdapter extends CustomListAdapter<Msg> {
     private Logger logger = Logger.getLogger(ConversationListAdapter.class.getSimpleName());
 
-    public ConversationListAdapter(Context context, int itemLayoutId) {
-        super(context, itemLayoutId);
+    public ConversationListAdapter(Context context) {
+        super(context, R.layout.conversation_fragment_list_item_layout);
     }
 
-    public ConversationListAdapter(Context context, int itemLayoutId, List<Msg> objects) {
-        super(context, itemLayoutId, objects);
+    public ConversationListAdapter(Context context, List<Msg> objects) {
+        super(context, R.layout.conversation_fragment_list_item_layout, objects);
     }
 
     @Override
     public View fillItem(int position, View view, ViewGroup parent, Msg item) {
         //logger.info(format("%s generate view for item %s", this, item));
-        TextView bodyView = (TextView) view.findViewById(R.id.conversation_list_item_body);
-        bodyView.setText(item.getText());
+        TextView bodyView = (TextView) view.findViewById(R.id.conversation_fragment_list_item_body);
+        bodyView.setText(item.getBody());
+
+        TextView author = (TextView) view.findViewById(R.id.conversation_fragment_list_item_author);
+        author.setText(item.getAuthor().getName());
+
+        TextView date = (TextView) view.findViewById(R.id.conversation_fragment_list_item_date);
+        date.setText(item.getDate());
+
 
         return view;
     }

@@ -15,13 +15,15 @@ public class MessageListenerAdapter implements MessageListener {
 
     public MessageListenerAdapter(MsgListener obj) {
         this.obj = obj;
+
     }
 
     @Override
     public void processMessage(Chat chat, Message message) {
-        logger.info(format("on message %s in chat %s", message.toString(), chat.toString()));
+        logger.info(format("on message %s in chat %s from %s", message.toString(), chat.toString(), chat.getParticipant()));
         if (obj != null) {
-            obj.onMessage(new MessageAdapter(message));
+            // TODO implement stub
+            obj.onMessage(new MessageAdapter(message, new ContactStub()));
         }
     }
 }

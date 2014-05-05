@@ -1,25 +1,10 @@
 package pl.edu.agh.iobber.core;
 
-public class Msg {
-    private String text;
+public interface Msg {
 
-    public Msg(String text) {
+    String getBody();
 
-        this.text = text;
-    }
+    String getDate();
 
-    public String getText() {
-        return text;
-    }
-
-    public void setText(String text) {
-        this.text = text;
-    }
-
-    @Override
-    public String toString() {
-        return "Msg{" +
-                "text='" + text + '\'' +
-                '}';
-    }
+    Contact getAuthor();
 }

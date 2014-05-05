@@ -12,22 +12,22 @@ public class AndroidRosterListener implements RosterListener {
 
     @Override
     public void entriesAdded(Collection<String> strings) {
-        logger.info("ectriesAdded");
+        logger.info("ectriesAdded " + strings);
     }
 
     @Override
     public void entriesUpdated(Collection<String> strings) {
-        logger.info("entriesUpdated");
+        logger.info("entriesUpdated " + strings);
     }
 
     @Override
     public void entriesDeleted(Collection<String> strings) {
 
-        logger.info("entriesDeleted");
+        logger.info("entriesDeleted " + strings);
     }
 
     @Override
     public void presenceChanged(Presence presence) {
-        logger.info("presenceChange");
+        logger.info("presenceChange " + presence);
     }
 }

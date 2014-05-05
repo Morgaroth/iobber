@@ -1,33 +1,31 @@
 package pl.edu.agh.iobber.core;
 
-import android.content.Context;
-
 import org.jivesoftware.smack.RosterEntry;
 
 public class Contact {
     private RosterEntry rosterEntry;
 
-    public Contact(){
+    public Contact() {
         rosterEntry = null;
     }
 
     public String getName() {
-        if(rosterEntry != null){
+        if (rosterEntry != null) {
             return rosterEntry.getUser();
         }
-        return null;
+        return "STUB!";
     }
 
-    public void setName(String name){
+    public void setName(String name) {
         rosterEntry.setName(name);
     }
 
-    public void setRosterEntry(RosterEntry rosterEntry){
-        this.rosterEntry = rosterEntry;
+    public RosterEntry getRosterEntry() {
+        return rosterEntry;
     }
 
-    public RosterEntry getRosterEntry(){
-        return rosterEntry;
+    public void setRosterEntry(RosterEntry rosterEntry) {
+        this.rosterEntry = rosterEntry;
     }
 
     @Override

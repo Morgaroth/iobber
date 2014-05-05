@@ -35,7 +35,8 @@ public class NavigationListAdapter extends CustomListAdapter<Conversation> {
         header.setText(item.getSimpleName());
 
         Msg lastMsg = item.getLastMessage();
-        String startOfMessage = lastMsg.getText().substring(0, 30);
+        int characters = lastMsg.getBody().length() > 30 ? 30 : lastMsg.getBody().length();
+        String startOfMessage = lastMsg.getBody().substring(0, characters - 1);
         more.setText(startOfMessage);
 
         unreaded.setText(String.valueOf(item.unreadedMessages()));

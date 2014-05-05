@@ -2,7 +2,6 @@ package pl.edu.agh.iobber.core;
 
 import org.jivesoftware.smack.Chat;
 import org.jivesoftware.smack.ChatManager;
-import org.jivesoftware.smack.MessageListener;
 import org.jivesoftware.smack.Roster;
 import org.jivesoftware.smack.RosterEntry;
 import org.jivesoftware.smack.XMPPConnection;
@@ -16,7 +15,7 @@ import java.util.logging.Logger;
 
 import pl.edu.agh.iobber.core.exceptions.IObberException;
 
-public class LoggedUser {
+public class LoggedUser implements ContactsResolver {
     private Logger logger = Logger.getLogger(LoggedUser.class.getSimpleName());
 
     private HashMap<String, Conversation> activeConversations = new HashMap<String, Conversation>();
@@ -88,10 +87,9 @@ public class LoggedUser {
             return activeConversations.get(contact.getName());
         } else {
             ChatManager chatManager = xmppConnection.getChatManager();
-            MessageListener messageListener = new MessageListenerAdapter(null);
-            Chat chat = chatManager.createChat(contact.getRosterEntry().getUser(), messageListener);
-            Conversation conversation = new Conversation(contact.getName(), chat);
-            // TODO zajebiste miejsce na wsadzenie listenera kolejka <-> smackapi
+            Conversation conversation = Conversation.createWithoutChat(contact.getName(), this);
+            Chat chat = chatManager.createChat(contact.getRosterEntry().getUser(), conversation.getInternalListener());
+            conversation.setUpChat(chat);
             activeConversations.put(contact.getName(), conversation);
             return conversation;
         }
@@ -103,5 +101,15 @@ public class LoggedUser {
 
     public void setContacts(List<Contact> contacts) {
         this.contacts = contacts;
+    }
+
+    @Override
+    public Contact resolve(String name) {
+        for (Contact contact : getContacts()) {
+            if (contact.getName().equals(name)) {
+                return contact;
+            }
+        }
+        return null;
     }
 }

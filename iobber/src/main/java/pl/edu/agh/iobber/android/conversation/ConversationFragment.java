@@ -21,8 +21,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import pl.edu.agh.iobber.R;
+import pl.edu.agh.iobber.core.Contact;
 import pl.edu.agh.iobber.core.Conversation;
 import pl.edu.agh.iobber.core.Msg;
+import pl.edu.agh.iobber.core.MsgImpl;
 import pl.edu.agh.iobber.core.MsgListener;
 import pl.edu.agh.iobber.core.exceptions.IObberException;
 
@@ -106,7 +108,7 @@ public class ConversationFragment extends ListFragment implements MsgListener {
      */
     @Deprecated
     private void addMsgToListDirectly(String text) {
-        onMessage(new Msg(text));
+        onMessage(new MsgImpl(text, new Contact()));
     }
 
     @Override
@@ -134,7 +136,7 @@ public class ConversationFragment extends ListFragment implements MsgListener {
             @Override
             public void run() {
                 if (adapter == null) {
-                    adapter = new ConversationListAdapter(getActivity(), R.layout.conversation_fragment_list_item_layout);
+                    adapter = new ConversationListAdapter(getActivity());
                     view.setTranscriptMode(AbsListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
                     ConversationFragment.this.setListAdapter(adapter);
                     logger.info("adapter for conversation created");
