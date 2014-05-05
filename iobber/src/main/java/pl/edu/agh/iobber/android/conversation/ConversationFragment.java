@@ -88,7 +88,7 @@ public class ConversationFragment extends ListFragment implements MsgListener {
     }
 
     private void clearEditText(TextView v) {
-        v.clearComposingText();
+        v.setText("");
     }
 
     private void sendMessage(CharSequence text) {
