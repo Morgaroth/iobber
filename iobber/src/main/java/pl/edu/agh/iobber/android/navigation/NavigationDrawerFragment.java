@@ -255,8 +255,8 @@ public class NavigationDrawerFragment extends Fragment {
         return ((ActionBarActivity) getActivity()).getSupportActionBar();
     }
 
-    public void addConversationToList(Conversation conversation) {
-        conversationsList.add(conversation);
+    public void updateConversationsList(List<Conversation> conversations) {
+        this.conversationsList = conversations;
         updateListAdapter();
     }
 

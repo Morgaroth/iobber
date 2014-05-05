@@ -20,6 +20,7 @@
             android:id="@+id/navigationdrawer_fragment_list_item_image"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:src="@drawable/chat" />
     </FrameLayout>
 
@@ -49,4 +50,19 @@
             android:text="New Text"
             android:textColor="@android:color/black" />
     </LinearLayout>
+
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent">
+
+        <TextView
+            android:id="@+id/navigationdrawer_fragment_list_item_unread"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:background="#ffff1200"
+            android:text="5"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textSize="25dp" />
+    </FrameLayout>
 </LinearLayout>

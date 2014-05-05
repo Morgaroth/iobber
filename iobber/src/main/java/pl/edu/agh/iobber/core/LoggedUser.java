@@ -16,13 +16,6 @@ import java.util.logging.Logger;
 
 import pl.edu.agh.iobber.core.exceptions.IObberException;
 
-// TODO wskazówki
-
-/**
- * tu proponowałbym wsadzić całą logikę odpowiedzialną za interakcje użytkownika z serwerem xmpp, ale
- * kompletnie niezależne od platform,ma nie mieć pojęcia, że działa na androidzie
- * czyli tu wszystko co użytkownik może mieć, lub zrobić
- */
 public class LoggedUser {
     private Logger logger = Logger.getLogger(LoggedUser.class.getSimpleName());
 
@@ -73,14 +66,14 @@ public class LoggedUser {
         return activeConversations.get(title);
     }
 
-    public Conversation startConversation(String title, List<Contact> others, MessageListener messageListener) {
-        // TODO tu brakuje połaczenia z serwerem, ustalenia rozmowy itd.........
-        ChatManager chatManager = xmppConnection.getChatManager();
-        Chat chat = chatManager.createChat(title, messageListener);
-        Conversation conversation = new Conversation(title, chat);
-        activeConversations.put(title, conversation);
-        return conversation;
-    }
+//    public Conversation startConversation(String title, List<Contact> others, MessageListener messageListener) {
+//        // TODO tu brakuje połaczenia z serwerem, ustalenia rozmowy itd.........
+//        ChatManager chatManager = xmppConnection.getChatManager();
+//        Chat chat = chatManager.createChat(title, messageListener);
+//        Conversation conversation = new Conversation(title, chat);
+//        activeConversations.put(title, conversation);
+//        return conversation;
+//    }
 
     public String getID() {
         return ID;
@@ -91,13 +84,17 @@ public class LoggedUser {
     }
 
     public Conversation startConversation(Contact contact) {
-        ChatManager chatManager = xmppConnection.getChatManager();
-
-        MessageListener messageListener = new MessageListenerAdapter(null);
-        Chat chat = chatManager.createChat(contact.getRosterEntry().getUser(), messageListener);
-        Conversation conversation = new Conversation(contact.getName(), chat);
-        activeConversations.put(contact.getName(), conversation);
-        return conversation;
+        if (activeConversations.containsKey(contact.getName())) {
+            return activeConversations.get(contact.getName());
+        } else {
+            ChatManager chatManager = xmppConnection.getChatManager();
+            MessageListener messageListener = new MessageListenerAdapter(null);
+            Chat chat = chatManager.createChat(contact.getRosterEntry().getUser(), messageListener);
+            Conversation conversation = new Conversation(contact.getName(), chat);
+            // TODO zajebiste miejsce na wsadzenie listenera kolejka <-> smackapi
+            activeConversations.put(contact.getName(), conversation);
+            return conversation;
+        }
     }
 
     public List<Contact> getContacts() {

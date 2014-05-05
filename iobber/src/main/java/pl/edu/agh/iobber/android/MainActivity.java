@@ -16,6 +16,7 @@ import com.j256.ormlite.android.apptools.OpenHelperManager;
 
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -43,7 +44,6 @@ public class MainActivity extends ActionBarActivity
     private Logger logger = Logger.getLogger(MainActivity.class.getSimpleName());
     private NavigationDrawerFragment navigationDrawerFragment;
     private ContactsFragment contactsFragment;
-    private CharSequence mTitle;
     private LoggedUser loggedUser;
     private Map<String, ConversationFragment> conversationsCache = new HashMap<String, ConversationFragment>();
     private boolean contactsLoaded = false;
@@ -188,8 +188,8 @@ public class MainActivity extends ActionBarActivity
 //        }).show();
 //    }
 
-    private void saveConversation(Conversation conversation) {
-        navigationDrawerFragment.addConversationToList(conversation);
+    private void updateNavigationDrawer() {
+        navigationDrawerFragment.updateConversationsList(new LinkedList<Conversation>(loggedUser.getActiveConversations()));
     }
 
     @Override
@@ -243,7 +243,7 @@ public class MainActivity extends ActionBarActivity
 
     private void startConversationWith(Contact contact) {
         Conversation conversation = loggedUser.startConversation(contact);
-        saveConversation(conversation);
+        updateNavigationDrawer();
         loadConversation(conversation.getName());
     }
 

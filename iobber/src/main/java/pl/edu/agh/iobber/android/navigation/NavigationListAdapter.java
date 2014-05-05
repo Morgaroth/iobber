@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 
 import pl.edu.agh.iobber.R;
 import pl.edu.agh.iobber.core.Conversation;
+import pl.edu.agh.iobber.core.Msg;
 import pl.morgaroth.utils.CustomListAdapter;
 
 public class NavigationListAdapter extends CustomListAdapter<Conversation> {
@@ -28,9 +29,16 @@ public class NavigationListAdapter extends CustomListAdapter<Conversation> {
 
         TextView header = (TextView) convertView.findViewById(R.id.navigationdrawer_fragment_list_item_header);
         TextView more = (TextView) convertView.findViewById(R.id.navigationdrawer_fragment_list_item_more);
+        TextView unreaded = (TextView) convertView.findViewById(R.id.navigationdrawer_fragment_list_item_unread);
 
-        header.setText(item.getName());
-        more.setText("dodatkowe info, np ostatnia wiadomość");
+
+        header.setText(item.getSimpleName());
+
+        Msg lastMsg = item.getLastMessage();
+        String startOfMessage = lastMsg.getText().substring(0, 30);
+        more.setText(startOfMessage);
+
+        unreaded.setText(String.valueOf(item.unreadedMessages()));
 
         logger.info("filled view = " + convertView);
 
