@@ -196,7 +196,8 @@ public class AndroidBaseManagerMessages implements BaseManagerMessages {
         QueryBuilder<SimpleMessage, Integer> queryBuilder2 = simpleMessageDao.queryBuilder();
         Where<SimpleMessage, Integer> where2 = queryBuilder2.where();
         try{
-            where2.or(where2.eq(SimpleMessage.TO_FIELD_MESSAGE, contact), where2.eq(SimpleMessage.FROM_FIELD_MESSAGE, contact));
+            where2.or(where2.eq(SimpleMessage.TO_FIELD_MESSAGE, contact), where2.eq(SimpleMessage.FROM_FIELD_MESSAGE, contact)).and().
+                    lt(SimpleMessage.ID_FIELD_MESSAGE, id);
             list = queryBuilder2.offset(id).limit(number).query();
         }catch(SQLException e){
             logger.info("Cannot get messages from the database");
@@ -208,7 +209,38 @@ public class AndroidBaseManagerMessages implements BaseManagerMessages {
 
     @Override
     public List<SimpleMessage> getEarlierMessagesForPerson(Contact contact, int number, SimpleMessage messageToBeExtractedFrom) throws CannotGetMessagesFromTheDatabaseException {
-        return null;
+        //search id of the message
+        long id;
+        QueryBuilder<SimpleMessage, Integer> queryBuilder = simpleMessageDao.queryBuilder();
+        Where<SimpleMessage, Integer> where = queryBuilder.where();
+
+        try {
+            where.eq(SimpleMessage.BODY_FIELD_MESSAGE, messageToBeExtractedFrom.getBody()).and().
+                    eq(SimpleMessage.DATE_FIELD_MESSAGE, messageToBeExtractedFrom).and().
+                    eq(SimpleMessage.FROM_FIELD_MESSAGE, messageToBeExtractedFrom.getFrom()).and().
+                    eq(SimpleMessage.TO_FIELD_MESSAGE, messageToBeExtractedFrom.getTo());
+            SimpleMessage simpleMessage = queryBuilder.limit(1).query().get(0);
+            id = simpleMessage.getId();
+        } catch (SQLException e) {
+            logger.info("Cannot get messages from the database");
+            throw new CannotGetMessagesFromTheDatabaseException();
+        }
+
+        //Find messages
+        List<SimpleMessage> list = null;
+        QueryBuilder<SimpleMessage, Integer> queryBuilder2 = simpleMessageDao.queryBuilder();
+        Where<SimpleMessage, Integer> where2 = queryBuilder2.where();
+        try{
+            where2.or(where2.eq(SimpleMessage.TO_FIELD_MESSAGE, contact), where2.eq(SimpleMessage.FROM_FIELD_MESSAGE, contact)).and().
+                    gt(SimpleMessage.ID_FIELD_MESSAGE, id);
+            list = queryBuilder2.offset(id).limit(number).query();
+        }catch(SQLException e){
+            logger.info("Cannot get messages from the database");
+            throw new CannotGetMessagesFromTheDatabaseException();
+        }
+
+        return list;
+
     }
 
     @Override   //czas przyjmowany jest tutaj w postaci dd-MM-yy hh:mm
