@@ -18,6 +18,8 @@ public interface BaseManagerMessages {
 
     List<SimpleMessage> getUnreadedMessagerForPerson(Contact contact);
 
+    List<SimpleMessage> getLastNMessagesForPerson(String title, int numberOfMessages) throws CannotGetMessagesFromTheDatabaseException;
+
     SimpleMessage getUnreadedLastMessageForPerson(String title);
 
     int countUnreadedMessagesForPerson(String title);

@@ -1,11 +1,9 @@
 package pl.edu.agh.iobber.android.baseMessages;
 
-import android.accounts.Account;
 import android.content.SharedPreferences;
 
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.DeleteBuilder;
-import com.j256.ormlite.stmt.PreparedQuery;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.UpdateBuilder;
 import com.j256.ormlite.stmt.Where;
@@ -26,6 +24,7 @@ import pl.edu.agh.iobber.android.baseMessages.exceptions.CannotAddNewMessageToDa
 import pl.edu.agh.iobber.core.BaseManagerMessages;
 import pl.edu.agh.iobber.core.BaseManagerMessagesConfiguration;
 import pl.edu.agh.iobber.core.Contact;
+import pl.edu.agh.iobber.core.EmptySimpleMessage;
 import pl.edu.agh.iobber.core.SimpleMessage;
 import pl.edu.agh.iobber.core.exceptions.CannotFindMessagesInTheDatabaseException;
 import pl.edu.agh.iobber.core.exceptions.CannotGetMessagesFromTheDatabaseException;
@@ -59,6 +58,18 @@ public class AndroidBaseManagerMessages implements BaseManagerMessages {
         obj = new Object();
         setTimeLifeOfMessages();
         refreshTheDatabase();
+        readFromTheDatabaseUnreadedEalierMessages();
+    }
+
+    private void readFromTheDatabaseUnreadedEalierMessages() {
+        QueryBuilder<SimpleMessage, Integer> queryBuilder = simpleMessageDao.queryBuilder();
+        Where<SimpleMessage, Integer> where = queryBuilder.where();
+        try {
+            where.eq(SimpleMessage.ISREADED_FIELD_MESSAGE, false);
+            unreadedMessages = queryBuilder.query();
+        } catch (SQLException e) {
+            logger.info("Cannnot read messages from the database so as to initial map");
+        }
     }
 
     private void setTimeLifeOfMessages() {
@@ -120,6 +131,24 @@ public class AndroidBaseManagerMessages implements BaseManagerMessages {
         synchronized (obj) {
             return messagesForConversations.get(contact.getName());
         }
+    }
+
+    @Override
+    public List<SimpleMessage> getLastNMessagesForPerson(String title, int numberOfMessages) throws CannotGetMessagesFromTheDatabaseException {
+        List<SimpleMessage> list = null;
+
+        QueryBuilder<SimpleMessage, Integer> queryBuilder = simpleMessageDao.queryBuilder();
+        Where<SimpleMessage, Integer> where = queryBuilder.where();
+
+        try {
+            where.or(where.eq(SimpleMessage.TO_FIELD_MESSAGE, title), where.eq(SimpleMessage.FROM_FIELD_MESSAGE, title));
+            list = queryBuilder.limit(numberOfMessages).orderBy(SimpleMessage.ID_FIELD_MESSAGE, false).query();
+        } catch (SQLException e) {
+            logger.info("Cannnot read messages from the database so as to initial map");
+            throw new CannotGetMessagesFromTheDatabaseException();
+        }
+
+        return list;
     }
 
     @Override
@@ -196,7 +225,8 @@ public class AndroidBaseManagerMessages implements BaseManagerMessages {
         QueryBuilder<SimpleMessage, Integer> queryBuilder2 = simpleMessageDao.queryBuilder();
         Where<SimpleMessage, Integer> where2 = queryBuilder2.where();
         try{
-            where2.or(where2.eq(SimpleMessage.TO_FIELD_MESSAGE, contact), where2.eq(SimpleMessage.FROM_FIELD_MESSAGE, contact));
+            where2.or(where2.eq(SimpleMessage.TO_FIELD_MESSAGE, contact), where2.eq(SimpleMessage.FROM_FIELD_MESSAGE, contact)).and().
+                    lt(SimpleMessage.ID_FIELD_MESSAGE, id);
             list = queryBuilder2.offset(id).limit(number).query();
         }catch(SQLException e){
             logger.info("Cannot get messages from the database");
@@ -208,7 +238,38 @@ public class AndroidBaseManagerMessages implements BaseManagerMessages {
 
     @Override
     public List<SimpleMessage> getEarlierMessagesForPerson(Contact contact, int number, SimpleMessage messageToBeExtractedFrom) throws CannotGetMessagesFromTheDatabaseException {
-        return null;
+        //search id of the message
+        long id;
+        QueryBuilder<SimpleMessage, Integer> queryBuilder = simpleMessageDao.queryBuilder();
+        Where<SimpleMessage, Integer> where = queryBuilder.where();
+
+        try {
+            where.eq(SimpleMessage.BODY_FIELD_MESSAGE, messageToBeExtractedFrom.getBody()).and().
+                    eq(SimpleMessage.DATE_FIELD_MESSAGE, messageToBeExtractedFrom).and().
+                    eq(SimpleMessage.FROM_FIELD_MESSAGE, messageToBeExtractedFrom.getFrom()).and().
+                    eq(SimpleMessage.TO_FIELD_MESSAGE, messageToBeExtractedFrom.getTo());
+            SimpleMessage simpleMessage = queryBuilder.limit(1).query().get(0);
+            id = simpleMessage.getId();
+        } catch (SQLException e) {
+            logger.info("Cannot get messages from the database");
+            throw new CannotGetMessagesFromTheDatabaseException();
+        }
+
+        //Find messages
+        List<SimpleMessage> list = null;
+        QueryBuilder<SimpleMessage, Integer> queryBuilder2 = simpleMessageDao.queryBuilder();
+        Where<SimpleMessage, Integer> where2 = queryBuilder2.where();
+        try{
+            where2.or(where2.eq(SimpleMessage.TO_FIELD_MESSAGE, contact), where2.eq(SimpleMessage.FROM_FIELD_MESSAGE, contact)).and().
+                    gt(SimpleMessage.ID_FIELD_MESSAGE, id);
+            list = queryBuilder2.offset(id).limit(number).query();
+        }catch(SQLException e){
+            logger.info("Cannot get messages from the database");
+            throw new CannotGetMessagesFromTheDatabaseException();
+        }
+
+        return list;
+
     }
 
     @Override   //czas przyjmowany jest tutaj w postaci dd-MM-yy hh:mm
@@ -255,7 +316,37 @@ public class AndroidBaseManagerMessages implements BaseManagerMessages {
             throw new CannotFindMessagesInTheDatabaseException();
         }
 
-        return list;
+        List<SimpleMessage> returnList = new ArrayList<SimpleMessage>();
+
+        for(SimpleMessage s : list){
+            try {
+                QueryBuilder<SimpleMessage, Integer> queryBuilder2 = simpleMessageDao.queryBuilder();
+                Where<SimpleMessage, Integer> where2 = queryBuilder2.where();
+                where2.or(where2.eq(SimpleMessage.TO_FIELD_MESSAGE, contact), where2.eq(SimpleMessage.FROM_FIELD_MESSAGE, contact)).and().lt(SimpleMessage.ID_FIELD_MESSAGE, s.getId());
+                List<SimpleMessage> sim = queryBuilder2.orderBy(SimpleMessage.ID_FIELD_MESSAGE, false).limit(1).query();
+                if(sim.size() > 0){
+                    returnList.add(sim.get(0));
+                }else{
+                    returnList.add(new EmptySimpleMessage());
+                }
+
+                returnList.add(s);
+
+                QueryBuilder<SimpleMessage, Integer> queryBuilder3 = simpleMessageDao.queryBuilder();
+                Where<SimpleMessage, Integer> where3 = queryBuilder3.where();
+                where3.or(where3.eq(SimpleMessage.TO_FIELD_MESSAGE, contact), where3.eq(SimpleMessage.FROM_FIELD_MESSAGE, contact)).and().gt(SimpleMessage.ID_FIELD_MESSAGE, s.getId());
+                List<SimpleMessage> sim3 = queryBuilder3.orderBy(SimpleMessage.ID_FIELD_MESSAGE, true).limit(1).query();
+                if(sim3.size() > 0){
+                    returnList.add(sim3.get(0));
+                }else{
+                    returnList.add(new EmptySimpleMessage());
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return returnList;
     }
 
     @Override
