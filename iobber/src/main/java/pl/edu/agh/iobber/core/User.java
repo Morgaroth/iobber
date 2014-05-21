@@ -19,7 +19,6 @@ public class User implements Serializable {
     @DatabaseField(id = true, useGetSet = true, columnName = LOGIN_FIELD_NAME)
     private String login;
 
-    @DatabaseField(useGetSet = true, columnName = PASSWORD_FIELD_NAME)
     private String password;
 
     @DatabaseField(useGetSet = true, columnName = PORT_FIELD_NAME)
@@ -32,7 +31,7 @@ public class User implements Serializable {
     private String sslEnable;
 
     public User() {
-
+        password = "";
     }
 
     public User login(String login) {

@@ -1,26 +1,28 @@
 package pl.edu.agh.iobber.core;
 
-import android.widget.Toast;
-
 import org.jivesoftware.smack.ConnectionConfiguration;
+import org.jivesoftware.smack.PacketListener;
 import org.jivesoftware.smack.Roster;
 import org.jivesoftware.smack.RosterListener;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
+import org.jivesoftware.smack.filter.PacketFilter;
+import org.jivesoftware.smack.packet.Message;
+import org.jivesoftware.smack.packet.Packet;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import pl.edu.agh.iobber.android.base.BaseManager;
-import pl.edu.agh.iobber.android.base.DatabaseHelper;
-import pl.edu.agh.iobber.android.base.exceptions.CannotAddNewUserToDatebase;
-import pl.edu.agh.iobber.android.base.exceptions.CannotDeleteUserFromDatabaseException;
-import pl.edu.agh.iobber.android.base.exceptions.CannotGetUsersFromDatabase;
+import pl.edu.agh.iobber.android.baseMessages.exceptions.CannotAddNewMessageToDatabase;
+import pl.edu.agh.iobber.android.baseUsers.exceptions.CannotAddNewUserToDatebase;
+import pl.edu.agh.iobber.android.baseUsers.exceptions.CannotDeleteUserFromDatabaseException;
+import pl.edu.agh.iobber.android.baseUsers.exceptions.CannotGetUsersFromDatabase;
 import pl.edu.agh.iobber.core.exceptions.InternetNotFoundException;
-import pl.edu.agh.iobber.core.exceptions.NobodyLogInException;
 import pl.edu.agh.iobber.core.exceptions.NotConnectedToTheServerException;
 import pl.edu.agh.iobber.core.exceptions.NotValidLoginException;
 import pl.edu.agh.iobber.core.exceptions.ServerNotFoundException;
@@ -33,6 +35,9 @@ public class XMPPManagerInstance {
     private List<User> users;
     private Logger logger = Logger.getLogger(XMPPManagerInstance.class.getSimpleName());
     private RosterListener temporaryRosterListener;
+    private BaseManagerMessages baseManagerMessages;
+    private PacketListener packetListenerReceiver;
+    private PacketListener packetListenerSent;
 
     protected XMPPManagerInstance() {
         users = new LinkedList<User>();
@@ -68,15 +73,67 @@ public class XMPPManagerInstance {
     public LoggedUser loginUser(User user) throws ServerNotFoundException, InternetNotFoundException, UserNotExistsException, NotConnectedToTheServerException, NotValidLoginException {
         XMPPConnection xmppConnection = connectToServer(user);
 
-            loginUserToServer(xmppConnection, user);
-            addRosterListener(xmppConnection);
-            LoggedUser loggedUser = new LoggedUser(user, user.getLogin(), xmppConnection);
-            loggedUsers.put(loggedUser.getID(), loggedUser);
-            putNewUserToBase(user);
-            return loggedUser;
+        loginUserToServer(xmppConnection, user);
+        addDefaultPacketListener(xmppConnection);
+        addRosterListener(xmppConnection);
+        LoggedUser loggedUser = new LoggedUser(user, user.getLogin(), xmppConnection, baseManagerMessages);
+        loggedUsers.put(loggedUser.getID(), loggedUser);
+        putNewUserToBase(user);
+        return loggedUser;
 
     }
 
+    private void addDefaultPacketListener(XMPPConnection xmppConnection) {
+        //listener for receiving packets
+        packetListenerReceiver = new PacketListener() {
+            @Override
+            public void processPacket(Packet packet) {
+                logger.info("New message received");
+                String body = packet.toXML().split("<body>")[1].split("</body>")[0];
+                SimpleMessage simpleMessage = new SimpleMessage().from(packet.getFrom().split("/")[0]).to(packet.getTo().split("/")[0]).isReaded(false)
+                        .date(new SimpleDateFormat().format(Calendar.getInstance().getTime())).body(body);
+                logger.info("New message received " + simpleMessage);
+                try {
+                    baseManagerMessages.addNewMessage(simpleMessage);
+                } catch (CannotAddNewMessageToDatabase cannotAddNewMessageToDatabase) {
+                    logger.info("Can not add message to the database in pocketlistener");
+                }
+            }
+        };
+
+        xmppConnection.addPacketListener(packetListenerReceiver, new PacketFilter() {
+            @Override
+            public boolean accept(Packet packet) {
+                logger.info("Packetfilter used" + packet.toXML());
+                return packet instanceof Message;
+            }
+        });
+
+        //listener for sent packets
+        packetListenerSent = new PacketListener() {
+            @Override
+            public void processPacket(Packet packet) {
+                logger.info("New message sent");
+                String body = packet.toXML().split("<body>")[1].split("</body>")[0];
+                SimpleMessage simpleMessage = new SimpleMessage().from(packet.getFrom().split("/")[0]).to(packet.getTo().split("/")[0]).isReaded(true)
+                        .date(new SimpleDateFormat().format(Calendar.getInstance().getTime())).body(body);
+                logger.info("New message sent " + simpleMessage);
+                try {
+                    baseManagerMessages.addNewSentMessage(simpleMessage);
+                } catch (CannotAddNewMessageToDatabase cannotAddNewMessageToDatabase) {
+                    logger.info("Can not add message to the database in pocketlistener");
+                }
+            }
+        };
+
+        xmppConnection.addPacketWriterListener(packetListenerSent, new PacketFilter() {
+            @Override
+            public boolean accept(Packet packet) {
+                logger.info("Packetfilter used" + packet.toXML());
+                return packet instanceof Message;
+            }
+        });
+    }
 
 
     private XMPPConnection connectToServer(User user) throws InternetNotFoundException, ServerNotFoundException, NotValidLoginException, NotConnectedToTheServerException {
@@ -145,5 +202,9 @@ public class XMPPManagerInstance {
             return null;
         }
         return loggedUsers.get(ID);
+    }
+
+    public void addBaseManagerMessage(BaseManagerMessages baseManagerMessages) {
+        this.baseManagerMessages = baseManagerMessages;
     }
 }

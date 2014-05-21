@@ -142,7 +142,7 @@ public class ConversationFragment extends ListFragment implements MsgListener {
                     logger.info("adapter for conversation created");
                 }
                 adapter.updateContent(messages);
-                logger.info("content updated " + messages);
+                logger.info("content updated ");
             }
         });
     }

@@ -18,3 +18,6 @@ public class TODO {
      * }
      */
 }
+
+//TODO Za kazdym razem gdy wyswietla sie pasek boczny z rozmowami trzeba pobrac od nowa ile rozmow jest nieprzeczytanych
+//TODO badz wsadzic listenera dobasemanagermessage ktory bedzie uruchamiany gdy przyjdzie jakas wiadomosc

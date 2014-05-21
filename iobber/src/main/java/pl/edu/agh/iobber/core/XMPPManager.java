@@ -2,10 +2,7 @@ package pl.edu.agh.iobber.core;
 
 import org.jivesoftware.smack.RosterListener;
 
-import pl.edu.agh.iobber.android.base.BaseManager;
-import pl.edu.agh.iobber.android.base.DatabaseHelper;
 import pl.edu.agh.iobber.core.exceptions.InternetNotFoundException;
-import pl.edu.agh.iobber.core.exceptions.NobodyLogInException;
 import pl.edu.agh.iobber.core.exceptions.NotConnectedToTheServerException;
 import pl.edu.agh.iobber.core.exceptions.NotValidLoginException;
 import pl.edu.agh.iobber.core.exceptions.ServerNotFoundException;
@@ -33,4 +30,5 @@ public class XMPPManager {
 
     public static void setRosterListener(RosterListener rosterListener) {instance.setRosterListener(rosterListener);}
 
+    public static void addBaseManagerMessage(BaseManagerMessages androidBaseManagerMessages) {instance.addBaseManagerMessage(androidBaseManagerMessages);}
 }

@@ -1,20 +1,16 @@
-package pl.edu.agh.iobber.android.base;
+package pl.edu.agh.iobber.android.baseUsers;
 
-import android.os.Bundle;
-
-import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
 import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.dao.RuntimeExceptionDao;
 
 import java.sql.SQLException;
 import java.util.List;
 import java.util.logging.Logger;
 
-import pl.edu.agh.iobber.android.base.exceptions.CannotAddNewUserToDatebase;
-import pl.edu.agh.iobber.android.base.exceptions.CannotDeleteUserFromDatabaseException;
-import pl.edu.agh.iobber.android.base.exceptions.CannotGetUsersFromDatabase;
+import pl.edu.agh.iobber.android.baseUsers.exceptions.CannotAddNewUserToDatebase;
+import pl.edu.agh.iobber.android.baseUsers.exceptions.CannotDeleteUserFromDatabaseException;
+import pl.edu.agh.iobber.android.baseUsers.exceptions.CannotGetUsersFromDatabase;
+import pl.edu.agh.iobber.core.BaseManager;
 import pl.edu.agh.iobber.core.User;
-import pl.edu.agh.iobber.core.XMPPManager;
 
 import static java.lang.String.format;
 
@@ -55,7 +51,7 @@ public class AndroidBaseManager implements BaseManager {
             logger.info("Users getted from the database");
             return u;
         } catch (SQLException e) {
-            logger.info("Cannot get users from the database");
+            logger.info("Cannot gezt users from the database");
             throw new CannotGetUsersFromDatabase();
         }
     }
