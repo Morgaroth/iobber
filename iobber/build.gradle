@@ -25,4 +25,8 @@ dependencies {
     compile 'com.android.support:support-v4:19.1.0'
     compile files('libs/ormlite-android-4.48.jar')
     compile files('libs/ormlite-core-4.48.jar')
+    compile files('libs/smack3.4.1.jar')
+    compile files('libs/smackx3.4.1.jar')
+    compile files('libs/smack.jar')
+    compile files('libs/smackx.jar')
 }

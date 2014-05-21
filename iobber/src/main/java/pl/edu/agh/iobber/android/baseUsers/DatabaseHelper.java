@@ -1,4 +1,4 @@
-package pl.edu.agh.iobber.android.base;
+package pl.edu.agh.iobber.android.baseUsers;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
@@ -11,6 +11,7 @@ import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 
 import java.sql.SQLException;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import pl.edu.agh.iobber.R;
 import pl.edu.agh.iobber.core.User;
@@ -21,13 +22,23 @@ import pl.edu.agh.iobber.core.User;
 public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
     private static final String DATABASE_NAME = "users.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 4;
 
     private Dao<User, String> userDao = null;
-    private RuntimeExceptionDao<User, String> userRuntimeDao = null;
+
+    private static DatabaseHelper helper2 = null;
+    private static final AtomicInteger usageCounter2 = new AtomicInteger(0);
 
     public DatabaseHelper(Context context) {
-        super(context, DATABASE_NAME, null, DATABASE_VERSION, R.raw.ormlite_config);
+        super(context, DATABASE_NAME, null, DATABASE_VERSION);
+    }
+
+    public static synchronized DatabaseHelper getHelper(Context context) {
+        if (helper2 == null) {
+            helper2 = new DatabaseHelper(context);
+        }
+        usageCounter2.incrementAndGet();
+        return helper2;
     }
 
     @Override
@@ -54,25 +65,20 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
         }
     }
 
-    public Dao<User, String> getDao() throws SQLException {
+    public Dao<User, String> getUserDao() throws SQLException {
         if (userDao == null) {
             userDao = getDao(User.class);
         }
         return userDao;
     }
 
-    public RuntimeExceptionDao<User, String> getUserDataDao() {
-        if (userRuntimeDao == null) {
-            userRuntimeDao = getRuntimeExceptionDao(User.class);
-        }
-        return userRuntimeDao;
-    }
-
     @Override
     public void close() {
-        super.close();
-        userDao = null;
-        userRuntimeDao = null;
+        if (usageCounter2.decrementAndGet() == 0) {
+            super.close();
+            userDao = null;
+            helper2 = null;
+        }
     }
 
 }

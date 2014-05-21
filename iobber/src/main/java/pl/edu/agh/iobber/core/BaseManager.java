@@ -1,10 +1,10 @@
-package pl.edu.agh.iobber.android.base;
+package pl.edu.agh.iobber.core;
 
 import java.util.List;
 
-import pl.edu.agh.iobber.android.base.exceptions.CannotAddNewUserToDatebase;
-import pl.edu.agh.iobber.android.base.exceptions.CannotDeleteUserFromDatabaseException;
-import pl.edu.agh.iobber.android.base.exceptions.CannotGetUsersFromDatabase;
+import pl.edu.agh.iobber.android.baseUsers.exceptions.CannotAddNewUserToDatebase;
+import pl.edu.agh.iobber.android.baseUsers.exceptions.CannotDeleteUserFromDatabaseException;
+import pl.edu.agh.iobber.android.baseUsers.exceptions.CannotGetUsersFromDatabase;
 import pl.edu.agh.iobber.core.User;
 
 /**

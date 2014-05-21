@@ -21,12 +21,16 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import pl.edu.agh.iobber.R;
-import pl.edu.agh.iobber.android.base.AndroidBaseManager;
-import pl.edu.agh.iobber.android.base.DatabaseHelper;
+import pl.edu.agh.iobber.android.baseMessages.AndroidBaseManagerMessages;
+import pl.edu.agh.iobber.android.baseMessages.DatabaseHelperMessages;
+import pl.edu.agh.iobber.android.baseUsers.AndroidBaseManager;
+import pl.edu.agh.iobber.android.baseUsers.DatabaseHelper;
 import pl.edu.agh.iobber.android.contacts.ContactsFragment;
 import pl.edu.agh.iobber.android.conversation.ConversationFragment;
 import pl.edu.agh.iobber.android.navigation.NavigationDrawerFragment;
 import pl.edu.agh.iobber.core.AndroidRosterListener;
+import pl.edu.agh.iobber.core.BaseManagerMessages;
+import pl.edu.agh.iobber.core.BaseManagerMessagesConfiguration;
 import pl.edu.agh.iobber.core.Contact;
 import pl.edu.agh.iobber.core.Conversation;
 import pl.edu.agh.iobber.core.LoggedUser;
@@ -40,6 +44,7 @@ public class MainActivity extends ActionBarActivity
 
 
     public static final String LOGGED_USER = "LOGGED_USER";
+    public static final String SHARED_PREFERENCES = "MESSAGES_PREFS";
     private static final String PREF = "SharedLogInPreferences";
     private Logger logger = Logger.getLogger(MainActivity.class.getSimpleName());
     private NavigationDrawerFragment navigationDrawerFragment;
@@ -48,17 +53,23 @@ public class MainActivity extends ActionBarActivity
     private Map<String, ConversationFragment> conversationsCache = new HashMap<String, ConversationFragment>();
     private boolean contactsLoaded = false;
     private DatabaseHelper databaseHelper = null;
+    private DatabaseHelperMessages databaseHelperMessages = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getHelperMessage();
         getHelper();
-        try {
-            XMPPManager.addBaseManager(new AndroidBaseManager(databaseHelper.getDao()));
-            XMPPManager.setRosterListener(new AndroidRosterListener());
-        } catch (SQLException e) {
-        }
 
+        try {
+            BaseManagerMessages baseManagerMessages = new AndroidBaseManagerMessages(databaseHelperMessages.getSimpleMessageDao(), getSharedPreferences(SHARED_PREFERENCES, 0));
+            baseManagerMessages.setBaseManagerMessagesConfiguration(new BaseManagerMessagesConfiguration(30));
+            XMPPManager.addBaseManagerMessage(baseManagerMessages);
+            XMPPManager.addBaseManager(new AndroidBaseManager(databaseHelper.getUserDao()));
+        } catch (SQLException e) {
+            logger.info(e.toString());
+        }
+        XMPPManager.setRosterListener(new AndroidRosterListener());
         LoggedUser user;
         if (savedInstanceState != null && (user = getLoggedUserOrNull(savedInstanceState)) != null) {
             logger.info(format("user %s recognized from bundle", user.getID()));
@@ -70,10 +81,18 @@ public class MainActivity extends ActionBarActivity
         }
     }
 
-    private void getHelper() {
+    private DatabaseHelper getHelper() {
         if (databaseHelper == null) {
-            databaseHelper = OpenHelperManager.getHelper(this, DatabaseHelper.class);
+            databaseHelper = DatabaseHelper.getHelper(this);
         }
+        return databaseHelper;
+    }
+
+    private DatabaseHelperMessages getHelperMessage(){
+        if(databaseHelperMessages == null){
+            databaseHelperMessages = DatabaseHelperMessages.getHelper(this);
+        }
+        return databaseHelperMessages;
     }
 
     private LoggedUser getLoggedUserOrNull(Bundle savedInstanceState) {
@@ -89,8 +108,13 @@ public class MainActivity extends ActionBarActivity
     protected void onDestroy() {
         super.onDestroy();
         if (databaseHelper != null) {
-            OpenHelperManager.releaseHelper();
+            databaseHelper.close();
             databaseHelper = null;
+        }
+
+        if (databaseHelperMessages != null) {
+            databaseHelperMessages.close();
+            databaseHelperMessages = null;
         }
     }
 
