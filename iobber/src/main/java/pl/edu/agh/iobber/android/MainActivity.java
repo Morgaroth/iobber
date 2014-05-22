@@ -12,8 +12,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import com.j256.ormlite.android.apptools.OpenHelperManager;
-
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -28,7 +26,6 @@ import pl.edu.agh.iobber.android.baseUsers.DatabaseHelper;
 import pl.edu.agh.iobber.android.contacts.ContactsFragment;
 import pl.edu.agh.iobber.android.conversation.ConversationFragment;
 import pl.edu.agh.iobber.android.navigation.NavigationDrawerFragment;
-import pl.edu.agh.iobber.core.AndroidRosterListener;
 import pl.edu.agh.iobber.core.BaseManagerMessages;
 import pl.edu.agh.iobber.core.BaseManagerMessagesConfiguration;
 import pl.edu.agh.iobber.core.Contact;
