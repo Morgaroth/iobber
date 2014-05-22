@@ -3,10 +3,10 @@ package pl.edu.agh.iobber.android.contacts;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,13 +27,27 @@ public class ContactsFragment extends ListFragment {
     }
 
     public static ContactsFragment newInstance() {
-        ContactsFragment result = new ContactsFragment();
-        return result;
+        return new ContactsFragment();
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        getListView().setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+
+            @Override
+            public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
+                                           int arg2, long arg3) {
+                Toast.makeText(getActivity(), format("On long click listener, arg2=%d, arg3=%d", arg2, arg3), Toast.LENGTH_LONG).show();
+                return true;
+            }
+        });
+
     }
 
     @Override
@@ -50,12 +64,6 @@ public class ContactsFragment extends ListFragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
-        return super.onCreateView(inflater, container, savedInstanceState);
-    }
-
-    @Override
     public void onDetach() {
         super.onDetach();
         mListener = null;
@@ -68,6 +76,7 @@ public class ContactsFragment extends ListFragment {
             mListener.onContactClicked(adapter.getItem(position));
         }
     }
+
 
     public void setContactsList(List<Contact> contactsList) {
         this.contactsList = contactsList;
@@ -87,5 +96,4 @@ public class ContactsFragment extends ListFragment {
         public void onContactClicked(Contact item);
 
     }
-
 }
