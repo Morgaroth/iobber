@@ -4,7 +4,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
@@ -17,6 +19,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Stack;
 import java.util.logging.Logger;
 
 import pl.edu.agh.iobber.R;
@@ -58,6 +61,7 @@ public class MainActivity extends ActionBarActivity
     private DatabaseHelperMessages databaseHelperMessages = null;
     private FindingFragment findingFragment;
     private FindingResultsFragment findingResultsFragment;
+    private Stack<Fragment> fragmentsStack = new Stack<Fragment>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -196,36 +200,21 @@ public class MainActivity extends ActionBarActivity
                 return true;
             case R.id.action_find:
                 logger.info("clicked fin action button");
-                FragmentManager fragmentManager = getSupportFragmentManager();
-                fragmentManager.beginTransaction()
-                        .replace(R.id.container, getFinderFragment())
-                        .commit();
+                loadFragment(getOrCreateFindingFragment());
                 return true;
-//            case R.id.action_new_conversation:
-//                logger.info("clicked new conversation action button");
-//                startNewConversation();
-//                return true;
+            case R.id.action_show_contacts:
+                loadContactsFragment();
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    private FindingFragment getFinderFragment() {
+    private FindingFragment getOrCreateFindingFragment() {
         if (findingFragment == null) {
             findingFragment = new FindingFragment();
         }
         return findingFragment;
     }
-
-//    private void startNewConversation() {
-//        InputDialog(this, "z kim?", new InputDialogC.OnClickListener() {
-//            @Override
-//            public void onClick(DialogInterface dialogInterface, int i, EditText input) {
-//                String oponent = input.getText().toString();
-//                logger.info("user typed oponent " + oponent);
-//                startConversationWith(oponent);
-//            }
-//        }).show();
-//    }
 
     private void updateNavigationDrawer() {
         navigationDrawerFragment.updateConversationsList(new LinkedList<Conversation>(loggedUser.getActiveConversations()));
@@ -236,12 +225,34 @@ public class MainActivity extends ActionBarActivity
         loadConversation(title);
     }
 
+    private void loadFragmentLoss(Fragment fragment) {
+        loadFragmentLoss(fragment, true);
+    }
+
+    private void loadFragmentLoss(Fragment fragment, boolean queue) {
+        prepareLoadingFragment(fragment, queue).commitAllowingStateLoss();
+    }
+
+    private void loadFragment(Fragment fragment) {
+        loadFragment(fragment, true);
+    }
+
+    private void loadFragment(Fragment fragment, boolean queue) {
+        prepareLoadingFragment(fragment, queue).commit();
+    }
+
+    private FragmentTransaction prepareLoadingFragment(Fragment fragment, boolean queue) {
+        if (queue) {
+            fragmentsStack.push(fragment);
+        }
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        return fragmentManager.beginTransaction()
+                .replace(R.id.container, fragment);
+    }
+
     private void loadConversation(String title) {
         ConversationFragment conversation = getConversationOrNew(title);
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction()
-                .replace(R.id.container, conversation)
-                .commit();
+        loadFragment(conversation);
         contactsLoaded = false;
         logger.info(format("conversation %s loaded", conversation));
     }
@@ -250,10 +261,7 @@ public class MainActivity extends ActionBarActivity
         if (contactsFragment == null) {
             contactsFragment = ContactsFragment.newInstance();
         }
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction()
-                .replace(R.id.container, contactsFragment)
-                .commitAllowingStateLoss();
+        loadFragmentLoss(contactsFragment);
         Handler handler = new Handler(Looper.getMainLooper());
         logger.info("logger setted");
         handler.postDelayed(new Runnable() {
@@ -265,7 +273,6 @@ public class MainActivity extends ActionBarActivity
         contactsLoaded = true;
         logger.info("contacts loaded");
     }
-
 
     private ConversationFragment getConversationOrNew(String title) {
         if (!conversationsCache.containsKey(title)) {
@@ -288,24 +295,20 @@ public class MainActivity extends ActionBarActivity
 
     @Override
     public void onBackPressed() {
-        if (contactsLoaded) {
-            super.onBackPressed();
-        } else {
-            loadContactsFragment();
+        if (!fragmentsStack.isEmpty()) {
+            logger.info(fragmentsStack.toString());
+            loadFragment(fragmentsStack.pop(), false);
         }
     }
 
     @Override
     public void onResult(List<SimpleMessage> messages) {
-        FindingResultsFragment fragment = getOrCreateFindingFragment();
+        FindingResultsFragment fragment = getOrCreateFindingResultsFragment();
         fragment.setUp(messages);
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction()
-                .replace(R.id.container, fragment)
-                .commit();
+        loadFragment(fragment);
     }
 
-    private FindingResultsFragment getOrCreateFindingFragment() {
+    private FindingResultsFragment getOrCreateFindingResultsFragment() {
         if (findingResultsFragment == null) {
             findingResultsFragment = new FindingResultsFragment();
         }
