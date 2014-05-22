@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -27,6 +28,7 @@ import pl.edu.agh.iobber.android.baseUsers.AndroidBaseManager;
 import pl.edu.agh.iobber.android.baseUsers.DatabaseHelper;
 import pl.edu.agh.iobber.android.contacts.ContactsFragment;
 import pl.edu.agh.iobber.android.conversation.ConversationFragment;
+import pl.edu.agh.iobber.android.finding.FindingFragment;
 import pl.edu.agh.iobber.android.navigation.NavigationDrawerFragment;
 import pl.edu.agh.iobber.core.AndroidRosterListener;
 import pl.edu.agh.iobber.core.BaseManagerMessages;
@@ -54,6 +56,7 @@ public class MainActivity extends ActionBarActivity
     private boolean contactsLoaded = false;
     private DatabaseHelper databaseHelper = null;
     private DatabaseHelperMessages databaseHelperMessages = null;
+    private FindingFragment findingFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,8 +91,8 @@ public class MainActivity extends ActionBarActivity
         return databaseHelper;
     }
 
-    private DatabaseHelperMessages getHelperMessage(){
-        if(databaseHelperMessages == null){
+    private DatabaseHelperMessages getHelperMessage() {
+        if (databaseHelperMessages == null) {
             databaseHelperMessages = DatabaseHelperMessages.getHelper(this);
         }
         return databaseHelperMessages;
@@ -190,8 +193,12 @@ public class MainActivity extends ActionBarActivity
             case R.id.action_settings:
                 logger.info("clicked settings action button");
                 return true;
-            case R.id.action_example:
-                logger.info("clicked example action button");
+            case R.id.action_find:
+                logger.info("clicked fin action button");
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                fragmentManager.beginTransaction()
+                        .replace(R.id.container, getFinderFragment())
+                        .commit();
                 return true;
 //            case R.id.action_new_conversation:
 //                logger.info("clicked new conversation action button");
@@ -199,6 +206,13 @@ public class MainActivity extends ActionBarActivity
 //                return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private FindingFragment getFinderFragment() {
+        if (findingFragment == null) {
+            findingFragment = new FindingFragment();
+        }
+        return findingFragment;
     }
 
 //    private void startNewConversation() {
