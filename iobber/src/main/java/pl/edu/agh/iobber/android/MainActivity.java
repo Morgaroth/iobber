@@ -45,8 +45,9 @@ import static java.lang.String.format;
 import static pl.edu.agh.iobber.android.LoginActivity.LOGIN_REQUEST;
 
 public class MainActivity extends ActionBarActivity
-        implements NavigationDrawerFragment.NavigationDrawerCallbacks, ContactsFragment.InteractionListener, FindingFragment.OnResultListener {
-
+        implements NavigationDrawerFragment.NavigationDrawerCallbacks,
+        ContactsFragment.InteractionListener, FindingFragment.OnResultListener,
+        FindingResultsFragment.OnResultLister {
 
     public static final String LOGGED_USER = "LOGGED_USER";
     public static final String SHARED_PREFERENCES = "MESSAGES_PREFS";
@@ -315,5 +316,11 @@ public class MainActivity extends ActionBarActivity
             findingResultsFragment = new FindingResultsFragment();
         }
         return findingResultsFragment;
+    }
+
+    @Override
+    public void selectedMessage(SimpleMessage msg) {
+        logger.info("scroll to msg " + msg);
+        Toast.makeText(this, "Scroll to " + msg.getBody(), Toast.LENGTH_LONG).show();
     }
 }

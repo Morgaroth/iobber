@@ -108,12 +108,6 @@ public class SimpleMessage {
     }
 
     @Override
-    public String toString() {
-        return new StringBuilder().append(from).append(" ").append(to).append(" ").append(date).append(" ").append(body)
-                .append(" ").append(isReaded).toString();
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (o == null) return false;
         if (!(o instanceof SimpleMessage)) return false;
@@ -137,5 +131,16 @@ public class SimpleMessage {
 
     public boolean isStub() {
         return false;
+    }
+
+    @Override
+    public String toString() {
+        return "SimpleMessage{" +
+                "id=" + id +
+                ", from='" + from + '\'' +
+                ", to='" + to + '\'' +
+                ", date='" + date + '\'' +
+                ", body='" + body + '\'' +
+                '}';
     }
 }

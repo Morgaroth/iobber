@@ -52,5 +52,10 @@ public class FindingResultsFragment extends ListFragment {
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
         logger.info(format("clicked ListView %s, View %s, position %d, id %d", l, v, position, id));
+        ((OnResultLister) getActivity()).selectedMessage(messages.get(position).msgExact);
+    }
+
+    public interface OnResultLister {
+        void selectedMessage(SimpleMessage msg);
     }
 }
