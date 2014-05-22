@@ -72,8 +72,10 @@ public class FindingFragment extends Fragment implements View.OnClickListener {
         phaseEdit = (EditText) inflated.findViewById(R.id.finding_fragment_layout_phase_edit);
         authorEdit = (EditText) inflated.findViewById(R.id.finding_fragment_layout_author_edit);
 
+
         return inflated;
     }
+
 
     @Override
     public void onClick(View view) {
@@ -111,6 +113,4 @@ public class FindingFragment extends Fragment implements View.OnClickListener {
     public interface OnResultListener {
         void onResult(List<SimpleMessage> messages);
     }
-
-
 }
