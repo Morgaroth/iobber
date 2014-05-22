@@ -6,6 +6,7 @@ import org.jivesoftware.smack.Roster;
 import org.jivesoftware.smack.RosterEntry;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
+import org.jivesoftware.smack.packet.IQ;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -16,6 +17,7 @@ import java.util.logging.Logger;
 import pl.edu.agh.iobber.core.exceptions.IObberException;
 
 public class LoggedUser implements ContactsResolver {
+    private final BaseManagerMessages baseManagerMessages;
     private Logger logger = Logger.getLogger(LoggedUser.class.getSimpleName());
 
     private HashMap<String, Conversation> activeConversations = new HashMap<String, Conversation>();
@@ -27,10 +29,11 @@ public class LoggedUser implements ContactsResolver {
     //private List<Contact> contacts = Arrays.asList(new Contact("mietek"), new Contact("wacek"), new Contact("leonidas"), new Contact("Hania"));
     private List<Contact> contacts;
 
-    public LoggedUser(User user, String ID, XMPPConnection xmppConnection) {
+    public LoggedUser(User user, String ID, XMPPConnection xmppConnection, BaseManagerMessages baseManagerMessages) {
         this.user = user;
         this.ID = ID;
         this.xmppConnection = xmppConnection;
+        this.baseManagerMessages = baseManagerMessages;
         logged = false;
         contacts = new ArrayList<Contact>();
         getConctactFromServer();
@@ -87,12 +90,17 @@ public class LoggedUser implements ContactsResolver {
             return activeConversations.get(contact.getName());
         } else {
             ChatManager chatManager = xmppConnection.getChatManager();
-            Conversation conversation = Conversation.createWithoutChat(contact.getName(), this);
+            Conversation conversation = Conversation.createWithoutChat(contact.getName(), this, baseManagerMessages);
             Chat chat = chatManager.createChat(contact.getRosterEntry().getUser(), conversation.getInternalListener());
+            baseManagerMessages.registerContactYouAreChattingWith(contact);
             conversation.setUpChat(chat);
             activeConversations.put(contact.getName(), conversation);
             return conversation;
         }
+    }
+
+    public void stopConversation(Contact contact){
+        baseManagerMessages.unregisterContactYouAreChattingWith(contact);
     }
 
     public List<Contact> getContacts() {

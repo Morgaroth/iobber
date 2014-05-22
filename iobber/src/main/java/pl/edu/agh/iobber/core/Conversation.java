@@ -9,12 +9,15 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Logger;
 
+import pl.edu.agh.iobber.core.exceptions.CannotFindMessagesInTheDatabaseException;
+import pl.edu.agh.iobber.core.exceptions.CannotUpdateTheDatabasseException;
 import pl.edu.agh.iobber.core.exceptions.IObberException;
 
 import static java.lang.String.format;
 
 public class Conversation implements MsgListener {
     private final LoggedUser owner;
+    private BaseManagerMessages baseManagerMessages;
     private String title;
     private Logger logger = Logger.getLogger(Conversation.class.getSimpleName());
     private String name;
@@ -23,9 +26,10 @@ public class Conversation implements MsgListener {
     private List<MsgListener> listeners = new LinkedList<MsgListener>();
     private InternalMessageListenerAdapter internalListener;
 
-    public Conversation(String title, LoggedUser owner) {
+    public Conversation(String title, LoggedUser owner, BaseManagerMessages baseManagerMessages) {
         this.title = title;
         this.owner = owner;
+        this.baseManagerMessages = baseManagerMessages;
         name = title;
         internalListener = new InternalMessageListenerAdapter(this, owner);
     }
@@ -39,8 +43,8 @@ public class Conversation implements MsgListener {
         chat.addMessageListener(internalListener);
     }
 
-    public static Conversation createWithoutChat(String title, LoggedUser owner) {
-        Conversation conversation = new Conversation(title, owner);
+    public static Conversation createWithoutChat(String title, LoggedUser owner, BaseManagerMessages baseManagerMessages) {
+        Conversation conversation = new Conversation(title, owner, baseManagerMessages);
         return conversation;
     }
 
@@ -66,6 +70,14 @@ public class Conversation implements MsgListener {
     public void sendMessage(String text) throws IObberException, XMPPException {
         chat.sendMessage(text);
         logger.info(format("wiadomość \"%s\" wysłano", text));
+
+        //test
+        try {
+            List<SimpleMessage> list = baseManagerMessages.findMessages(name, null, null, "dupa");
+            logger.info("Finded messages " + list);
+        } catch (CannotFindMessagesInTheDatabaseException e) {
+            e.printStackTrace();
+        }
     }
 
     public void addMessageListener(MsgListener msgListener) {
@@ -86,10 +98,10 @@ public class Conversation implements MsgListener {
         return name != null ? name.hashCode() : 0;
     }
 
-
     public Msg getLastMessage() {
-        // TODO implement
-        return new MsgImpl("stub last Message", new ContactStub());
+        SimpleMessage simpleMessage = baseManagerMessages.getUnreadedLastMessageForPerson(title);
+        MsgImpl msg = new MsgImpl(simpleMessage.getBody(), new SimpleContact(simpleMessage.getFrom()));
+        return msg;
     }
 
     public String getSimpleName() {
@@ -101,8 +113,7 @@ public class Conversation implements MsgListener {
     }
 
     public int unreadedMessages() {
-        // TODO implement
-        return 7;
+        return baseManagerMessages.countUnreadedMessagesForPerson(title);
     }
 
     @Override
@@ -120,24 +131,4 @@ public class Conversation implements MsgListener {
     // TODO kolejka wiadomosci + listener
     // TODO dekorator na Chat z smackapi, może coś więcej będziemy dokładać, jakieś metody chociaż, nie wiem, zobaczy sie
 
-    private class InternalMessageListenerAdapter implements MessageListener {
-
-        private final MsgListener obj;
-        private final ContactsResolver resolver;
-        private Logger logger = Logger.getLogger(MessageListenerAdapter.class.getSimpleName());
-
-        public InternalMessageListenerAdapter(MsgListener obj, ContactsResolver resolver) {
-            this.obj = obj;
-            this.resolver = resolver;
-        }
-
-        @Override
-        public void processMessage(Chat chat, Message message) {
-            logger.info(format("on message %s in chat %s from %s", message.toString(), chat.toString(), chat.getParticipant()));
-            if (obj != null) {
-                // TODO implement stub
-                obj.onMessage(new MessageAdapter(message, resolver.resolve(chat.getParticipant())));
-            }
-        }
-    }
 }
