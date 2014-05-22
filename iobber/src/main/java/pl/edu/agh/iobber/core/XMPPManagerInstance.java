@@ -44,11 +44,7 @@ public class XMPPManagerInstance {
         loggedUsers = new HashMap<String, LoggedUser>();
     }
 
-    public void setBaseManager(BaseManager baseManager){
-        this.baseManager = baseManager;
-    }
-
-    public List<User> getAvailableUsersToConnect(){
+    public List<User> getAvailableUsersToConnect() {
         try {
             return baseManager.getAvailableUsers();
         } catch (CannotGetUsersFromDatabase cannotGetUsersFromDatabase) {
@@ -56,14 +52,14 @@ public class XMPPManagerInstance {
         return null;
     }
 
-    private void putNewUserToBase(User user){
+    private void putNewUserToBase(User user) {
         try {
             baseManager.addNewUser(user);
         } catch (CannotAddNewUserToDatebase cannotAddNewUserToDatebase) {
         }
     }
 
-    public void removeUserFromBase(User user){
+    public void removeUserFromBase(User user) {
         try {
             baseManager.deleteUser(user);
         } catch (CannotDeleteUserFromDatabaseException e) {
@@ -135,7 +131,6 @@ public class XMPPManagerInstance {
         });
     }
 
-
     private XMPPConnection connectToServer(User user) throws InternetNotFoundException, ServerNotFoundException, NotValidLoginException, NotConnectedToTheServerException {
 //        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 //        NetworkInfo niWIFI = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
@@ -148,7 +143,7 @@ public class XMPPManagerInstance {
         boolean authenticationSASL = user.isSslEnabled();
         String login = user.getLogin();
 
-        if(login.contains("@") == false){
+        if (login.contains("@") == false) {
             throw new NotValidLoginException();
         }
         String service = login.split("@")[1];
@@ -162,17 +157,17 @@ public class XMPPManagerInstance {
             return temporaryXmppConnection;
         } catch (XMPPException e) {
             throw new ServerNotFoundException(e);
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new NotConnectedToTheServerException();
         }
     }
 
-    public void setRosterListener(RosterListener rosterListener){
+    public void setRosterListener(RosterListener rosterListener) {
         this.temporaryRosterListener = rosterListener;
     }
 
-    private void addRosterListener(XMPPConnection xmppConnection){
-        if(temporaryRosterListener != null){
+    private void addRosterListener(XMPPConnection xmppConnection) {
+        if (temporaryRosterListener != null) {
             Roster roster = xmppConnection.getRoster();
             roster.addRosterListener(temporaryRosterListener);
         }
@@ -185,9 +180,9 @@ public class XMPPManagerInstance {
         String password = user.getPassword();
 
         String name;
-        if(user.getLogin().contains("@")) {
+        if (user.getLogin().contains("@")) {
             name = user.getLogin().split("@")[0];
-        }else{
+        } else {
             name = user.getLogin();
         }
         try {
@@ -197,8 +192,8 @@ public class XMPPManagerInstance {
         }
     }
 
-    public LoggedUser getLoggedUser(String ID){
-        if(loggedUsers.containsKey(ID) == false){
+    public LoggedUser getLoggedUser(String ID) {
+        if (loggedUsers.containsKey(ID) == false) {
             return null;
         }
         return loggedUsers.get(ID);
@@ -206,5 +201,13 @@ public class XMPPManagerInstance {
 
     public void addBaseManagerMessage(BaseManagerMessages baseManagerMessages) {
         this.baseManagerMessages = baseManagerMessages;
+    }
+
+    public BaseManagerMessages getBaseManager() {
+        return baseManagerMessages;
+    }
+
+    public void setBaseManager(BaseManager baseManager) {
+        this.baseManager = baseManager;
     }
 }

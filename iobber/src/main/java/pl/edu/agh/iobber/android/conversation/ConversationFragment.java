@@ -32,10 +32,13 @@ import static java.lang.String.format;
 
 public class ConversationFragment extends ListFragment implements MsgListener {
 
-    private final Conversation delegate;
+    private Conversation delegate;
     private Logger logger = Logger.getLogger(ConversationFragment.class.getSimpleName());
     private List<Msg> messages = new LinkedList<Msg>();
     private ConversationListAdapter adapter;
+
+    public ConversationFragment() {
+    }
 
     public ConversationFragment(Conversation conversation) {
         this.delegate = conversation;

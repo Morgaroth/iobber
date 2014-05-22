@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -13,11 +12,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import com.j256.ormlite.android.apptools.OpenHelperManager;
-
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -29,6 +27,7 @@ import pl.edu.agh.iobber.android.baseUsers.DatabaseHelper;
 import pl.edu.agh.iobber.android.contacts.ContactsFragment;
 import pl.edu.agh.iobber.android.conversation.ConversationFragment;
 import pl.edu.agh.iobber.android.finding.FindingFragment;
+import pl.edu.agh.iobber.android.finding.FindingResultsFragment;
 import pl.edu.agh.iobber.android.navigation.NavigationDrawerFragment;
 import pl.edu.agh.iobber.core.AndroidRosterListener;
 import pl.edu.agh.iobber.core.BaseManagerMessages;
@@ -36,13 +35,14 @@ import pl.edu.agh.iobber.core.BaseManagerMessagesConfiguration;
 import pl.edu.agh.iobber.core.Contact;
 import pl.edu.agh.iobber.core.Conversation;
 import pl.edu.agh.iobber.core.LoggedUser;
+import pl.edu.agh.iobber.core.SimpleMessage;
 import pl.edu.agh.iobber.core.XMPPManager;
 
 import static java.lang.String.format;
 import static pl.edu.agh.iobber.android.LoginActivity.LOGIN_REQUEST;
 
 public class MainActivity extends ActionBarActivity
-        implements NavigationDrawerFragment.NavigationDrawerCallbacks, ContactsFragment.InteractionListener {
+        implements NavigationDrawerFragment.NavigationDrawerCallbacks, ContactsFragment.InteractionListener, FindingFragment.OnResultListener {
 
 
     public static final String LOGGED_USER = "LOGGED_USER";
@@ -57,6 +57,7 @@ public class MainActivity extends ActionBarActivity
     private DatabaseHelper databaseHelper = null;
     private DatabaseHelperMessages databaseHelperMessages = null;
     private FindingFragment findingFragment;
+    private FindingResultsFragment findingResultsFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -292,5 +293,22 @@ public class MainActivity extends ActionBarActivity
         } else {
             loadContactsFragment();
         }
+    }
+
+    @Override
+    public void onResult(List<SimpleMessage> messages) {
+        FindingResultsFragment fragment = getOrCreateFindingFragment();
+        fragment.setUp(messages);
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction()
+                .replace(R.id.container, fragment)
+                .commit();
+    }
+
+    private FindingResultsFragment getOrCreateFindingFragment() {
+        if (findingResultsFragment == null) {
+            findingResultsFragment = new FindingResultsFragment();
+        }
+        return findingResultsFragment;
     }
 }
