@@ -295,9 +295,11 @@ public class MainActivity extends ActionBarActivity
 
     @Override
     public void onBackPressed() {
-        if (!fragmentsStack.isEmpty()) {
+        if (fragmentsStack.size() > 1) {
             logger.info(fragmentsStack.toString());
             loadFragment(fragmentsStack.pop(), false);
+        } else {
+            logger.info("stack has only one position");
         }
     }
 

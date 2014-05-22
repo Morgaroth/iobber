@@ -1,11 +1,11 @@
 package pl.edu.agh.iobber.android.finding;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -14,17 +14,25 @@ import java.util.logging.Logger;
 import pl.edu.agh.iobber.R;
 import pl.edu.agh.iobber.core.SimpleMessage;
 
+import static java.lang.String.format;
+
 public class FindingResultsFragment extends ListFragment {
 
     private Logger logger = Logger.getLogger(FindingResultsFragment.class.getSimpleName());
-    private List<SimpleMessage> messages = new LinkedList<SimpleMessage>();
-    private FindingListAdapter adapter;
+    private List<Tuple> messages = new LinkedList<Tuple>();
 
     public FindingResultsFragment() {
     }
 
     public void setUp(List<SimpleMessage> messages) {
-        this.messages = messages;
+        if (messages.size() % 3 != 0) {
+            throw new RuntimeException("nie trójkami");
+        }
+        this.messages.clear();
+        int count = messages.size() / 3;
+        for (int i = 0; i < count; ++i) {
+            this.messages.add(new Tuple(messages.get(i), messages.get(i + 1), messages.get(i + 2)));
+        }
     }
 
     @Override
@@ -38,16 +46,11 @@ public class FindingResultsFragment extends ListFragment {
     }
 
     private FindingListAdapter getOrCreateListAdapter() {
-        if (adapter == null) {
-            adapter = new FindingListAdapter(getActivity(), messages);
-        }
-        return adapter;
+        return new FindingListAdapter(getActivity(), messages);
     }
 
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-//        ((MainActivity) activity).onSectionAttached(
-//                getArguments().getInt(ARG_SECTION_NUMBER));
+    public void onListItemClick(ListView l, View v, int position, long id) {
+        logger.info(format("clicked ListView %s, View %s, position %d, id %d", l, v, position, id));
     }
 }
