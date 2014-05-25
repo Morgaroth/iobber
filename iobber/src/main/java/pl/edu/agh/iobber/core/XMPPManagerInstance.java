@@ -1,5 +1,7 @@
 package pl.edu.agh.iobber.core;
 
+import android.os.AsyncTask;
+
 import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.PacketListener;
 import org.jivesoftware.smack.Roster;
@@ -151,13 +153,29 @@ public class XMPPManagerInstance {
         ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(server, port, service);
         connectionConfiguration.setReconnectionAllowed(true);
         connectionConfiguration.setSASLAuthenticationEnabled(authenticationSASL);
-        XMPPConnection temporaryXmppConnection = new XMPPConnection(connectionConfiguration);
+        final XMPPConnection temporaryXmppConnection = new XMPPConnection(connectionConfiguration);
         try {
-            temporaryXmppConnection.connect();
+            XMPPException execute = new AsyncTask<Void, Void, XMPPException>() {
+                @Override
+                protected XMPPException doInBackground(Void... voids) {
+                    try {
+                        temporaryXmppConnection.connect();
+                        return null;
+                    } catch (XMPPException e) {
+                        e.printStackTrace();
+                        return e;
+                    }
+                }
+            }.execute().get();
+            if (execute != null) {
+                throw execute;
+            }
             return temporaryXmppConnection;
         } catch (XMPPException e) {
+            logger.severe("cached xmppexception " + e.getMessage() + " | " + e.toString());
             throw new ServerNotFoundException(e);
         } catch (Exception e) {
+            logger.severe("cached exception " + e.getMessage() + " | " + e.toString());
             throw new NotConnectedToTheServerException();
         }
     }
