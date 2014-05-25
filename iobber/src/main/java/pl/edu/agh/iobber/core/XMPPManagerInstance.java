@@ -1,6 +1,7 @@
 package pl.edu.agh.iobber.core;
 
 import android.os.AsyncTask;
+import android.os.Build;
 
 import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.PacketListener;
@@ -153,6 +154,25 @@ public class XMPPManagerInstance {
         ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(server, port, service);
         connectionConfiguration.setReconnectionAllowed(true);
         connectionConfiguration.setSASLAuthenticationEnabled(authenticationSASL);
+        connectionConfiguration.setSelfSignedCertificateEnabled(false);
+
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+//            logger.severe("====================================================================");
+//            connectionConfiguration.setTruststoreType("AndroidCAStore");
+//            connectionConfiguration.setTruststorePassword(null);
+//            connectionConfiguration.setTruststorePath(null);
+//
+//        } else {
+//            logger.severe("-------------------------------------------------------------------");
+//            connectionConfiguration.setTruststoreType("BKS");
+//            String path = System.getProperty("javax.net.ssl.trustStore");
+//            if (path == null)
+//                path = System.getProperty("java.home") + File.separator + "etc"
+//                        + File.separator + "security" + File.separator
+//                        + "cacerts.bks";
+//            connectionConfiguration.setTruststorePath(path);
+//        }
+
         final XMPPConnection temporaryXmppConnection = new XMPPConnection(connectionConfiguration);
         try {
             XMPPException execute = new AsyncTask<Void, Void, XMPPException>() {
@@ -206,6 +226,7 @@ public class XMPPManagerInstance {
         try {
             xmppConnection.login(name, password);
         } catch (XMPPException e) {
+            logger.severe(e.getMessage() + "|" + e.getLocalizedMessage() + "|" + e);
             throw new UserNotExistsException(e);
         }
     }

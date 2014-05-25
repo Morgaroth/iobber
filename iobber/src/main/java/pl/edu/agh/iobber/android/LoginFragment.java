@@ -97,6 +97,12 @@ public class LoginFragment extends Fragment {
         EditText serverField = ((EditText) inflate.findViewById(R.id.login_server_edit));
         String server = serverField.getText().toString();
 
+        if (nick == null || nick.equals("")) {
+            Toast.makeText(getActivity(), Nick_cannot_be_empty, LENGTH_SHORT).show();
+            return;
+        }
+
+        // to remove in production
         if (nick.equals("m")) {
             nick = "mjaje@student.agh.edu.pl";
             password = "Funatyha";
@@ -104,9 +110,6 @@ public class LoginFragment extends Fragment {
             nick = "klusek@student.agh.edu.pl";
             password = "fotidep";
         }
-
-        CheckBox sASLAuth = (CheckBox) inflate.findViewById(R.id.SASLAuth);
-        boolean sASLAuthChecked = sASLAuth.isChecked();
 
         if (nick == null || nick.equals("")) {
             Toast.makeText(getActivity(), Nick_cannot_be_empty, LENGTH_SHORT).show();
@@ -118,6 +121,10 @@ public class LoginFragment extends Fragment {
             Toast.makeText(getActivity(), Server_cannot_be_empty, LENGTH_SHORT).show();
             return;
         }
+
+
+        CheckBox sASLAuth = (CheckBox) inflate.findViewById(R.id.SASLAuth);
+        boolean sASLAuthChecked = sASLAuth.isChecked();
 
         User user = new User().login(nick).password(password).port("5222").serverAddress(server).sslEnable(sASLAuthChecked);
 
