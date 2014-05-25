@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -67,6 +68,7 @@ public class MainActivity extends ActionBarActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        PreferenceManager.setDefaultValues(this, R.xml.settings, true);
         getHelperMessage();
         getHelper();
 
@@ -198,6 +200,7 @@ public class MainActivity extends ActionBarActivity
         switch (item.getItemId()) {
             case R.id.action_settings:
                 logger.info("clicked settings action button");
+                startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
                 return true;
             case R.id.action_find:
                 logger.info("clicked fin action button");

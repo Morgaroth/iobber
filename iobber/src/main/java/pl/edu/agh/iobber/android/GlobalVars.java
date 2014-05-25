@@ -1,9 +1,11 @@
 package pl.edu.agh.iobber.android;
 
 import android.app.Application;
+import android.preference.PreferenceManager;
 
 import java.util.logging.Logger;
 
+import pl.edu.agh.iobber.R;
 import pl.edu.agh.iobber.core.XMPPManager;
 import pl.edu.agh.iobber.core.XMPPManagerInstance;
 

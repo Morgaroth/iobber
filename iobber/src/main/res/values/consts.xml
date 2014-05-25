@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="PREF_BODY_FONT_SIZE">PREF_BODY_FONT_SIZE</string>
+    <string name="PREF_DATE_FONT_SIZE">PREF_DATE_FONT_SIZE</string>
+    <string name="PREF_AUTHOR_FONT_SIZE">PREF_AUTHOR_FONT_SIZE</string>
+</resources>

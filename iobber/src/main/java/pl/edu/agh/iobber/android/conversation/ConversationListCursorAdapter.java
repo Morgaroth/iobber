@@ -33,8 +33,6 @@ public class ConversationListCursorAdapter extends CursorAdapter {
         int position = cursor.getPosition();
         logger.info("bindView at position " + position);
 
-        context.getApplicationContext().getSharedPreferences()
-
         String body = null;
         String authorName = null;
         String msgDate = null;

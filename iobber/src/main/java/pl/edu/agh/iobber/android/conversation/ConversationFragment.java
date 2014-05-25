@@ -36,7 +36,7 @@ public class ConversationFragment extends ListFragment implements MsgListener {
     private Conversation delegate;
     private Logger logger = Logger.getLogger(ConversationFragment.class.getSimpleName());
     private List<Msg> messages = new LinkedList<Msg>();
-    private ConversationListCursorAdapter adapter;
+    private ConversationListAdapter adapter;
     private Cursor cursor;
 
     public ConversationFragment() {
@@ -161,11 +161,12 @@ public class ConversationFragment extends ListFragment implements MsgListener {
             @Override
             public void run() {
                 if (adapter == null) {
-                    adapter = new ConversationListCursorAdapter(getActivity(), null, true);
+                    adapter = new ConversationListAdapter(getActivity());
                     view.setTranscriptMode(AbsListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
                     ConversationFragment.this.setListAdapter(adapter);
                     logger.info("adapter for conversation created");
                 }
+                adapter.updateContent(messages);
                 logger.info("content updated ");
             }
         });
