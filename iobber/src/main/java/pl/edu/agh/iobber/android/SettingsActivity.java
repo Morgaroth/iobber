@@ -32,7 +32,7 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
     @Override
     public boolean onPreferenceChange(Preference pref, Object o) {
         updatePreference(pref, o);
-        return false;
+        return true;
     }
 
     private void updatePreference(Preference pref, Object value) {

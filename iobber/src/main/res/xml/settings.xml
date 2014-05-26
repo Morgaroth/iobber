@@ -8,6 +8,7 @@
         android:defaultValue="22"
         android:inputType="number"
         android:key="@string/PREF_BODY_FONT_SIZE"
+        android:numeric="integer"
         android:summary="@string/set_font_size_in_body_field"
         android:title="@string/body_font_size" />
 
@@ -16,6 +17,7 @@
         android:defaultValue="18"
         android:inputType="number"
         android:key="@string/PREF_AUTHOR_FONT_SIZE"
+        android:numeric="decimal"
         android:summary="@string/set_font_size_in_author_field"
         android:title="@string/author_fotn_size" />
 
@@ -24,6 +26,7 @@
         android:defaultValue="18"
         android:inputType="number"
         android:key="@string/PREF_DATE_FONT_SIZE"
+        android:numeric="decimal"
         android:summary="@string/set_font_size_in_date_field"
         android:title="@string/date_font_size" />
 </PreferenceScreen>

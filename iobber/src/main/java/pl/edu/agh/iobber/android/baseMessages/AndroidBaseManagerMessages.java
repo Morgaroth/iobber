@@ -152,11 +152,11 @@ public class AndroidBaseManagerMessages implements BaseManagerMessages {
     }
 
     @Override
-    public SimpleMessage getUnreadedLastMessageForPerson(String title) {
+    public SimpleMessage getUnreadedLastMessageForPerson(String recipient) {
         SimpleMessage sim;
         synchronized (obj) {
-            if (messagesForConversations.get(title).size() > 0) {
-                sim = messagesForConversations.get(title).get(0);
+            if (messagesForConversations.get(recipient).size() > 0) {
+                sim = messagesForConversations.get(recipient).get(0);
             } else {
                 sim = new SimpleMessage().to(" ").isReaded(true).from(" ").date("01-01-70 00:00").body(" ");
             }

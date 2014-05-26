@@ -105,7 +105,7 @@ public class LoginFragment extends Fragment {
         // to remove in production
         if (nick.equals("m")) {
             nick = "mjaje@student.agh.edu.pl";
-            password = "Funatyha";
+            password = "ferihame";
         } else if (nick.equals("a")) {
             nick = "klusek@student.agh.edu.pl";
             password = "fotidep";
