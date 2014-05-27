@@ -117,7 +117,7 @@ public class Conversation implements MsgListener {
     }
 
     @Override
-    public void onMessage(Msg message) {
+    public void onMessage(SimpleMessage message) {
         // TODO wsadzenie new MessageAdapter(message, )
         for (MsgListener listener : listeners) {
             listener.onMessage(message);

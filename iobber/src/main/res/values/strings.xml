@@ -46,5 +46,6 @@
     <string name="date_font_size">Date font size</string>
     <string name="author_fotn_size">Author font size</string>
     <string name="settings">settings</string>
+    <string name="spinner">spinner</string>
 
 </resources>

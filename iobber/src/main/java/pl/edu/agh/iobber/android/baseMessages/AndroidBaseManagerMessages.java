@@ -202,7 +202,7 @@ public class AndroidBaseManagerMessages implements BaseManagerMessages {
     }
 
     @Override
-    public List<SimpleMessage> getLaterMessagesForPerson(Contact contact, int number, SimpleMessage messageToBeExtractedFrom) throws CannotGetMessagesFromTheDatabaseException {
+    public List<SimpleMessage> getEarlierMessagesForPerson(Contact contact, int number, SimpleMessage messageToBeExtractedFrom) throws CannotGetMessagesFromTheDatabaseException {
         //search id of the message
         long id;
         QueryBuilder<SimpleMessage, Integer> queryBuilder = simpleMessageDao.queryBuilder();
@@ -237,7 +237,7 @@ public class AndroidBaseManagerMessages implements BaseManagerMessages {
     }
 
     @Override
-    public List<SimpleMessage> getEarlierMessagesForPerson(Contact contact, int number, SimpleMessage messageToBeExtractedFrom) throws CannotGetMessagesFromTheDatabaseException {
+    public List<SimpleMessage> getLaterMessagesForPerson(Contact contact, int number, SimpleMessage messageToBeExtractedFrom) throws CannotGetMessagesFromTheDatabaseException {
         //search id of the message
         long id;
         QueryBuilder<SimpleMessage, Integer> queryBuilder = simpleMessageDao.queryBuilder();

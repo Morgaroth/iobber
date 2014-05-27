@@ -27,6 +27,9 @@ import pl.edu.agh.iobber.core.Conversation;
 import pl.edu.agh.iobber.core.Msg;
 import pl.edu.agh.iobber.core.MsgImpl;
 import pl.edu.agh.iobber.core.MsgListener;
+import pl.edu.agh.iobber.core.SimpleMessage;
+import pl.edu.agh.iobber.core.XMPPManager;
+import pl.edu.agh.iobber.core.exceptions.CannotGetMessagesFromTheDatabaseException;
 import pl.edu.agh.iobber.core.exceptions.IObberException;
 
 import static java.lang.String.format;
@@ -35,8 +38,8 @@ public class ConversationFragment extends ListFragment implements MsgListener {
 
     private Conversation delegate;
     private Logger logger = Logger.getLogger(ConversationFragment.class.getSimpleName());
-    private List<Msg> messages = new LinkedList<Msg>();
-    private ConversationListAdapter adapter;
+    private List<SimpleMessage> messages = new LinkedList<SimpleMessage>();
+    private EndlessAdapter adapter;
     private Cursor cursor;
 
     public ConversationFragment() {
@@ -117,7 +120,8 @@ public class ConversationFragment extends ListFragment implements MsgListener {
      */
     @Deprecated
     private void addMsgToListDirectly(String text) {
-        onMessage(new MsgImpl(text, new Contact()));
+        //onMessage(new MsgImpl(text, new Contact()));
+        updateAdapter();
     }
 
     @Override
@@ -129,12 +133,12 @@ public class ConversationFragment extends ListFragment implements MsgListener {
 
 
     @Override
-    public void onMessage(Msg message) {
+    public void onMessage(SimpleMessage message) {
         addNewMessageToList(message);
         logger.info(message + " received");
     }
 
-    private void addNewMessageToList(Msg message) {
+    private void addNewMessageToList(SimpleMessage message) {
         messages.add(message);
         updateAdapter();
     }
@@ -157,19 +161,24 @@ public class ConversationFragment extends ListFragment implements MsgListener {
 //    }
     private void updateAdapter() {
         final ListView view = getListView();
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if (adapter == null) {
-                    adapter = new ConversationListAdapter(getActivity());
-                    view.setTranscriptMode(AbsListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
-                    ConversationFragment.this.setListAdapter(adapter);
-                    logger.info("adapter for conversation created");
+        if (adapter == null) {
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (adapter == null) {
+                        try {
+                            XMPPManager.instance.getBaseManager().getLastNMessagesForPerson(delegate.getName(), 20);
+                            adapter = new EndlessAdapter(getActivity(), messages, true, false);
+                            view.setTranscriptMode(AbsListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
+                            ConversationFragment.this.setListAdapter(adapter);
+                            logger.info("adapter for conversation created");
+                        } catch (CannotGetMessagesFromTheDatabaseException e) {
+                            e.printStackTrace();
+                        }
+                    }
                 }
-                adapter.updateContent(messages);
-                logger.info("content updated ");
-            }
-        });
+            });
+        }
     }
 
 
