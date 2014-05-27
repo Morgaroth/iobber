@@ -26,7 +26,7 @@ public class GlobalVars extends Application {
 
             @Override
             protected Void doInBackground(Void... voids) {
-                SystemClock.sleep(100);
+                SystemClock.sleep(50);
                 SmackAndroid.init(GlobalVars.this);
                 logger.info("Smack android initialized");
                 return null;
