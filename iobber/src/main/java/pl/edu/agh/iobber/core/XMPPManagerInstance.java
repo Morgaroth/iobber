@@ -3,6 +3,7 @@ package pl.edu.agh.iobber.core;
 import android.os.AsyncTask;
 import android.os.Build;
 
+import org.apache.harmony.javax.security.sasl.SaslException;
 import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.PacketListener;
 import org.jivesoftware.smack.Roster;
@@ -13,6 +14,8 @@ import org.jivesoftware.smack.filter.PacketFilter;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Packet;
 
+import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -88,7 +91,7 @@ public class XMPPManagerInstance {
             @Override
             public void processPacket(Packet packet) {
                 logger.info("New message received");
-                String body = packet.toXML().split("<body>")[1].split("</body>")[0];
+                String body = packet.toXML().toString().split("<body>")[1].split("</body>")[0];
                 SimpleMessage simpleMessage = new SimpleMessage().from(packet.getFrom().split("/")[0]).to(packet.getTo().split("/")[0]).isReaded(false)
                         .date(new SimpleDateFormat().format(Calendar.getInstance().getTime())).body(body);
                 logger.info("New message received " + simpleMessage);
@@ -113,7 +116,7 @@ public class XMPPManagerInstance {
             @Override
             public void processPacket(Packet packet) {
                 logger.info("New message sent");
-                String body = packet.toXML().split("<body>")[1].split("</body>")[0];
+                String body = packet.toXML().toString().split("<body>")[1].split("</body>")[0];
                 SimpleMessage simpleMessage = new SimpleMessage().from(packet.getFrom().split("/")[0]).to(packet.getTo().split("/")[0]).isReaded(true)
                         .date(new SimpleDateFormat().format(Calendar.getInstance().getTime())).body(body);
                 logger.info("New message sent " + simpleMessage);
@@ -153,25 +156,25 @@ public class XMPPManagerInstance {
 
         ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(server, port, service);
         connectionConfiguration.setReconnectionAllowed(true);
-        connectionConfiguration.setSASLAuthenticationEnabled(authenticationSASL);
-        connectionConfiguration.setSelfSignedCertificateEnabled(false);
+        //connectionConfiguration.setSASLAuthenticationEnabled(authenticationSASL);
+        //connectionConfiguration.setSelfSignedCertificateEnabled(false);
 
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-//            logger.severe("====================================================================");
-//            connectionConfiguration.setTruststoreType("AndroidCAStore");
-//            connectionConfiguration.setTruststorePassword(null);
-//            connectionConfiguration.setTruststorePath(null);
-//
-//        } else {
-//            logger.severe("-------------------------------------------------------------------");
-//            connectionConfiguration.setTruststoreType("BKS");
-//            String path = System.getProperty("javax.net.ssl.trustStore");
-//            if (path == null)
-//                path = System.getProperty("java.home") + File.separator + "etc"
-//                        + File.separator + "security" + File.separator
-//                        + "cacerts.bks";
-//            connectionConfiguration.setTruststorePath(path);
-//        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+            logger.severe("====================================================================");
+            connectionConfiguration.setTruststoreType("AndroidCAStore");
+            connectionConfiguration.setTruststorePassword(null);
+            connectionConfiguration.setTruststorePath(null);
+
+        } else {
+            logger.severe("-------------------------------------------------------------------");
+            connectionConfiguration.setTruststoreType("BKS");
+            String path = System.getProperty("javax.net.ssl.trustStore");
+            if (path == null)
+                path = System.getProperty("java.home") + File.separator + "etc"
+                        + File.separator + "security" + File.separator
+                        + "cacerts.bks";
+            connectionConfiguration.setTruststorePath(path);
+        }
 
         final XMPPConnection temporaryXmppConnection = new XMPPConnection(connectionConfiguration);
         try {
