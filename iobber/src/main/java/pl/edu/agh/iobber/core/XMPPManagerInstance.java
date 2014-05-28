@@ -1,5 +1,9 @@
 package pl.edu.agh.iobber.core;
 
+import android.os.AsyncTask;
+import android.os.Build;
+
+import org.apache.harmony.javax.security.sasl.SaslException;
 import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.PacketListener;
 import org.jivesoftware.smack.Roster;
@@ -10,6 +14,8 @@ import org.jivesoftware.smack.filter.PacketFilter;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Packet;
 
+import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -44,11 +50,7 @@ public class XMPPManagerInstance {
         loggedUsers = new HashMap<String, LoggedUser>();
     }
 
-    public void setBaseManager(BaseManager baseManager){
-        this.baseManager = baseManager;
-    }
-
-    public List<User> getAvailableUsersToConnect(){
+    public List<User> getAvailableUsersToConnect() {
         try {
             return baseManager.getAvailableUsers();
         } catch (CannotGetUsersFromDatabase cannotGetUsersFromDatabase) {
@@ -56,14 +58,14 @@ public class XMPPManagerInstance {
         return null;
     }
 
-    private void putNewUserToBase(User user){
+    private void putNewUserToBase(User user) {
         try {
             baseManager.addNewUser(user);
         } catch (CannotAddNewUserToDatebase cannotAddNewUserToDatebase) {
         }
     }
 
-    public void removeUserFromBase(User user){
+    public void removeUserFromBase(User user) {
         try {
             baseManager.deleteUser(user);
         } catch (CannotDeleteUserFromDatabaseException e) {
@@ -89,7 +91,7 @@ public class XMPPManagerInstance {
             @Override
             public void processPacket(Packet packet) {
                 logger.info("New message received");
-                String body = packet.toXML().split("<body>")[1].split("</body>")[0];
+                String body = packet.toXML().toString().split("<body>")[1].split("</body>")[0];
                 SimpleMessage simpleMessage = new SimpleMessage().from(packet.getFrom().split("/")[0]).to(packet.getTo().split("/")[0]).isReaded(false)
                         .date(new SimpleDateFormat().format(Calendar.getInstance().getTime())).body(body);
                 logger.info("New message received " + simpleMessage);
@@ -114,7 +116,7 @@ public class XMPPManagerInstance {
             @Override
             public void processPacket(Packet packet) {
                 logger.info("New message sent");
-                String body = packet.toXML().split("<body>")[1].split("</body>")[0];
+                String body = packet.toXML().toString().split("<body>")[1].split("</body>")[0];
                 SimpleMessage simpleMessage = new SimpleMessage().from(packet.getFrom().split("/")[0]).to(packet.getTo().split("/")[0]).isReaded(true)
                         .date(new SimpleDateFormat().format(Calendar.getInstance().getTime())).body(body);
                 logger.info("New message sent " + simpleMessage);
@@ -135,7 +137,6 @@ public class XMPPManagerInstance {
         });
     }
 
-
     private XMPPConnection connectToServer(User user) throws InternetNotFoundException, ServerNotFoundException, NotValidLoginException, NotConnectedToTheServerException {
 //        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 //        NetworkInfo niWIFI = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
@@ -148,31 +149,66 @@ public class XMPPManagerInstance {
         boolean authenticationSASL = user.isSslEnabled();
         String login = user.getLogin();
 
-        if(login.contains("@") == false){
+        if (login.contains("@") == false) {
             throw new NotValidLoginException();
         }
         String service = login.split("@")[1];
 
         ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(server, port, service);
         connectionConfiguration.setReconnectionAllowed(true);
-        connectionConfiguration.setSASLAuthenticationEnabled(authenticationSASL);
-        XMPPConnection temporaryXmppConnection = new XMPPConnection(connectionConfiguration);
+        //connectionConfiguration.setSASLAuthenticationEnabled(authenticationSASL);
+        //connectionConfiguration.setSelfSignedCertificateEnabled(false);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+            logger.severe("====================================================================");
+            connectionConfiguration.setTruststoreType("AndroidCAStore");
+            connectionConfiguration.setTruststorePassword(null);
+            connectionConfiguration.setTruststorePath(null);
+
+        } else {
+            logger.severe("-------------------------------------------------------------------");
+            connectionConfiguration.setTruststoreType("BKS");
+            String path = System.getProperty("javax.net.ssl.trustStore");
+            if (path == null)
+                path = System.getProperty("java.home") + File.separator + "etc"
+                        + File.separator + "security" + File.separator
+                        + "cacerts.bks";
+            connectionConfiguration.setTruststorePath(path);
+        }
+
+        final XMPPConnection temporaryXmppConnection = new XMPPConnection(connectionConfiguration);
         try {
-            temporaryXmppConnection.connect();
+            XMPPException execute = new AsyncTask<Void, Void, XMPPException>() {
+                @Override
+                protected XMPPException doInBackground(Void... voids) {
+                    try {
+                        temporaryXmppConnection.connect();
+                        return null;
+                    } catch (XMPPException e) {
+                        e.printStackTrace();
+                        return e;
+                    }
+                }
+            }.execute().get();
+            if (execute != null) {
+                throw execute;
+            }
             return temporaryXmppConnection;
         } catch (XMPPException e) {
+            logger.severe("cached xmppexception " + e.getMessage() + " | " + e.toString());
             throw new ServerNotFoundException(e);
-        } catch (Exception e){
+        } catch (Exception e) {
+            logger.severe("cached exception " + e.getMessage() + " | " + e.toString());
             throw new NotConnectedToTheServerException();
         }
     }
 
-    public void setRosterListener(RosterListener rosterListener){
+    public void setRosterListener(RosterListener rosterListener) {
         this.temporaryRosterListener = rosterListener;
     }
 
-    private void addRosterListener(XMPPConnection xmppConnection){
-        if(temporaryRosterListener != null){
+    private void addRosterListener(XMPPConnection xmppConnection) {
+        if (temporaryRosterListener != null) {
             Roster roster = xmppConnection.getRoster();
             roster.addRosterListener(temporaryRosterListener);
         }
@@ -185,20 +221,21 @@ public class XMPPManagerInstance {
         String password = user.getPassword();
 
         String name;
-        if(user.getLogin().contains("@")) {
+        if (user.getLogin().contains("@")) {
             name = user.getLogin().split("@")[0];
-        }else{
+        } else {
             name = user.getLogin();
         }
         try {
             xmppConnection.login(name, password);
         } catch (XMPPException e) {
+            logger.severe(e.getMessage() + "|" + e.getLocalizedMessage() + "|" + e);
             throw new UserNotExistsException(e);
         }
     }
 
-    public LoggedUser getLoggedUser(String ID){
-        if(loggedUsers.containsKey(ID) == false){
+    public LoggedUser getLoggedUser(String ID) {
+        if (loggedUsers.containsKey(ID) == false) {
             return null;
         }
         return loggedUsers.get(ID);
@@ -206,5 +243,13 @@ public class XMPPManagerInstance {
 
     public void addBaseManagerMessage(BaseManagerMessages baseManagerMessages) {
         this.baseManagerMessages = baseManagerMessages;
+    }
+
+    public BaseManagerMessages getBaseManager() {
+        return baseManagerMessages;
+    }
+
+    public void setBaseManager(BaseManager baseManager) {
+        this.baseManager = baseManager;
     }
 }

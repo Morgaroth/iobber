@@ -4,8 +4,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
@@ -16,7 +18,9 @@ import android.widget.Toast;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
+import java.util.Stack;
 import java.util.logging.Logger;
 
 import pl.edu.agh.iobber.R;
@@ -27,6 +31,7 @@ import pl.edu.agh.iobber.android.baseUsers.DatabaseHelper;
 import pl.edu.agh.iobber.android.contacts.ContactsFragment;
 import pl.edu.agh.iobber.android.conversation.ConversationFragment;
 import pl.edu.agh.iobber.android.finding.FindingFragment;
+import pl.edu.agh.iobber.android.finding.FindingResultsFragment;
 import pl.edu.agh.iobber.android.navigation.NavigationDrawerFragment;
 import pl.edu.agh.iobber.core.AndroidRosterListener;
 import pl.edu.agh.iobber.core.BaseManagerMessages;
@@ -34,14 +39,16 @@ import pl.edu.agh.iobber.core.BaseManagerMessagesConfiguration;
 import pl.edu.agh.iobber.core.Contact;
 import pl.edu.agh.iobber.core.Conversation;
 import pl.edu.agh.iobber.core.LoggedUser;
+import pl.edu.agh.iobber.core.SimpleMessage;
 import pl.edu.agh.iobber.core.XMPPManager;
 
 import static java.lang.String.format;
 import static pl.edu.agh.iobber.android.LoginActivity.LOGIN_REQUEST;
 
 public class MainActivity extends ActionBarActivity
-        implements NavigationDrawerFragment.NavigationDrawerCallbacks, ContactsFragment.InteractionListener {
-
+        implements NavigationDrawerFragment.NavigationDrawerCallbacks,
+        ContactsFragment.InteractionListener, FindingFragment.OnResultListener,
+        FindingResultsFragment.OnResultLister {
 
     public static final String LOGGED_USER = "LOGGED_USER";
     public static final String SHARED_PREFERENCES = "MESSAGES_PREFS";
@@ -55,10 +62,13 @@ public class MainActivity extends ActionBarActivity
     private DatabaseHelper databaseHelper = null;
     private DatabaseHelperMessages databaseHelperMessages = null;
     private FindingFragment findingFragment;
+    private FindingResultsFragment findingResultsFragment;
+    private Stack<Fragment> fragmentsStack = new Stack<Fragment>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        PreferenceManager.setDefaultValues(this, R.xml.settings, true);
         getHelperMessage();
         getHelper();
 
@@ -190,39 +200,25 @@ public class MainActivity extends ActionBarActivity
         switch (item.getItemId()) {
             case R.id.action_settings:
                 logger.info("clicked settings action button");
+                startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
                 return true;
             case R.id.action_find:
                 logger.info("clicked fin action button");
-                FragmentManager fragmentManager = getSupportFragmentManager();
-                fragmentManager.beginTransaction()
-                        .replace(R.id.container, getFinderFragment())
-                        .commit();
+                loadFragment(getOrCreateFindingFragment());
                 return true;
-//            case R.id.action_new_conversation:
-//                logger.info("clicked new conversation action button");
-//                startNewConversation();
-//                return true;
+            case R.id.action_show_contacts:
+                loadContactsFragment();
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    private FindingFragment getFinderFragment() {
+    private FindingFragment getOrCreateFindingFragment() {
         if (findingFragment == null) {
             findingFragment = new FindingFragment();
         }
         return findingFragment;
     }
-
-//    private void startNewConversation() {
-//        InputDialog(this, "z kim?", new InputDialogC.OnClickListener() {
-//            @Override
-//            public void onClick(DialogInterface dialogInterface, int i, EditText input) {
-//                String oponent = input.getText().toString();
-//                logger.info("user typed oponent " + oponent);
-//                startConversationWith(oponent);
-//            }
-//        }).show();
-//    }
 
     private void updateNavigationDrawer() {
         navigationDrawerFragment.updateConversationsList(new LinkedList<Conversation>(loggedUser.getActiveConversations()));
@@ -233,12 +229,34 @@ public class MainActivity extends ActionBarActivity
         loadConversation(title);
     }
 
+    private void loadFragmentLoss(Fragment fragment) {
+        loadFragmentLoss(fragment, true);
+    }
+
+    private void loadFragmentLoss(Fragment fragment, boolean queue) {
+        prepareLoadingFragment(fragment, queue).commitAllowingStateLoss();
+    }
+
+    private void loadFragment(Fragment fragment) {
+        loadFragment(fragment, true);
+    }
+
+    private void loadFragment(Fragment fragment, boolean queue) {
+        prepareLoadingFragment(fragment, queue).commit();
+    }
+
+    private FragmentTransaction prepareLoadingFragment(Fragment fragment, boolean queue) {
+        if (queue) {
+            fragmentsStack.push(fragment);
+        }
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        return fragmentManager.beginTransaction()
+                .replace(R.id.container, fragment);
+    }
+
     private void loadConversation(String title) {
         ConversationFragment conversation = getConversationOrNew(title);
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction()
-                .replace(R.id.container, conversation)
-                .commit();
+        loadFragment(conversation);
         contactsLoaded = false;
         logger.info(format("conversation %s loaded", conversation));
     }
@@ -247,10 +265,7 @@ public class MainActivity extends ActionBarActivity
         if (contactsFragment == null) {
             contactsFragment = ContactsFragment.newInstance();
         }
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction()
-                .replace(R.id.container, contactsFragment)
-                .commitAllowingStateLoss();
+        loadFragmentLoss(contactsFragment);
         Handler handler = new Handler(Looper.getMainLooper());
         logger.info("logger setted");
         handler.postDelayed(new Runnable() {
@@ -262,7 +277,6 @@ public class MainActivity extends ActionBarActivity
         contactsLoaded = true;
         logger.info("contacts loaded");
     }
-
 
     private ConversationFragment getConversationOrNew(String title) {
         if (!conversationsCache.containsKey(title)) {
@@ -285,10 +299,31 @@ public class MainActivity extends ActionBarActivity
 
     @Override
     public void onBackPressed() {
-        if (contactsLoaded) {
-            super.onBackPressed();
+        if (fragmentsStack.size() > 1) {
+            logger.info(fragmentsStack.toString());
+            loadFragment(fragmentsStack.pop(), false);
         } else {
-            loadContactsFragment();
+            logger.info("stack has only one position");
         }
+    }
+
+    @Override
+    public void onResult(List<SimpleMessage> messages) {
+        FindingResultsFragment fragment = getOrCreateFindingResultsFragment();
+        fragment.setUp(messages);
+        loadFragment(fragment);
+    }
+
+    private FindingResultsFragment getOrCreateFindingResultsFragment() {
+        if (findingResultsFragment == null) {
+            findingResultsFragment = new FindingResultsFragment();
+        }
+        return findingResultsFragment;
+    }
+
+    @Override
+    public void selectedMessage(SimpleMessage msg) {
+        logger.info("scroll to msg " + msg);
+        Toast.makeText(this, "Scroll to " + msg.getBody(), Toast.LENGTH_LONG).show();
     }
 }

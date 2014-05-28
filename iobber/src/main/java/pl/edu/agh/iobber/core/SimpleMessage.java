@@ -31,72 +31,116 @@ public class SimpleMessage {
     @DatabaseField(useGetSet = true, columnName = ISREADED_FIELD_MESSAGE)
     private boolean isReaded;
 
-    public SimpleMessage(){}
+    public SimpleMessage() {
+    }
 
-    public SimpleMessage from(String from){
+    public SimpleMessage from(String from) {
         this.from = from;
         return this;
     }
 
-    public SimpleMessage to(String to){
+    public SimpleMessage to(String to) {
         this.to = to;
         return this;
     }
 
-    public SimpleMessage date(String date){
-        this.date= date;
+    public SimpleMessage date(String date) {
+        this.date = date;
         return this;
     }
 
-    public SimpleMessage body(String body){
+    public SimpleMessage body(String body) {
         this.body = body;
         return this;
     }
 
-    public SimpleMessage isReaded(boolean isReaded){
+    public SimpleMessage isReaded(boolean isReaded) {
         this.isReaded = isReaded;
         return this;
     }
 
-    public void setId(Integer id){this.id = id;}
-    public void setFrom(String from){this.from = from;}
-    public void setTo(String to){this.to = to;}
-    public void setDate(String date){this.date = date;}
-    public void setBody(String body){this.body = body;}
-    public void setIsReaded(boolean isReaded){this.isReaded = isReaded;}
+    public Integer getId() {
+        return id;
+    }
 
-    public Integer getId(){return id;}
-    public String getFrom(){return from;}
-    public String getTo(){return to;}
-    public String getDate(){return date;}
-    public String getBody(){return body;}
-    public boolean getIsReaded(){return isReaded;}
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
-    @Override
-    public String toString(){
-        return new StringBuilder().append(from).append(" ").append(to).append(" ").append(date).append(" ").append(body)
-                .append(" ").append(isReaded).toString();
+    public String getFrom() {
+        return from;
+    }
+
+    public void setFrom(String from) {
+        this.from = from;
+    }
+
+    public String getTo() {
+        return to;
+    }
+
+    public void setTo(String to) {
+        this.to = to;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
+
+    public String getBody() {
+        return body;
+    }
+
+    public void setBody(String body) {
+        this.body = body;
+    }
+
+    public boolean getIsReaded() {
+        return isReaded;
+    }
+
+    public void setIsReaded(boolean isReaded) {
+        this.isReaded = isReaded;
     }
 
     @Override
-    public boolean equals(Object o){
-        if(o == null)                return false;
-        if(!(o instanceof SimpleMessage)) return false;
+    public boolean equals(Object o) {
+        if (o == null) return false;
+        if (!(o instanceof SimpleMessage)) return false;
 
         SimpleMessage other = (SimpleMessage) o;
         return this.getFrom().equals(other.getFrom()) &&
-               this.getIsReaded() == other.getIsReaded() &&
-               this.getBody().equals(other.getBody()) &&
-               this.getTo().equals(other.getTo()) &&
-               this.getDate().equals(other.getDate());
+                this.getIsReaded() == other.getIsReaded() &&
+                this.getBody().equals(other.getBody()) &&
+                this.getTo().equals(other.getTo()) &&
+                this.getDate().equals(other.getDate());
     }
 
     @Override
-    public int hashCode(){
+    public int hashCode() {
         return getFrom().hashCode() * 3 +
                 getBody().hashCode() * 7 +
                 getTo().hashCode() * 11 +
                 getDate().hashCode() * 13 +
                 (getIsReaded() == true ? 1 : 2);
+    }
+
+    public boolean isStub() {
+        return false;
+    }
+
+    @Override
+    public String toString() {
+        return "SimpleMessage{" +
+                "id=" + id +
+                ", from='" + from + '\'' +
+                ", to='" + to + '\'' +
+                ", date='" + date + '\'' +
+                ", body='" + body + '\'' +
+                '}';
     }
 }

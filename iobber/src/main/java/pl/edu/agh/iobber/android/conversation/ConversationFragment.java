@@ -1,6 +1,7 @@
 package pl.edu.agh.iobber.android.conversation;
 
 import android.app.Activity;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.view.KeyEvent;
@@ -32,15 +33,18 @@ import static java.lang.String.format;
 
 public class ConversationFragment extends ListFragment implements MsgListener {
 
-    private final Conversation delegate;
+    private Conversation delegate;
     private Logger logger = Logger.getLogger(ConversationFragment.class.getSimpleName());
     private List<Msg> messages = new LinkedList<Msg>();
     private ConversationListAdapter adapter;
+    private Cursor cursor;
+
+    public ConversationFragment() {
+    }
 
     public ConversationFragment(Conversation conversation) {
         this.delegate = conversation;
     }
-
 
     public static ConversationFragment newInstance(Conversation chat) {
         return new ConversationFragment(chat);
@@ -52,6 +56,11 @@ public class ConversationFragment extends ListFragment implements MsgListener {
                 actionId == EditorInfo.IME_ACTION_SEND ||
                 event.getAction() == KeyEvent.ACTION_DOWN &&
                         event.getKeyCode() == KeyEvent.KEYCODE_ENTER;
+    }
+
+    public void setUp(Cursor c) {
+
+        cursor = c;
     }
 
     @Override
@@ -130,6 +139,22 @@ public class ConversationFragment extends ListFragment implements MsgListener {
         updateAdapter();
     }
 
+    //    private void updateAdapter() {
+//        final ListView view = getListView();
+//        getActivity().runOnUiThread(new Runnable() {
+//            @Override
+//            public void run() {
+//                if (adapter == null) {
+//                    adapter = new ConversationListAdapter(getActivity());
+//                    view.setTranscriptMode(AbsListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
+//                    ConversationFragment.this.setListAdapter(adapter);
+//                    logger.info("adapter for conversation created");
+//                }
+//                adapter.updateContent(messages);
+//                logger.info("content updated ");
+//            }
+//        });
+//    }
     private void updateAdapter() {
         final ListView view = getListView();
         getActivity().runOnUiThread(new Runnable() {
@@ -146,4 +171,11 @@ public class ConversationFragment extends ListFragment implements MsgListener {
             }
         });
     }
+
+
+    public void scrollToPosition(int pos) {
+        getListView().setSelection(pos);
+    }
+
+
 }

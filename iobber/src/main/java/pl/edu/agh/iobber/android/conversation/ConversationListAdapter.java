@@ -36,7 +36,7 @@ public class ConversationListAdapter extends CustomListAdapter<Msg> {
         date.setText(item.getDate());
 
 
-        return view;
+        return ConversationItemFormatter.format(getContext(), view);
     }
 
     @Override

@@ -2,10 +2,12 @@ package pl.edu.agh.iobber.android;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
@@ -95,16 +97,19 @@ public class LoginFragment extends Fragment {
         EditText serverField = ((EditText) inflate.findViewById(R.id.login_server_edit));
         String server = serverField.getText().toString();
 
+        if (nick == null || nick.equals("")) {
+            Toast.makeText(getActivity(), Nick_cannot_be_empty, LENGTH_SHORT).show();
+            return;
+        }
+
+        // to remove in production
         if (nick.equals("m")) {
             nick = "mjaje@student.agh.edu.pl";
-            password = "Funatyha";
+            password = "ferihame";
         } else if (nick.equals("a")) {
             nick = "klusek@student.agh.edu.pl";
             password = "fotidep";
         }
-
-        CheckBox sASLAuth = (CheckBox) inflate.findViewById(R.id.SASLAuth);
-        boolean sASLAuthChecked = sASLAuth.isChecked();
 
         if (nick == null || nick.equals("")) {
             Toast.makeText(getActivity(), Nick_cannot_be_empty, LENGTH_SHORT).show();
@@ -116,6 +121,10 @@ public class LoginFragment extends Fragment {
             Toast.makeText(getActivity(), Server_cannot_be_empty, LENGTH_SHORT).show();
             return;
         }
+
+
+        CheckBox sASLAuth = (CheckBox) inflate.findViewById(R.id.SASLAuth);
+        boolean sASLAuthChecked = sASLAuth.isChecked();
 
         User user = new User().login(nick).password(password).port("5222").serverAddress(server).sslEnable(sASLAuthChecked);
 
@@ -130,7 +139,7 @@ public class LoginFragment extends Fragment {
             Toast.makeText(getActivity(), R.string.User_not_exsist, Toast.LENGTH_LONG).show();
         } catch (NotConnectedToTheServerException e) {
             Toast.makeText(getActivity(), R.string.Server_not_connect, Toast.LENGTH_LONG).show();
-        } catch (NotValidLoginException e){
+        } catch (NotValidLoginException e) {
             Toast.makeText(getActivity(), R.string.Login_not_valid, Toast.LENGTH_LONG).show();
         }
     }
@@ -161,4 +170,5 @@ public class LoginFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         public void userLogged(String user);
     }
+
 }
