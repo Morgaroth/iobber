@@ -168,7 +168,7 @@ public class ConversationFragment extends ListFragment implements MsgListener {
                     if (adapter == null) {
                         try {
                             XMPPManager.instance.getBaseManager().getLastNMessagesForPerson(delegate.getName(), 20);
-                            adapter = new EndlessAdapter(getActivity(), messages, true, false);
+                            adapter = new EndlessAdapter<ConversationListAdapter>(getActivity(), new ConversationListAdapter(getActivity(), messages), true, false).setContact(delegate.getChat().getParticipant());
                             view.setTranscriptMode(AbsListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
                             ConversationFragment.this.setListAdapter(adapter);
                             logger.info("adapter for conversation created");

@@ -23,17 +23,18 @@ import pl.edu.agh.iobber.core.XMPPManager;
 import pl.edu.agh.iobber.core.XMPPManagerInstance;
 import pl.edu.agh.iobber.core.exceptions.CannotGetMessagesFromTheDatabaseException;
 
-public class EndlessAdapter extends com.commonsware.cwac.endless.EndslessAdapter {
+public class EndlessAdapter<T extends ListAdapter> extends com.commonsware.cwac.endless.EndslessAdapter {
 
     private static Logger logger = Logger.getLogger(EndlessAdapter.class.getSimpleName());
     private ListAdapter wrapped;
     private RotateAnimation rotate;
     private View pendingView;
-    private Contact contact;
+    private String contact;
     private List<SimpleMessage> earlierMessagesForPerson;
 
-    public EndlessAdapter(Context context, List<SimpleMessage> objects, boolean keepOnAppendingAtStart, boolean keepOnAppendingAtEnd) {
-        super(new ArrayAdapter<SimpleMessage>(context, R.layout.pending_item_layout, android.R.id.text1, objects), keepOnAppendingAtStart, keepOnAppendingAtEnd);
+    public EndlessAdapter(Context context, T wrapped, boolean keepOnAppendingAtStart, boolean keepOnAppendingAtEnd) {
+        super(wrapped, keepOnAppendingAtStart, keepOnAppendingAtEnd);
+        logger.info("endless adapter initialized with adapter with " + wrapped.getCount() + " items");
         rotate = new RotateAnimation(0f, 360f, Animation.RELATIVE_TO_SELF,
                 0.5f, Animation.RELATIVE_TO_SELF,
                 0.5f);
@@ -42,9 +43,15 @@ public class EndlessAdapter extends com.commonsware.cwac.endless.EndslessAdapter
         rotate.setRepeatCount(Animation.INFINITE);
     }
 
-    public EndlessAdapter setContact(Contact contact) {
+    public EndlessAdapter setContact(String contact) {
         this.contact = contact;
         return this;
+    }
+
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        logger.info("endless adapter returns view at position " + position);
+        return super.getView(position, convertView, parent);
     }
 
     @Override
@@ -64,15 +71,14 @@ public class EndlessAdapter extends com.commonsware.cwac.endless.EndslessAdapter
     @Override
     protected boolean cacheStartInBackground() throws Exception {
         logger.info("cacheStartInBackground");
-
-
         try {
             if (getWrappedAdapter().getCount() > 0) {
                 SimpleMessage item = (SimpleMessage) getWrappedAdapter().getItem(0);
-                earlierMessagesForPerson = XMPPManager.instance.getBaseManager().getEarlierMessagesForPerson(contact, 20, item);
+                //earlierMessagesForPerson = XMPPManager.instance.getBaseManager().getEarlierMessagesForPerson(contact, 20, item);
                 logger.info("query on more msgs returned " + earlierMessagesForPerson);
             } else {
-                earlierMessagesForPerson = XMPPManager.instance.getBaseManager().getLastNMessagesForPerson(contact.getName(), 20);
+                logger.severe("NULLPOINTER? " + contact);
+                earlierMessagesForPerson = XMPPManager.instance.getBaseManager().getLastNMessagesForPerson(contact, 20);
                 logger.info("query on last msgs returned " + earlierMessagesForPerson);
             }
             return earlierMessagesForPerson.size() != 0;

@@ -10,27 +10,32 @@ import java.util.logging.Logger;
 
 import pl.edu.agh.iobber.R;
 import pl.edu.agh.iobber.core.Msg;
+import pl.edu.agh.iobber.core.SimpleMessage;
 import pl.morgaroth.utils.CustomListAdapter;
 
-public class ConversationListAdapter extends CustomListAdapter<Msg> {
+import static java.lang.String.format;
+
+public class ConversationListAdapter extends CustomListAdapter<SimpleMessage> {
     private Logger logger = Logger.getLogger(ConversationListAdapter.class.getSimpleName());
 
     public ConversationListAdapter(Context context) {
         super(context, R.layout.conversation_fragment_list_item_layout);
     }
 
-    public ConversationListAdapter(Context context, List<Msg> objects) {
+    public ConversationListAdapter(Context context, List<SimpleMessage> objects) {
         super(context, R.layout.conversation_fragment_list_item_layout, objects);
     }
 
     @Override
-    public View fillItem(int position, View view, ViewGroup parent, Msg item) {
-        //logger.info(format("%s generate view for item %s", this, item));
+    public View fillItem(int position, View view, ViewGroup parent, SimpleMessage item) {
+        logger.info(format("%s generate view at index %d for item %s", this, position, item));
         TextView bodyView = (TextView) view.findViewById(R.id.conversation_fragment_list_item_body);
+
+        logger.severe("NULLPOINTER? bodyView=" + bodyView + " item=" + item);
         bodyView.setText(item.getBody());
 
         TextView author = (TextView) view.findViewById(R.id.conversation_fragment_list_item_author);
-        author.setText(item.getAuthor().getName());
+        author.setText(item.getFrom());
 
         TextView date = (TextView) view.findViewById(R.id.conversation_fragment_list_item_date);
         date.setText(item.getDate());
