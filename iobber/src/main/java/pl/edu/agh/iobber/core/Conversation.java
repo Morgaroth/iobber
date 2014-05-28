@@ -73,7 +73,7 @@ public class Conversation implements MsgListener {
 
         //test
         try {
-            List<SimpleMessage> list = baseManagerMessages.findMessages(name, null, null, "dupa");
+            List<SimpleMessage> list = baseManagerMessages.findMessages(name, null, null, "Ola");
             logger.info("Finded messages " + list);
         } catch (CannotFindMessagesInTheDatabaseException e) {
             e.printStackTrace();

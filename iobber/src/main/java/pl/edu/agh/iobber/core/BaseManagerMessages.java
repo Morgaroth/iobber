@@ -39,4 +39,10 @@ public interface BaseManagerMessages {
     void registerContactYouAreChattingWith(Contact contact);
 
     void unregisterContactYouAreChattingWith(Contact contact);
+
+    void registerMessageListenerForConversation(Contact contact, MessageListener messageListener);
+
+    void registerMessageListenerForNotConductedConversation(MessageListener messageListener);
+
+    void unregisterMessageListenerForConversation(Contact contact);
 }
