@@ -25,6 +25,7 @@ import pl.edu.agh.iobber.core.BaseManagerMessages;
 import pl.edu.agh.iobber.core.BaseManagerMessagesConfiguration;
 import pl.edu.agh.iobber.core.Contact;
 import pl.edu.agh.iobber.core.EmptySimpleMessage;
+import pl.edu.agh.iobber.core.MessageListener;
 import pl.edu.agh.iobber.core.SimpleMessage;
 import pl.edu.agh.iobber.core.exceptions.CannotFindMessagesInTheDatabaseException;
 import pl.edu.agh.iobber.core.exceptions.CannotGetMessagesFromTheDatabaseException;
@@ -45,6 +46,8 @@ public class AndroidBaseManagerMessages implements BaseManagerMessages {
     private BaseManagerMessagesConfiguration baseManagerMessagesConfiguration;
     private Object obj;
     private Map<String, List<SimpleMessage>> messagesForConversations;
+    private Map<String, MessageListener> messageListeners;
+    private MessageListener messageListenerForNotConductedConversation;
     private DateFormat sdff;
     private SharedPreferences sharedPreferences;
     private long timeLifeOfMesssagesInSeconds = 0;
@@ -54,6 +57,8 @@ public class AndroidBaseManagerMessages implements BaseManagerMessages {
         this.sharedPreferences = sharedPreferences;
         unreadedMessages = new LinkedList<SimpleMessage>();
         messagesForConversations = new HashMap<String, List<SimpleMessage>>();
+        messageListeners = new HashMap<String, MessageListener>();
+        messageListenerForNotConductedConversation = null;
         this.simpleMessageDao = dao;
         obj = new Object();
         setTimeLifeOfMessages();
@@ -88,12 +93,25 @@ public class AndroidBaseManagerMessages implements BaseManagerMessages {
             }
             String convertedTime = String.valueOf(date.getTime()/1000);
             sendMessageToProperQueue(simpleMessage);
+            notifyAboutNewMessage(simpleMessage);
             simpleMessage.setDate(convertedTime);
             simpleMessageDao.create(simpleMessage);
             logger.info("New message added to the database " + simpleMessage);
         } catch (SQLException e) {
             logger.info("Cannot add new message to the database");
             throw new CannotAddNewMessageToDatabase();
+        }
+    }
+
+    private void notifyAboutNewMessage(SimpleMessage simpleMessage) {
+        if(messageListeners.containsKey(simpleMessage.getFrom())){
+            messageListeners.get(simpleMessage.getFrom()).process(this, simpleMessage);
+            logger.info("Notified about new message for know person");
+        }else{
+            if(messageListenerForNotConductedConversation != null) {
+                messageListenerForNotConductedConversation.process(this, simpleMessage);
+                logger.info("Notified about new message for not know person");
+            }
         }
     }
 
@@ -306,14 +324,14 @@ public class AndroidBaseManagerMessages implements BaseManagerMessages {
             }
         } catch (SQLException e) {
             logger.info("Cannot find messages in the database");
-            throw new CannotFindMessagesInTheDatabaseException();
+            throw new CannotFindMessagesInTheDatabaseException(e);
         }
 
         try {
             list = queryBuilder.query();
         } catch (SQLException e) {
             logger.info("Cannot query the database with messages");
-            throw new CannotFindMessagesInTheDatabaseException();
+            throw new CannotFindMessagesInTheDatabaseException(e);
         }
 
         List<SimpleMessage> returnList = new ArrayList<SimpleMessage>();
@@ -395,5 +413,20 @@ public class AndroidBaseManagerMessages implements BaseManagerMessages {
     @Override
     public void unregisterContactYouAreChattingWith(Contact contact) {
         messagesForConversations.remove(contact.getName());
+    }
+
+    @Override
+    public void registerMessageListenerForConversation(Contact contact, MessageListener messageListener) {
+        messageListeners.put(contact.getName(), messageListener);
+    }
+
+    @Override
+    public void registerMessageListenerForNotConductedConversation(MessageListener messageListener) {
+        messageListenerForNotConductedConversation = messageListener;
+    }
+
+    @Override
+    public void unregisterMessageListenerForConversation(Contact contact) {
+        messageListeners.remove(contact.getName());
     }
 }
