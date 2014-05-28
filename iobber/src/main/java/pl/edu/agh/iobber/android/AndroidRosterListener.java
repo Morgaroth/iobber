@@ -1,4 +1,4 @@
-package pl.edu.agh.iobber.android;
+package pl.edu.agh.iobber.core;
 
 import org.jivesoftware.smack.RosterListener;
 import org.jivesoftware.smack.packet.Presence;
