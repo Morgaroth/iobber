@@ -73,14 +73,14 @@ public class Conversation implements MsgListener {
         logger.info(format("wiadomość \"%s\" wysłano", text));
 
         //test
-        try {
-            List<SimpleMessage> list = baseManagerMessages.getLastNMessagesForPerson("adeq9223@gmail.com", 1);
-            List<SimpleMessage> list2 = baseManagerMessages.getEarlierMessagesForPerson("adeq9223@gmail.com", 10, list.get(0));
-            logger.info("Finded messages " + list);
-            logger.info("Finded messages getEarliermessges " + list2);
-        } catch (CannotGetMessagesFromTheDatabaseException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            List<SimpleMessage> list = baseManagerMessages.getLastNMessagesForPerson("adeq9223@gmail.com", 1);
+//            List<SimpleMessage> list2 = baseManagerMessages.getEarlierMessagesForPerson("adeq9223@gmail.com", 10, list.get(0));
+//            logger.info("Finded messages " + list);
+//            logger.info("Finded messages getEarliermessges " + list2);
+//        } catch (CannotGetMessagesFromTheDatabaseException e) {
+//            e.printStackTrace();
+//        }
     }
 
     public void addMessageListener(MsgListener msgListener) {

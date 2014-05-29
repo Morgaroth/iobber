@@ -199,7 +199,7 @@ abstract public class EndslessAdapter extends AdapterWrapper {
      * "Pending" row when new data is loaded.
      */
     public int getItemViewType(int position) {
-        logger.info("endsless adapter -> returning view for position " + position);
+//        logger.info("endsless adapter -> returning view for position " + position);
         if (position == getWrappedAdapter().getCount() || position == 0) {
             return (IGNORE_ITEM_VIEW_TYPE);
         }
@@ -222,7 +222,7 @@ abstract public class EndslessAdapter extends AdapterWrapper {
 
     @Override
     public Object getItem(int position) {
-        logger.info("getItem at position " + position);
+//        logger.info("getItem at position " + position);
         if (position >= super.getCount()) {
             return (null);
         }
@@ -407,20 +407,21 @@ abstract public class EndslessAdapter extends AdapterWrapper {
 
         @Override
         protected Exception doInBackground(Void... params) {
-            Exception result = null;
-
             try {
                 tempKeep = isAtStart ? adapter.cacheStartInBackground() : adapter.cacheEndInBackground();
+                return null;
             } catch (Exception e) {
-                result = e;
+                return e;
             }
-
-            return (result);
         }
 
         @Override
         protected void onPostExecute(Exception e) {
-            adapter.setKeepOnAppendingAtEnd(tempKeep);
+            if (isAtStart) {
+                adapter.setKeepOnAppendingAtStart(tempKeep);
+            } else {
+                adapter.setKeepOnAppendingAtEnd(tempKeep);
+            }
 
             if (e == null) {
                 if (isAtStart) {
