@@ -247,7 +247,8 @@ public class AndroidBaseManagerMessages implements BaseManagerMessages {
         try {
             where2.or(where2.eq(SimpleMessage.TO_FIELD_MESSAGE, contact), where2.eq(SimpleMessage.FROM_FIELD_MESSAGE, contact)).and().
                     lt(SimpleMessage.ID_FIELD_MESSAGE, id);
-            list = queryBuilder2.offset(id).limit(number).query();//?? todo tu poprawic wyszukiwanie, nie wiecz czy w ogole potrzeben to offset
+            list = queryBuilder2.limit(number).orderBy(SimpleMessage.ID_FIELD_MESSAGE, false).query();
+            Collections.reverse(list);
         } catch (SQLException e) {
             logger.info("Cannot get messages from the database");
             throw new CannotGetMessagesFromTheDatabaseException();
@@ -282,7 +283,7 @@ public class AndroidBaseManagerMessages implements BaseManagerMessages {
         try {
             where2.or(where2.eq(SimpleMessage.TO_FIELD_MESSAGE, contact), where2.eq(SimpleMessage.FROM_FIELD_MESSAGE, contact)).and().
                     gt(SimpleMessage.ID_FIELD_MESSAGE, id);
-            list = queryBuilder2.offset(id).limit(number).query();
+            list = queryBuilder2.limit(number).query();
         } catch (SQLException e) {
             logger.info("Cannot get messages from the database");
             throw new CannotGetMessagesFromTheDatabaseException();

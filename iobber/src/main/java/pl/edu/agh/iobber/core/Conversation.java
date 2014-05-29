@@ -75,9 +75,11 @@ public class Conversation implements MsgListener {
         //test
         try {
             List<SimpleMessage> list = baseManagerMessages.getLastNMessagesForPerson("adeq9223@gmail.com", 1);
-            List<SimpleMessage> list2 = baseManagerMessages.getEarlierMessagesForPerson("adeq9223@gmail.com", 10, list.get(0));
+            List<SimpleMessage> list2 = baseManagerMessages.getEarlierMessagesForPerson("adeq9223@gmail.com", 2, list.get(0));
+            List<SimpleMessage> list3 = baseManagerMessages.getLaterMessagesForPerson("adeq9223@gmail.com", 2, list2.get(0));
             logger.info("Finded messages " + list);
             logger.info("Finded messages getEarliermessges " + list2);
+            logger.info("Finded messages getLatermessages "  + list3);
         } catch (CannotGetMessagesFromTheDatabaseException e) {
             e.printStackTrace();
         }
