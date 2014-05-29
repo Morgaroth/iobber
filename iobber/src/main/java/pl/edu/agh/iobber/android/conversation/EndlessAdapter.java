@@ -29,7 +29,7 @@ public class EndlessAdapter<T extends ListAdapter> extends com.commonsware.cwac.
     private ListAdapter wrapped;
     private RotateAnimation rotate;
     private View pendingView;
-    private String contact;
+    private String xmppUserID;
     private List<SimpleMessage> earlierMessagesForPerson;
 
     public EndlessAdapter(Context context, T wrapped, boolean keepOnAppendingAtStart, boolean keepOnAppendingAtEnd) {
@@ -43,8 +43,8 @@ public class EndlessAdapter<T extends ListAdapter> extends com.commonsware.cwac.
         rotate.setRepeatCount(Animation.INFINITE);
     }
 
-    public EndlessAdapter setContact(String contact) {
-        this.contact = contact;
+    public EndlessAdapter setContactID(String xmppUserID) {
+        this.xmppUserID = xmppUserID;
         return this;
     }
 
@@ -74,11 +74,11 @@ public class EndlessAdapter<T extends ListAdapter> extends com.commonsware.cwac.
         try {
             if (getWrappedAdapter().getCount() > 0) {
                 SimpleMessage item = (SimpleMessage) getWrappedAdapter().getItem(0);
-                //earlierMessagesForPerson = XMPPManager.instance.getBaseManager().getEarlierMessagesForPerson(contact, 20, item);
+//                earlierMessagesForPerson = XMPPManager.instance.getBaseManager().getEarlierMessagesForPerson(contact, 20, item);
                 logger.info("query on more msgs returned " + earlierMessagesForPerson);
             } else {
-                logger.severe("NULLPOINTER? " + contact);
-                earlierMessagesForPerson = XMPPManager.instance.getBaseManager().getLastNMessagesForPerson(contact, 20);
+                logger.severe("NULLPOINTER? " + xmppUserID);
+                earlierMessagesForPerson = XMPPManager.instance.getBaseManager().getLastNMessagesForPerson(xmppUserID, 20);
                 logger.info("query on last msgs returned " + earlierMessagesForPerson);
             }
             return earlierMessagesForPerson.size() != 0;

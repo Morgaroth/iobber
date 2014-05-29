@@ -28,6 +28,7 @@ import android.widget.ListAdapter;
 import com.commonsware.cwac.adapter.AdapterWrapper;
 
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.logging.Logger;
 
 /**
  * Adapter that assists another adapter in appearing
@@ -52,6 +53,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * that final call to appendInBackground().
  */
 abstract public class EndslessAdapter extends AdapterWrapper {
+    private static Logger logger = Logger.getLogger(EndslessAdapter.class.getSimpleName());
     private View pendingView = null;
     private AtomicBoolean keepOnAppendingAtStart = new AtomicBoolean(true);
     private AtomicBoolean keepOnAppendingAtEnd = new AtomicBoolean(true);
@@ -197,6 +199,7 @@ abstract public class EndslessAdapter extends AdapterWrapper {
      * "Pending" row when new data is loaded.
      */
     public int getItemViewType(int position) {
+        logger.info("endsless adapter -> returning view for position " + position);
         if (position == getWrappedAdapter().getCount() || position == 0) {
             return (IGNORE_ITEM_VIEW_TYPE);
         }
@@ -211,6 +214,7 @@ abstract public class EndslessAdapter extends AdapterWrapper {
      * @see #getItemViewType(int)
      */
     public int getViewTypeCount() {
+        logger.info("getViewTypeCount");
         // TODO ?-----------------------------------------------------------
         // TODO ?-----------------------------------------------------------
         return (super.getViewTypeCount() + 1);
@@ -218,6 +222,7 @@ abstract public class EndslessAdapter extends AdapterWrapper {
 
     @Override
     public Object getItem(int position) {
+        logger.info("getItem at position " + position);
         if (position >= super.getCount()) {
             return (null);
         }
@@ -254,9 +259,9 @@ abstract public class EndslessAdapter extends AdapterWrapper {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         if (position == 0 && keepOnAppendingAtStart.get()) {
+            logger.info("returning begining pending view");
             if (pendingView == null) {
                 pendingView = getPendingView(parent);
-
                 if (runInBackground) {
                     executeAsyncTask(buildTaskForStart());
                 } else {
@@ -272,6 +277,7 @@ abstract public class EndslessAdapter extends AdapterWrapper {
         }
 
         if (position == (super.getCount() + (keepOnAppendingAtStart.get() ? 1 : 0)) && keepOnAppendingAtEnd.get()) {
+            logger.info("returning ending pending view");
             if (pendingView == null) {
                 pendingView = getPendingView(parent);
 
