@@ -12,6 +12,7 @@ import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -161,6 +162,8 @@ public class AndroidBaseManagerMessages implements BaseManagerMessages {
         try {
             where.or(where.eq(SimpleMessage.TO_FIELD_MESSAGE, xmppUserID), where.eq(SimpleMessage.FROM_FIELD_MESSAGE, xmppUserID));
             list = queryBuilder.limit(numberOfMessages).orderBy(SimpleMessage.ID_FIELD_MESSAGE, false).query();
+            Collections.reverse(list);
+            logger.info("returnNMessages" + list);
         } catch (SQLException e) {
             logger.info("Cannnot read messages from the database so as to initial map");
             throw new CannotGetMessagesFromTheDatabaseException();
@@ -220,15 +223,14 @@ public class AndroidBaseManagerMessages implements BaseManagerMessages {
     }
 
     @Override
-    public List<SimpleMessage> getEarlierMessagesForPerson(Contact contact, int number, SimpleMessage messageToBeExtractedFrom) throws CannotGetMessagesFromTheDatabaseException {
+    public List<SimpleMessage> getEarlierMessagesForPerson(String contact, int number, SimpleMessage messageToBeExtractedFrom) throws CannotGetMessagesFromTheDatabaseException {
         //search id of the message
         long id;
         QueryBuilder<SimpleMessage, Integer> queryBuilder = simpleMessageDao.queryBuilder();
         Where<SimpleMessage, Integer> where = queryBuilder.where();
-
         try {
             where.eq(SimpleMessage.BODY_FIELD_MESSAGE, messageToBeExtractedFrom.getBody()).and().
-                    eq(SimpleMessage.DATE_FIELD_MESSAGE, messageToBeExtractedFrom).and().
+                    eq(SimpleMessage.DATE_FIELD_MESSAGE, messageToBeExtractedFrom.getDate()).and().
                     eq(SimpleMessage.FROM_FIELD_MESSAGE, messageToBeExtractedFrom.getFrom()).and().
                     eq(SimpleMessage.TO_FIELD_MESSAGE, messageToBeExtractedFrom.getTo());
             SimpleMessage simpleMessage = queryBuilder.limit(1).query().get(0);
@@ -245,7 +247,7 @@ public class AndroidBaseManagerMessages implements BaseManagerMessages {
         try {
             where2.or(where2.eq(SimpleMessage.TO_FIELD_MESSAGE, contact), where2.eq(SimpleMessage.FROM_FIELD_MESSAGE, contact)).and().
                     lt(SimpleMessage.ID_FIELD_MESSAGE, id);
-            list = queryBuilder2.offset(id).limit(number).query();
+            list = queryBuilder2.offset(id).limit(number).query();//?? todo tu poprawic wyszukiwanie, nie wiecz czy w ogole potrzeben to offset
         } catch (SQLException e) {
             logger.info("Cannot get messages from the database");
             throw new CannotGetMessagesFromTheDatabaseException();
@@ -255,7 +257,7 @@ public class AndroidBaseManagerMessages implements BaseManagerMessages {
     }
 
     @Override
-    public List<SimpleMessage> getLaterMessagesForPerson(Contact contact, int number, SimpleMessage messageToBeExtractedFrom) throws CannotGetMessagesFromTheDatabaseException {
+    public List<SimpleMessage> getLaterMessagesForPerson(String contact, int number, SimpleMessage messageToBeExtractedFrom) throws CannotGetMessagesFromTheDatabaseException {
         //search id of the message
         long id;
         QueryBuilder<SimpleMessage, Integer> queryBuilder = simpleMessageDao.queryBuilder();
@@ -263,7 +265,7 @@ public class AndroidBaseManagerMessages implements BaseManagerMessages {
 
         try {
             where.eq(SimpleMessage.BODY_FIELD_MESSAGE, messageToBeExtractedFrom.getBody()).and().
-                    eq(SimpleMessage.DATE_FIELD_MESSAGE, messageToBeExtractedFrom).and().
+                    eq(SimpleMessage.DATE_FIELD_MESSAGE, messageToBeExtractedFrom.getDate()).and().
                     eq(SimpleMessage.FROM_FIELD_MESSAGE, messageToBeExtractedFrom.getFrom()).and().
                     eq(SimpleMessage.TO_FIELD_MESSAGE, messageToBeExtractedFrom.getTo());
             SimpleMessage simpleMessage = queryBuilder.limit(1).query().get(0);

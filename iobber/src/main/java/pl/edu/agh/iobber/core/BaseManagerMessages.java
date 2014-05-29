@@ -26,9 +26,9 @@ public interface BaseManagerMessages {
 
     void markMessageAsReaded(SimpleMessage simpleMessage) throws CannotUpdateTheDatabasseException;
 
-    List<SimpleMessage> getLaterMessagesForPerson(Contact contact, int number, SimpleMessage messageToBeExtractedFrom) throws CannotGetMessagesFromTheDatabaseException;
+    List<SimpleMessage> getLaterMessagesForPerson(String contact, int number, SimpleMessage messageToBeExtractedFrom) throws CannotGetMessagesFromTheDatabaseException;
 
-    List<SimpleMessage> getEarlierMessagesForPerson(Contact contact, int number, SimpleMessage messageToBeExtractedFrom) throws CannotGetMessagesFromTheDatabaseException;
+    List<SimpleMessage> getEarlierMessagesForPerson(String contact, int number, SimpleMessage messageToBeExtractedFrom) throws CannotGetMessagesFromTheDatabaseException;
 
     List<SimpleMessage> findMessages(String contact, String dateFrom, String dateTo, String body) throws CannotFindMessagesInTheDatabaseException;
 

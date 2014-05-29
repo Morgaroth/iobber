@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import pl.edu.agh.iobber.core.exceptions.CannotFindMessagesInTheDatabaseException;
+import pl.edu.agh.iobber.core.exceptions.CannotGetMessagesFromTheDatabaseException;
 import pl.edu.agh.iobber.core.exceptions.CannotUpdateTheDatabasseException;
 import pl.edu.agh.iobber.core.exceptions.IObberException;
 
@@ -73,9 +74,11 @@ public class Conversation implements MsgListener {
 
         //test
         try {
-            List<SimpleMessage> list = baseManagerMessages.findMessages(name, null, null, "Ola");
+            List<SimpleMessage> list = baseManagerMessages.getLastNMessagesForPerson("adeq9223@gmail.com", 1);
+            List<SimpleMessage> list2 = baseManagerMessages.getEarlierMessagesForPerson("adeq9223@gmail.com", 10, list.get(0));
             logger.info("Finded messages " + list);
-        } catch (CannotFindMessagesInTheDatabaseException e) {
+            logger.info("Finded messages getEarliermessges " + list2);
+        } catch (CannotGetMessagesFromTheDatabaseException e) {
             e.printStackTrace();
         }
     }
