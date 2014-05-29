@@ -1,6 +1,7 @@
 package pl.edu.agh.iobber.android.conversation;
 
 import android.content.Context;
+import android.os.SystemClock;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,7 +30,7 @@ public class EndlessAdapter<T extends ListAdapter> extends com.commonsware.cwac.
     private ListAdapter wrapped;
     private RotateAnimation rotate;
     private View pendingView;
-    private String contact;
+    private String xmppUserID;
     private List<SimpleMessage> earlierMessagesForPerson;
 
     public EndlessAdapter(Context context, T wrapped, boolean keepOnAppendingAtStart, boolean keepOnAppendingAtEnd) {
@@ -43,8 +44,8 @@ public class EndlessAdapter<T extends ListAdapter> extends com.commonsware.cwac.
         rotate.setRepeatCount(Animation.INFINITE);
     }
 
-    public EndlessAdapter setContact(String contact) {
-        this.contact = contact;
+    public EndlessAdapter setContactID(String xmppUserID) {
+        this.xmppUserID = xmppUserID;
         return this;
     }
 
@@ -71,14 +72,14 @@ public class EndlessAdapter<T extends ListAdapter> extends com.commonsware.cwac.
     @Override
     protected boolean cacheStartInBackground() throws Exception {
         logger.info("cacheStartInBackground");
+        SystemClock.sleep(1000 * 3);
         try {
             if (getWrappedAdapter().getCount() > 0) {
                 SimpleMessage item = (SimpleMessage) getWrappedAdapter().getItem(0);
-                //earlierMessagesForPerson = XMPPManager.instance.getBaseManager().getEarlierMessagesForPerson(contact, 20, item);
+                earlierMessagesForPerson = XMPPManager.instance.getBaseManager().getEarlierMessagesForPerson(xmppUserID, 20, item);
                 logger.info("query on more msgs returned " + earlierMessagesForPerson);
             } else {
-                logger.severe("NULLPOINTER? " + contact);
-                earlierMessagesForPerson = XMPPManager.instance.getBaseManager().getLastNMessagesForPerson(contact, 20);
+                earlierMessagesForPerson = XMPPManager.instance.getBaseManager().getLastNMessagesForPerson(xmppUserID, 20);
                 logger.info("query on last msgs returned " + earlierMessagesForPerson);
             }
             return earlierMessagesForPerson.size() != 0;

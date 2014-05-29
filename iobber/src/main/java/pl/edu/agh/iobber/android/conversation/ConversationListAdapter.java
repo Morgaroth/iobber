@@ -28,10 +28,9 @@ public class ConversationListAdapter extends CustomListAdapter<SimpleMessage> {
 
     @Override
     public View fillItem(int position, View view, ViewGroup parent, SimpleMessage item) {
-        logger.info(format("%s generate view at index %d for item %s", this, position, item));
+//        logger.info(format("%s generate view at index %d for item %s", this, position, item));
         TextView bodyView = (TextView) view.findViewById(R.id.conversation_fragment_list_item_body);
 
-        logger.severe("NULLPOINTER? bodyView=" + bodyView + " item=" + item);
         bodyView.setText(item.getBody());
 
         TextView author = (TextView) view.findViewById(R.id.conversation_fragment_list_item_author);
