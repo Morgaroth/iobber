@@ -53,6 +53,7 @@ import java.util.logging.Logger;
  * that final call to appendInBackground().
  */
 abstract public class EndslessAdapter extends AdapterWrapper {
+
     private static Logger logger = Logger.getLogger(EndslessAdapter.class.getSimpleName());
     private View pendingView = null;
     private AtomicBoolean keepOnAppendingAtStart = new AtomicBoolean(true);
@@ -122,7 +123,7 @@ abstract public class EndslessAdapter extends AdapterWrapper {
 
     abstract protected int appendCachedDataAtStart();
 
-    abstract protected void onPostAppend(int itemsAppended);
+    abstract protected void onPostAppend(Direction d, int itemsAppended);
 
     abstract protected int appendCachedDataAtEnd();
 
@@ -202,11 +203,15 @@ abstract public class EndslessAdapter extends AdapterWrapper {
      */
     public int getItemViewType(int position) {
         logger.info("endsless adapter -> returning view for position " + position);
-        if (position == getWrappedAdapter().getCount() || position == 0) {
-            return (IGNORE_ITEM_VIEW_TYPE);
+        if (keepOnAppendingAtStart.get() && position == 0) {
+            return IGNORE_ITEM_VIEW_TYPE;
         }
-
-        return (super.getItemViewType(position));
+        if (keepOnAppendingAtEnd.get()) {
+            if (position == (getWrappedAdapter().getCount() + (keepOnAppendingAtStart.get() ? 1 : 0))) {
+                return IGNORE_ITEM_VIEW_TYPE;
+            }
+        }
+        return super.getItemViewType(position);
     }
 
     /**
@@ -360,7 +365,6 @@ abstract public class EndslessAdapter extends AdapterWrapper {
         }
     }
 
-
     /**
      * Inflates pending view using the pendingResource ID
      * passed into the constructor
@@ -390,6 +394,7 @@ abstract public class EndslessAdapter extends AdapterWrapper {
         return (context);
     }
 
+    public enum Direction {Start, End}
 
     /**
      * A background task that will be run when there is a need
@@ -428,12 +433,9 @@ abstract public class EndslessAdapter extends AdapterWrapper {
             int position = 0;
             if (e == null) {
                 if (isAtStart) {
-                    int items = adapter.appendCachedDataAtStart();
-                    if (items > 0) {
-                        position = items;
-                    }
+                    position = adapter.appendCachedDataAtStart();
                 } else {
-                    int items = adapter.appendCachedDataAtEnd();
+                    position = adapter.appendCachedDataAtEnd();
                 }
             } else {
                 if (isAtStart) {
@@ -445,7 +447,7 @@ abstract public class EndslessAdapter extends AdapterWrapper {
                 }
             }
             adapter.onDataReady();
-            adapter.onPostAppend(position);
+            adapter.onPostAppend(isAtStart ? Direction.Start : Direction.End, position);
         }
     }
 }

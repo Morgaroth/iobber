@@ -29,23 +29,19 @@ import pl.edu.agh.iobber.core.exceptions.CannotGetMessagesFromTheDatabaseExcepti
 import pl.edu.agh.iobber.core.exceptions.IObberException;
 
 import static java.lang.String.format;
+import static java.lang.Thread.sleep;
 
 public class ConversationFragment extends ListFragment implements MsgListener {
 
     private Conversation delegate;
     private Logger logger = Logger.getLogger(ConversationFragment.class.getSimpleName());
-    private List<SimpleMessage> messages = new LinkedList<SimpleMessage>();
     private EndlessAdapter adapter;
 
     public ConversationFragment() {
     }
 
-    public ConversationFragment(Conversation conversation) {
-        this.delegate = conversation;
-    }
-
     public static ConversationFragment newInstance(Conversation chat) {
-        return new ConversationFragment(chat);
+        return new ConversationFragment().setUp(chat);
     }
 
     private static boolean isActionSend(int actionId, KeyEvent event) {
@@ -54,6 +50,11 @@ public class ConversationFragment extends ListFragment implements MsgListener {
                 actionId == EditorInfo.IME_ACTION_SEND ||
                 event.getAction() == KeyEvent.ACTION_DOWN &&
                         event.getKeyCode() == KeyEvent.KEYCODE_ENTER;
+    }
+
+    public ConversationFragment setUp(Conversation conversation) {
+        this.delegate = conversation;
+        return this;
     }
 
     @Override
@@ -116,8 +117,12 @@ public class ConversationFragment extends ListFragment implements MsgListener {
      */
     @Deprecated
     private void addMsgToListDirectly(String text) {
-        //onMessage(new MsgImpl(text, new Contact()));
-        setAdapter();
+        try {
+            sleep(80);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        scrollAdapterDown();
     }
 
     @Override
@@ -135,8 +140,19 @@ public class ConversationFragment extends ListFragment implements MsgListener {
     }
 
     private void addNewMessageToList(SimpleMessage message) {
-        messages.add(message);
+        scrollAdapterDown();
         setAdapter();
+    }
+
+    private void scrollAdapterDown() {
+        if (adapter != null) {
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    adapter.scrollDown();
+                }
+            });
+        }
     }
 
     private void setAdapter() {

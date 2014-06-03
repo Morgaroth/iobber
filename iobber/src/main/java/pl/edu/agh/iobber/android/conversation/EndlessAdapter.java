@@ -37,6 +37,7 @@ public class EndlessAdapter<T extends ListAdapter> extends com.commonsware.cwac.
     private String xmppUserID;
     private List<SimpleMessage> earlierMessagesForPerson;
     private ListView listView;
+    private List<SimpleMessage> laterMessagesForPerson;
 
     public EndlessAdapter(Context context, T wrapped, ListView listView, boolean keepOnAppendingAtStart, boolean keepOnAppendingAtEnd) {
         super(wrapped, keepOnAppendingAtStart, keepOnAppendingAtEnd);
@@ -78,7 +79,6 @@ public class EndlessAdapter<T extends ListAdapter> extends com.commonsware.cwac.
     @Override
     protected boolean cacheStartInBackground() throws Exception {
         logger.info("cacheStartInBackground");
-        SystemClock.sleep(1000 * 3);
         try {
             if (getWrappedAdapter().getCount() > 0) {
                 SimpleMessage item = (SimpleMessage) getWrappedAdapter().getItem(0);
@@ -98,7 +98,20 @@ public class EndlessAdapter<T extends ListAdapter> extends com.commonsware.cwac.
     @Override
     protected boolean cacheEndInBackground() throws Exception {
         logger.info("cacheEndtInBackground");
-        return false;//true - jeśli jest co dodać i jest sens wywoływać appendAtEnd
+        try {
+            if (getWrappedAdapter().getCount() > 0) {
+                SimpleMessage item = (SimpleMessage) getWrappedAdapter().getItem(getWrappedAdapter().getCount() - 1);
+                laterMessagesForPerson = XMPPManager.instance.getBaseManager().getLaterMessagesForPerson(xmppUserID, 20, item);
+                logger.info("query on more msgs to end returned " + laterMessagesForPerson);
+            } else {
+                laterMessagesForPerson = XMPPManager.instance.getBaseManager().getLastNMessagesForPerson(xmppUserID, 20);
+                logger.info("query on last msgs returned " + laterMessagesForPerson);
+            }
+            return laterMessagesForPerson != null && laterMessagesForPerson.size() != 0;
+        } catch (CannotGetMessagesFromTheDatabaseException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     @Override
@@ -120,13 +133,28 @@ public class EndlessAdapter<T extends ListAdapter> extends com.commonsware.cwac.
     }
 
     @Override
-    protected void onPostAppend(int itemsAppended) {
-        listView.setSelection(itemsAppended);
+    protected void onPostAppend(Direction d, int itemsAppended) {
+        if (d == Direction.Start) {
+            listView.setSelection(itemsAppended);
+        } else {
+            listView.setSelection(getCount() - itemsAppended);
+        }
     }
 
     @Override
     protected int appendCachedDataAtEnd() {
         logger.info("appendCachedDataAtEnd");
+        if (laterMessagesForPerson != null) {
+            ArrayAdapter adapter = (ArrayAdapter) getWrappedAdapter();
+            for (SimpleMessage simpleMessage : laterMessagesForPerson) {
+                adapter.add(simpleMessage);
+            }
+            try {
+                return laterMessagesForPerson.size();
+            } finally {
+                laterMessagesForPerson = null;
+            }
+        }
         return 0;
     }
 
@@ -145,5 +173,10 @@ public class EndlessAdapter<T extends ListAdapter> extends com.commonsware.cwac.
     @Override
     public void onScroll(AbsListView view, int firstVisible, int visibleCount, int totalCount) {
         System.out.println(format("firstVisible %d, visibleCount %d, totalCount %d", firstVisible, visibleCount, totalCount));
+    }
+
+    public void scrollDown() {
+        restartAppendingAtEnd();
+        listView.setSelection(getCount() - 1);
     }
 }
