@@ -148,9 +148,11 @@ public class ConversationFragment extends ListFragment implements MsgListener {
                     if (adapter == null) {
                         try {
                             List<SimpleMessage> lastNMessagesForPerson = XMPPManager.instance.getBaseManager().getLastNMessagesForPerson(delegate.getName(), 20);
-                            adapter = new EndlessAdapter<ConversationListAdapter>(getActivity(), new ConversationListAdapter(getActivity(), lastNMessagesForPerson), true, false).setContactID(delegate.getChat().getParticipant());
+                            ListView listView = ConversationFragment.this.getListView();
+                            adapter = new EndlessAdapter<ConversationListAdapter>(getActivity(), new ConversationListAdapter(getActivity(), lastNMessagesForPerson), listView, true, false).setContactID(delegate.getChat().getParticipant());
                             ConversationFragment.this.setListAdapter(adapter);
-                            ConversationFragment.this.getListView().setSelection(lastNMessagesForPerson.size() - 4);
+                            listView.setSelection(lastNMessagesForPerson.size() - 4);
+                            //listView.setOnScrollListener(adapter);
                             logger.info("adapter for conversation created");
                         } catch (CannotGetMessagesFromTheDatabaseException e) {
                             e.printStackTrace();

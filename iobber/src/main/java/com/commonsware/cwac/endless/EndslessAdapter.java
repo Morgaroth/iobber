@@ -120,9 +120,11 @@ abstract public class EndslessAdapter extends AdapterWrapper {
 
     abstract protected boolean cacheEndInBackground() throws Exception;
 
-    abstract protected void appendCachedDataAtStart();
+    abstract protected int appendCachedDataAtStart();
 
-    abstract protected void appendCachedDataAtEnd();
+    abstract protected void onPostAppend(int itemsAppended);
+
+    abstract protected int appendCachedDataAtEnd();
 
     public boolean isSerialized() {
         return (isSerialized);
@@ -199,7 +201,7 @@ abstract public class EndslessAdapter extends AdapterWrapper {
      * "Pending" row when new data is loaded.
      */
     public int getItemViewType(int position) {
-//        logger.info("endsless adapter -> returning view for position " + position);
+        logger.info("endsless adapter -> returning view for position " + position);
         if (position == getWrappedAdapter().getCount() || position == 0) {
             return (IGNORE_ITEM_VIEW_TYPE);
         }
@@ -388,6 +390,7 @@ abstract public class EndslessAdapter extends AdapterWrapper {
         return (context);
     }
 
+
     /**
      * A background task that will be run when there is a need
      * to append more data. Mostly, this code delegates to the
@@ -422,12 +425,15 @@ abstract public class EndslessAdapter extends AdapterWrapper {
             } else {
                 adapter.setKeepOnAppendingAtEnd(tempKeep);
             }
-
+            int position = 0;
             if (e == null) {
                 if (isAtStart) {
-                    adapter.appendCachedDataAtStart();
+                    int items = adapter.appendCachedDataAtStart();
+                    if (items > 0) {
+                        position = items;
+                    }
                 } else {
-                    adapter.appendCachedDataAtEnd();
+                    int items = adapter.appendCachedDataAtEnd();
                 }
             } else {
                 if (isAtStart) {
@@ -438,8 +444,8 @@ abstract public class EndslessAdapter extends AdapterWrapper {
                             e));
                 }
             }
-
             adapter.onDataReady();
+            adapter.onPostAppend(position);
         }
     }
 }

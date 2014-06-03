@@ -7,8 +7,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.RotateAnimation;
+import android.widget.AbsListView;
 import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
+import android.widget.ListView;
 
 import com.commonsware.cwac.endless.EndslessAdapter;
 
@@ -24,7 +26,9 @@ import pl.edu.agh.iobber.core.XMPPManager;
 import pl.edu.agh.iobber.core.XMPPManagerInstance;
 import pl.edu.agh.iobber.core.exceptions.CannotGetMessagesFromTheDatabaseException;
 
-public class EndlessAdapter<T extends ListAdapter> extends com.commonsware.cwac.endless.EndslessAdapter {
+import static java.lang.String.format;
+
+public class EndlessAdapter<T extends ListAdapter> extends com.commonsware.cwac.endless.EndslessAdapter implements ListView.OnScrollListener {
 
     private static Logger logger = Logger.getLogger(EndlessAdapter.class.getSimpleName());
     private ListAdapter wrapped;
@@ -32,9 +36,11 @@ public class EndlessAdapter<T extends ListAdapter> extends com.commonsware.cwac.
     private View pendingView;
     private String xmppUserID;
     private List<SimpleMessage> earlierMessagesForPerson;
+    private ListView listView;
 
-    public EndlessAdapter(Context context, T wrapped, boolean keepOnAppendingAtStart, boolean keepOnAppendingAtEnd) {
+    public EndlessAdapter(Context context, T wrapped, ListView listView, boolean keepOnAppendingAtStart, boolean keepOnAppendingAtEnd) {
         super(wrapped, keepOnAppendingAtStart, keepOnAppendingAtEnd);
+        this.listView = listView;
         logger.info("endless adapter initialized with adapter with " + wrapped.getCount() + " items");
         rotate = new RotateAnimation(0f, 360f, Animation.RELATIVE_TO_SELF,
                 0.5f, Animation.RELATIVE_TO_SELF,
@@ -96,7 +102,7 @@ public class EndlessAdapter<T extends ListAdapter> extends com.commonsware.cwac.
     }
 
     @Override
-    protected void appendCachedDataAtStart() {
+    protected int appendCachedDataAtStart() {
         logger.info("appendCachedDataAtStart");
         if (earlierMessagesForPerson != null) {
             Collections.reverse(earlierMessagesForPerson);
@@ -104,13 +110,24 @@ public class EndlessAdapter<T extends ListAdapter> extends com.commonsware.cwac.
             for (SimpleMessage simpleMessage : earlierMessagesForPerson) {
                 adapter.insert(simpleMessage, 0);
             }
-            earlierMessagesForPerson = null;
+            try {
+                return earlierMessagesForPerson.size();
+            } finally {
+                earlierMessagesForPerson = null;
+            }
         }
+        return 0;
     }
 
     @Override
-    protected void appendCachedDataAtEnd() {
+    protected void onPostAppend(int itemsAppended) {
+        listView.setSelection(itemsAppended);
+    }
+
+    @Override
+    protected int appendCachedDataAtEnd() {
         logger.info("appendCachedDataAtEnd");
+        return 0;
     }
 
     void startProgressAnimation() {
@@ -118,5 +135,15 @@ public class EndlessAdapter<T extends ListAdapter> extends com.commonsware.cwac.
         if (pendingView != null) {
             pendingView.startAnimation(rotate);
         }
+    }
+
+    @Override
+    public void onScrollStateChanged(AbsListView absListView, int i) {
+        System.out.println(format("%s view and i %d", absListView, i));
+    }
+
+    @Override
+    public void onScroll(AbsListView view, int firstVisible, int visibleCount, int totalCount) {
+        System.out.println(format("firstVisible %d, visibleCount %d, totalCount %d", firstVisible, visibleCount, totalCount));
     }
 }
