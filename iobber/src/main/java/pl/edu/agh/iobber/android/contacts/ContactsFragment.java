@@ -16,7 +16,7 @@ import pl.edu.agh.iobber.core.Contact;
 
 import static java.lang.String.format;
 
-public class ContactsFragment extends ListFragment {
+public class ContactsFragment extends ListFragment implements AdapterView.OnItemLongClickListener {
     private Logger logger = Logger.getLogger(ContactsFragment.class.getSimpleName());
     private InteractionListener mListener;
     private ContactListAdapter adapter;
@@ -38,17 +38,9 @@ public class ContactsFragment extends ListFragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        getListView().setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-
-            @Override
-            public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
-                                           int arg2, long arg3) {
-                Toast.makeText(getActivity(), format("On long click listener, arg2=%d, arg3=%d", arg2, arg3), Toast.LENGTH_LONG).show();
-                return true;
-            }
-        });
-
+        getListView().setOnItemLongClickListener(this);
     }
+
 
     @Override
     public void onAttach(Activity activity) {
@@ -92,8 +84,17 @@ public class ContactsFragment extends ListFragment {
         adapter.updateContent(contactsList);
     }
 
+    @Override
+    public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+        if (mListener != null) {
+            mListener.onContactLongClick((Contact) adapterView.getItemAtPosition(i));
+        }
+        return true;
+    }
+
     public interface InteractionListener {
         public void onContactClicked(Contact item);
 
+        public void onContactLongClick(Contact item);
     }
 }

@@ -2,7 +2,7 @@ package pl.edu.agh.iobber.core;
 
 public class ContactStub extends Contact {
     @Override
-    public String getName() {
+    public String getXMPPIdentifier() {
         return "Stub Name!";
     }
 

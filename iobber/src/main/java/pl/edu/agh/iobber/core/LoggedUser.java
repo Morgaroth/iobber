@@ -6,7 +6,6 @@ import org.jivesoftware.smack.Roster;
 import org.jivesoftware.smack.RosterEntry;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
-import org.jivesoftware.smack.packet.IQ;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -64,6 +63,15 @@ public class LoggedUser implements ContactsResolver {
         return activeConversations.values();
     }
 
+    public Conversation getOrCreateConversation(String xmppID) {
+        Conversation conversation = getConversation(xmppID);
+        if (conversation != null) {
+            return conversation;
+        } else {
+            return startConversation(resolve(xmppID));
+        }
+    }
+
     public Conversation getConversation(String title) {
         return activeConversations.get(title);
     }
@@ -86,20 +94,20 @@ public class LoggedUser implements ContactsResolver {
     }
 
     public Conversation startConversation(Contact contact) {
-        if (activeConversations.containsKey(contact.getName())) {
-            return activeConversations.get(contact.getName());
+        if (activeConversations.containsKey(contact.getXMPPIdentifier())) {
+            return activeConversations.get(contact.getXMPPIdentifier());
         } else {
             ChatManager chatManager = xmppConnection.getChatManager();
-            Conversation conversation = Conversation.createWithoutChat(contact.getName(), this, baseManagerMessages);
+            Conversation conversation = Conversation.createWithoutChat(contact.getXMPPIdentifier(), this, baseManagerMessages);
             Chat chat = chatManager.createChat(contact.getRosterEntry().getUser(), conversation.getInternalListener());
             baseManagerMessages.registerContactYouAreChattingWith(contact);
             conversation.setUpChat(chat);
-            activeConversations.put(contact.getName(), conversation);
+            activeConversations.put(contact.getXMPPIdentifier(), conversation);
             return conversation;
         }
     }
 
-    public void stopConversation(Contact contact){
+    public void stopConversation(Contact contact) {
         baseManagerMessages.unregisterContactYouAreChattingWith(contact);
     }
 
@@ -114,7 +122,7 @@ public class LoggedUser implements ContactsResolver {
     @Override
     public Contact resolve(String name) {
         for (Contact contact : getContacts()) {
-            if (contact.getName().equals(name)) {
+            if (contact.getXMPPIdentifier().equals(name)) {
                 return contact;
             }
         }

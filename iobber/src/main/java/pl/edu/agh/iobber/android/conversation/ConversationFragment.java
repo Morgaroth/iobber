@@ -1,7 +1,6 @@
 package pl.edu.agh.iobber.android.conversation;
 
 import android.app.Activity;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.view.KeyEvent;
@@ -34,6 +33,7 @@ import static java.lang.Thread.sleep;
 public class ConversationFragment extends ListFragment implements MsgListener {
 
     private Conversation delegate;
+    private SimpleMessage messagesToInit = null;
     private Logger logger = Logger.getLogger(ConversationFragment.class.getSimpleName());
     private EndlessAdapter adapter;
 
@@ -42,6 +42,10 @@ public class ConversationFragment extends ListFragment implements MsgListener {
 
     public static ConversationFragment newInstance(Conversation chat) {
         return new ConversationFragment().setUp(chat);
+    }
+
+    public static ConversationFragment newInstance(Conversation chat, SimpleMessage messagesToInit) {
+        return new ConversationFragment().setUp(chat, messagesToInit);
     }
 
     private static boolean isActionSend(int actionId, KeyEvent event) {
@@ -54,6 +58,12 @@ public class ConversationFragment extends ListFragment implements MsgListener {
 
     public ConversationFragment setUp(Conversation conversation) {
         this.delegate = conversation;
+        return this;
+    }
+
+    public ConversationFragment setUp(Conversation chat, SimpleMessage messagesToInit) {
+        this.delegate = chat;
+        this.messagesToInit = messagesToInit;
         return this;
     }
 
@@ -93,7 +103,8 @@ public class ConversationFragment extends ListFragment implements MsgListener {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        setAdapter();
+        setAdapter(messagesToInit);
+        messagesToInit = null;
     }
 
     private void clearEditText(TextView v) {
@@ -141,7 +152,6 @@ public class ConversationFragment extends ListFragment implements MsgListener {
 
     private void addNewMessageToList(SimpleMessage message) {
         scrollAdapterDown();
-        setAdapter();
     }
 
     private void scrollAdapterDown() {
@@ -155,7 +165,7 @@ public class ConversationFragment extends ListFragment implements MsgListener {
         }
     }
 
-    private void setAdapter() {
+    private void setAdapter(final SimpleMessage messageToInit) {
         final ListView view = getListView();
         if (adapter == null) {
             getActivity().runOnUiThread(new Runnable() {
@@ -163,12 +173,29 @@ public class ConversationFragment extends ListFragment implements MsgListener {
                 public void run() {
                     if (adapter == null) {
                         try {
-                            List<SimpleMessage> lastNMessagesForPerson = XMPPManager.instance.getBaseManager().getLastNMessagesForPerson(delegate.getName(), 20);
+                            List<SimpleMessage> messages;
+                            if (messageToInit == null) {
+                                messages = XMPPManager.instance.getBaseManager().getLastNMessagesForPerson(delegate.getName(), 20);
+                            } else {
+                                messages = new LinkedList<SimpleMessage>();
+                                List<SimpleMessage> earlier = XMPPManager.instance.getBaseManager().getEarlierMessagesForPerson(delegate.getName(), 7, messageToInit);
+                                List<SimpleMessage> later = XMPPManager.instance.getBaseManager().getLaterMessagesForPerson(delegate.getName(), 7, messageToInit);
+                                for (SimpleMessage msg : earlier) {
+                                    messages.add(msg);
+                                }
+                                messages.add(messageToInit);
+                                for (SimpleMessage msg : later) {
+                                    messages.add(msg);
+                                }
+                            }
                             ListView listView = ConversationFragment.this.getListView();
-                            adapter = new EndlessAdapter<ConversationListAdapter>(getActivity(), new ConversationListAdapter(getActivity(), lastNMessagesForPerson), listView, true, false).setContactID(delegate.getChat().getParticipant());
+                            adapter = new EndlessAdapter<ConversationListAdapter>(getActivity(), new ConversationListAdapter(getActivity(), messages), listView, true, messageToInit != null).setContactID(delegate.getChat().getParticipant());
                             ConversationFragment.this.setListAdapter(adapter);
-                            listView.setSelection(lastNMessagesForPerson.size() - 4);
-                            //listView.setOnScrollListener(adapter);
+                            if (messageToInit != null) {
+                                listView.setSelection(6);
+                            } else {
+                                listView.setSelection(messages.size() - 4);
+                            }
                             logger.info("adapter for conversation created");
                         } catch (CannotGetMessagesFromTheDatabaseException e) {
                             e.printStackTrace();

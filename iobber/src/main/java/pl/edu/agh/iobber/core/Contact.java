@@ -9,7 +9,7 @@ public class Contact {
         rosterEntry = null;
     }
 
-    public String getName() {
+    public String getXMPPIdentifier() {
         if (rosterEntry != null) {
             return rosterEntry.getUser();
         }
@@ -31,7 +31,7 @@ public class Contact {
     @Override
     public String toString() {
         return "Contact{" +
-                "name='" + getName() + '\'' +
+                "xmppID='" + getXMPPIdentifier() + '\'' +
                 '}';
     }
 }

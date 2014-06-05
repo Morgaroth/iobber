@@ -20,11 +20,13 @@ public class FindingResultsFragment extends ListFragment {
 
     private Logger logger = Logger.getLogger(FindingResultsFragment.class.getSimpleName());
     private List<Tuple> messages = new LinkedList<Tuple>();
+    private String author;
 
     public FindingResultsFragment() {
     }
 
-    public void setUp(List<SimpleMessage> messages) {
+    public void setUp(List<SimpleMessage> messages, String author) {
+        this.author = author;
         if (messages.size() % 3 != 0) {
             throw new RuntimeException("nie trójkami");
         }
@@ -52,10 +54,10 @@ public class FindingResultsFragment extends ListFragment {
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
         logger.info(format("clicked ListView %s, View %s, position %d, id %d", l, v, position, id));
-        ((OnResultLister) getActivity()).selectedMessage(messages.get(position).msgExact);
+        ((OnResultLister) getActivity()).onFoundMessageSelected(messages.get(position).msgExact, author);
     }
 
     public interface OnResultLister {
-        void selectedMessage(SimpleMessage msg);
+        void onFoundMessageSelected(SimpleMessage msg, String author);
     }
 }

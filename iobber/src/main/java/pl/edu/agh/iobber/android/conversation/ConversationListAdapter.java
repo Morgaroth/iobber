@@ -5,7 +5,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Locale;
 import java.util.logging.Logger;
 
 import pl.edu.agh.iobber.R;
@@ -16,6 +18,7 @@ import pl.morgaroth.utils.CustomListAdapter;
 import static java.lang.String.format;
 
 public class ConversationListAdapter extends CustomListAdapter<SimpleMessage> {
+    public static final SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss dd.MM.yyyy", Locale.US);
     private Logger logger = Logger.getLogger(ConversationListAdapter.class.getSimpleName());
 
     public ConversationListAdapter(Context context) {
@@ -37,7 +40,7 @@ public class ConversationListAdapter extends CustomListAdapter<SimpleMessage> {
         author.setText(item.getFrom());
 
         TextView date = (TextView) view.findViewById(R.id.conversation_fragment_list_item_date);
-        date.setText(item.getDate());
+        date.setText(formatter.format(item.getDate()));
 
 
         return ConversationItemFormatter.format(getContext(), view);

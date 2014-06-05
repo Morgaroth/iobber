@@ -2,8 +2,6 @@ package pl.edu.agh.iobber.core;
 
 import org.jivesoftware.smack.packet.Message;
 
-import java.text.SimpleDateFormat;
-
 public class MessageAdapter extends SimpleMessage {
     private final Message obj;
 
@@ -11,7 +9,7 @@ public class MessageAdapter extends SimpleMessage {
         this.obj = obj;
         setBody(obj.getBody());
         setDate("customDate");
-        setFrom(author.getName());
+        setFrom(author.getXMPPIdentifier());
     }
 
 

@@ -279,8 +279,23 @@ public class MainActivity extends ActionBarActivity
     }
 
     private ConversationFragment getConversationOrNew(String title) {
-        if (!conversationsCache.containsKey(title)) {
-            conversationsCache.put(title, ConversationFragment.newInstance(loggedUser.getConversation(title)));
+        return getConversationOrNew(title, false);
+    }
+
+    private ConversationFragment getConversationOrNew(String title, boolean recreate) {
+        if ((!conversationsCache.containsKey(title)) || recreate) {
+            conversationsCache.put(title, ConversationFragment.newInstance(loggedUser.getOrCreateConversation(title)));
+        }
+        return conversationsCache.get(title);
+    }
+
+    private ConversationFragment getConversationOrNew(String title, SimpleMessage messages) {
+        return getConversationOrNew(title, messages, false);
+    }
+
+    private ConversationFragment getConversationOrNew(String title, SimpleMessage messages, boolean recreate) {
+        if ((!conversationsCache.containsKey(title)) || recreate) {
+            conversationsCache.put(title, ConversationFragment.newInstance(loggedUser.getOrCreateConversation(title), messages));
         }
         return conversationsCache.get(title);
     }
@@ -289,6 +304,13 @@ public class MainActivity extends ActionBarActivity
     public void onContactClicked(Contact contact) {
         logger.info(format("user start conversation with %s", contact));
         startConversationWith(contact);
+    }
+
+    @Override
+    public void onContactLongClick(Contact item) {
+        FindingFragment fragment = getOrCreateFindingFragment();
+        fragment.setContact(item);
+        loadFragment(fragment);
     }
 
     private void startConversationWith(Contact contact) {
@@ -310,9 +332,9 @@ public class MainActivity extends ActionBarActivity
     }
 
     @Override
-    public void onResult(List<SimpleMessage> messages) {
+    public void onResult(String author, List<SimpleMessage> messages) {
         FindingResultsFragment fragment = getOrCreateFindingResultsFragment();
-        fragment.setUp(messages);
+        fragment.setUp(messages, author);
         loadFragment(fragment);
     }
 
@@ -324,8 +346,10 @@ public class MainActivity extends ActionBarActivity
     }
 
     @Override
-    public void selectedMessage(SimpleMessage msg) {
+    public void onFoundMessageSelected(SimpleMessage msg, String author) {
         logger.info("scroll to msg " + msg);
+        ConversationFragment conversationFrag = getConversationOrNew(author, msg, true);
+        loadFragment(conversationFrag);
         Toast.makeText(this, "Scroll to " + msg.getBody(), Toast.LENGTH_LONG).show();
     }
 }

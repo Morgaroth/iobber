@@ -148,7 +148,7 @@ public class AndroidBaseManagerMessages implements BaseManagerMessages {
     @Override
     public List<SimpleMessage> getUnreadedMessagerForPerson(Contact contact) {
         synchronized (obj) {
-            return messagesForConversations.get(contact.getName());
+            return messagesForConversations.get(contact.getXMPPIdentifier());
         }
     }
 
@@ -410,17 +410,17 @@ public class AndroidBaseManagerMessages implements BaseManagerMessages {
 
     @Override
     public void registerContactYouAreChattingWith(Contact contact) {
-        messagesForConversations.put(contact.getName(), new LinkedList<SimpleMessage>());
+        messagesForConversations.put(contact.getXMPPIdentifier(), new LinkedList<SimpleMessage>());
     }
 
     @Override
     public void unregisterContactYouAreChattingWith(Contact contact) {
-        messagesForConversations.remove(contact.getName());
+        messagesForConversations.remove(contact.getXMPPIdentifier());
     }
 
     @Override
     public void registerMessageListenerForConversation(Contact contact, MessageListener messageListener) {
-        messageListeners.put(contact.getName(), messageListener);
+        messageListeners.put(contact.getXMPPIdentifier(), messageListener);
     }
 
     @Override
@@ -430,6 +430,6 @@ public class AndroidBaseManagerMessages implements BaseManagerMessages {
 
     @Override
     public void unregisterMessageListenerForConversation(Contact contact) {
-        messageListeners.remove(contact.getName());
+        messageListeners.remove(contact.getXMPPIdentifier());
     }
 }

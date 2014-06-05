@@ -31,6 +31,7 @@ import static java.lang.String.format;
 public class EndlessAdapter<T extends ListAdapter> extends com.commonsware.cwac.endless.EndslessAdapter implements ListView.OnScrollListener {
 
     private static Logger logger = Logger.getLogger(EndlessAdapter.class.getSimpleName());
+    Integer pos = null;
     private ListAdapter wrapped;
     private RotateAnimation rotate;
     private View pendingView;
@@ -137,7 +138,10 @@ public class EndlessAdapter<T extends ListAdapter> extends com.commonsware.cwac.
         if (d == Direction.Start) {
             listView.setSelection(itemsAppended);
         } else {
-            listView.setSelection(getCount() - itemsAppended);
+            if (pos != null) {
+                listView.setSelection(pos);
+//                listView.setScrollX(pos);
+            }
         }
     }
 
@@ -145,6 +149,8 @@ public class EndlessAdapter<T extends ListAdapter> extends com.commonsware.cwac.
     protected int appendCachedDataAtEnd() {
         logger.info("appendCachedDataAtEnd");
         if (laterMessagesForPerson != null) {
+            pos = listView.getFirstVisiblePosition();
+//            pos = listView.getScrollX();
             ArrayAdapter adapter = (ArrayAdapter) getWrappedAdapter();
             for (SimpleMessage simpleMessage : laterMessagesForPerson) {
                 adapter.add(simpleMessage);

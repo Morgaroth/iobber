@@ -16,6 +16,7 @@ import java.util.logging.Logger;
 
 import pl.edu.agh.iobber.R;
 import pl.edu.agh.iobber.android.DateTimeDialog;
+import pl.edu.agh.iobber.core.Contact;
 import pl.edu.agh.iobber.core.SimpleMessage;
 import pl.edu.agh.iobber.core.XMPPManager;
 import pl.edu.agh.iobber.core.exceptions.CannotFindMessagesInTheDatabaseException;
@@ -29,6 +30,8 @@ public class FindingFragment extends Fragment implements View.OnClickListener {
     private Button toButton;
     private EditText phaseEdit;
     private EditText authorEdit;
+
+    private String authorData = null;
 
     public FindingFragment() {
     }
@@ -71,7 +74,9 @@ public class FindingFragment extends Fragment implements View.OnClickListener {
         findButton.setOnClickListener(this);
         phaseEdit = (EditText) inflated.findViewById(R.id.finding_fragment_layout_phase_edit);
         authorEdit = (EditText) inflated.findViewById(R.id.finding_fragment_layout_author_edit);
-
+        if (authorData != null) {
+            authorEdit.setText(authorData);
+        }
 
         return inflated;
     }
@@ -104,13 +109,17 @@ public class FindingFragment extends Fragment implements View.OnClickListener {
             logger.info(format("finding author %s, phrase %s, date from %s, date to %s", author, phrase, dateFrom, dateTo));
             List<SimpleMessage> messages = XMPPManager.instance.getBaseManager().findMessages(author, dateFrom, dateTo, phrase);
             logger.info("msgs: " + messages);
-            ((OnResultListener) getActivity()).onResult(messages);
+            ((OnResultListener) getActivity()).onResult(author, messages);
         } catch (CannotFindMessagesInTheDatabaseException e) {
             e.printStackTrace();
         }
     }
 
+    public void setContact(Contact item) {
+        authorData = item.getXMPPIdentifier();
+    }
+
     public interface OnResultListener {
-        void onResult(List<SimpleMessage> messages);
+        void onResult(String author, List<SimpleMessage> messages);
     }
 }

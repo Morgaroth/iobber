@@ -23,7 +23,7 @@ public class ContactListAdapter extends CustomListAdapter<Contact> {
     @Override
     public View fillItem(int position, View view, ViewGroup parent, Contact item) {
         TextView header = (TextView) view.findViewById(R.id.contact_list_item_header);
-        header.setText(item.getName());
+        header.setText(item.getXMPPIdentifier());
         return view;
     }
 
