@@ -40,7 +40,7 @@ public class ConversationListAdapter extends CustomListAdapter<SimpleMessage> {
         author.setText(item.getFrom());
 
         TextView date = (TextView) view.findViewById(R.id.conversation_fragment_list_item_date);
-        date.setText(formatter.format(item.getDate()));
+        date.setText(formatter.format(Long.valueOf(item.getDate())));
 
 
         return ConversationItemFormatter.format(getContext(), view);
