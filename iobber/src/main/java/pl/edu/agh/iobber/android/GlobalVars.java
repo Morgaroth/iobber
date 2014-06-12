@@ -33,6 +33,4 @@ public class GlobalVars extends Application {
             }
         }.execute();
     }
-
-
 }
