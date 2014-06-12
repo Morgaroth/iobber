@@ -1,5 +1,8 @@
 package pl.edu.agh.iobber.android;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -8,6 +11,7 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
@@ -377,8 +381,23 @@ public class MainActivity extends ActionBarActivity
 
     @Override
     public void chatCreated(Chat chat, boolean startedByMe) {
-        // reakcja na przychodzącą wiadomość
+        logger.info(format("chat %s created by me %s", chat.getParticipant(), startedByMe));
         if (!startedByMe) {
+            PendingIntent pi = PendingIntent.getActivity(this, 10, new Intent(), 0);
+            Notification noti = new NotificationCompat.Builder(this)
+                    .setSmallIcon(android.R.drawable.ic_lock_power_off)
+                    .setTicker("Wiadomość przyszła")
+                            //.setLargeIcon(largeIcon)
+                    .setWhen(System.currentTimeMillis())
+                    .setContentTitle("fdsagfdsgd")
+                    .setContentText("Content message")
+                    .setContentIntent(pi)
+                            //At most three action buttons can be added
+                    .setAutoCancel(true).build();
+            NotificationManager notificationManager =
+                    (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+            notificationManager.notify(1003, noti);
+            logger.info("notification exposed");
             joinToConversatonWith(chat);
         }
     }

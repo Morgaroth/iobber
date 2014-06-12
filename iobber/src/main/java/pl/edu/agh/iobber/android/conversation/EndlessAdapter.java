@@ -183,6 +183,7 @@ public class EndlessAdapter<T extends ListAdapter> extends com.commonsware.cwac.
 
     public void scrollDown() {
         restartAppendingAtEnd();
-        listView.setSelection(getCount() - 1);
+        listView.setSelection(getCount());
+        System.out.println(listView.getMaxScrollAmount() + "|" + listView.getScrollX());
     }
 }
