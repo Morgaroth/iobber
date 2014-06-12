@@ -21,10 +21,10 @@ public class InternalMessageListenerAdapter implements MessageListener {
 
     @Override
     public void processMessage(Chat chat, Message message) {
-        logger.info(format("on message %s in chat %s from %s", message.toString(), chat.toString(), chat.getParticipant()));
+        logger.info(format("on message %s in chat %s from %s", message.toString(), chat.toString(), chat.getParticipant().split("/")[0]));
         if (obj != null) {
             // TODO implement stub
-            obj.onMessage(new MessageAdapter(message, resolver.resolve(chat.getParticipant())));
+            obj.onMessage(new MessageAdapter(message, resolver.resolve(chat.getParticipant().split("/")[0])));
         }
     }
 }

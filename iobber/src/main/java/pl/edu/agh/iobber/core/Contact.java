@@ -11,7 +11,7 @@ public class Contact {
 
     public String getXMPPIdentifier() {
         if (rosterEntry != null) {
-            return rosterEntry.getUser();
+            return rosterEntry.getUser().split("/")[0];
         }
         return "STUB!";
     }

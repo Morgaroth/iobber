@@ -189,7 +189,7 @@ public class ConversationFragment extends ListFragment implements MsgListener {
                                 }
                             }
                             ListView listView = ConversationFragment.this.getListView();
-                            adapter = new EndlessAdapter<ConversationListAdapter>(getActivity(), new ConversationListAdapter(getActivity(), messages), listView, true, messageToInit != null).setContactID(delegate.getChat().getParticipant());
+                            adapter = new EndlessAdapter<ConversationListAdapter>(getActivity(), new ConversationListAdapter(getActivity(), messages), listView, true, messageToInit != null).setContactID(delegate.getChat().getParticipant().split("/")[0]);
                             ConversationFragment.this.setListAdapter(adapter);
                             if (messageToInit != null) {
                                 listView.setSelection(6);

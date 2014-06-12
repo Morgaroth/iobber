@@ -1,8 +1,5 @@
 package pl.edu.agh.iobber.android;
 
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -11,7 +8,6 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.app.NotificationCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
@@ -19,7 +15,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import org.jivesoftware.smack.Chat;
+import org.jivesoftware.smack.Roster;
+import org.jivesoftware.smack.RosterEntry;
+import org.jivesoftware.smack.XMPPConnection;
+
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -28,6 +30,7 @@ import java.util.Stack;
 import java.util.logging.Logger;
 
 import pl.edu.agh.iobber.R;
+import pl.edu.agh.iobber.android.ChatManagerListener.AndroidChatManagerListenerCore;
 import pl.edu.agh.iobber.android.baseMessages.AndroidBaseManagerMessages;
 import pl.edu.agh.iobber.android.baseMessages.DatabaseHelperMessages;
 import pl.edu.agh.iobber.android.baseUsers.AndroidBaseManager;
@@ -37,7 +40,7 @@ import pl.edu.agh.iobber.android.conversation.ConversationFragment;
 import pl.edu.agh.iobber.android.finding.FindingFragment;
 import pl.edu.agh.iobber.android.finding.FindingResultsFragment;
 import pl.edu.agh.iobber.android.navigation.NavigationDrawerFragment;
-import pl.edu.agh.iobber.core.AndroidRosterListener;
+import pl.edu.agh.iobber.android.AndroidRosterListener;
 import pl.edu.agh.iobber.core.BaseManagerMessages;
 import pl.edu.agh.iobber.core.BaseManagerMessagesConfiguration;
 import pl.edu.agh.iobber.core.Contact;
@@ -85,6 +88,7 @@ public class MainActivity extends ActionBarActivity
             logger.info(e.toString());
         }
         XMPPManager.setRosterListener(new AndroidRosterListener());
+        XMPPManager.setChatManagerListener(new AndroidChatManagerListenerCore(this));
         LoggedUser user;
         if (savedInstanceState != null && (user = getLoggedUserOrNull(savedInstanceState)) != null) {
             logger.info(format("user %s recognized from bundle", user.getID()));
@@ -211,21 +215,6 @@ public class MainActivity extends ActionBarActivity
                 loadFragment(getOrCreateFindingFragment());
                 return true;
             case R.id.action_show_contacts:
-                PendingIntent pi = PendingIntent.getActivity(this, 10, new Intent(), 0);
-                Notification noti = new NotificationCompat.Builder(this)
-                        .setSmallIcon(android.R.drawable.ic_lock_power_off)
-                        .setTicker("Ticker")
-                                //.setLargeIcon(largeIcon)
-                        .setWhen(System.currentTimeMillis())
-                        .setContentTitle("Content Title")
-                        .setContentText("Content message")
-                        .setContentIntent(pi)
-                                //At most three action buttons can be added
-                        .setAutoCancel(true).build();
-                NotificationManager notificationManager =
-                        (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-                notificationManager.notify(1003, noti);
-                logger.info("notification exposed");
                 loadContactsFragment();
                 return true;
         }
@@ -332,10 +321,22 @@ public class MainActivity extends ActionBarActivity
         loadFragment(fragment);
     }
 
+    public void joinToConversatonWith(Chat chat) {
+        final Conversation conversation = loggedUser.joinToConversation(chat);
+        logger.info("Joined to conversation");
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                updateNavigationDrawer();
+                loadConversation(conversation.getName());
+            }
+        });
+    }
+
     private void startConversationWith(Contact contact) {
         Conversation conversation = loggedUser.startConversation(contact);
-        updateNavigationDrawer();
-        loadConversation(conversation.getName());
+        //updateNavigationDrawer();
+        //loadConversation(conversation.getName());
     }
 
     @Override

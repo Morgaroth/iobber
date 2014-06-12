@@ -7,6 +7,7 @@ import com.j256.ormlite.table.DatabaseTable;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+
 @DatabaseTable(tableName = "users")
 public class User implements Serializable {
 
@@ -63,39 +64,39 @@ public class User implements Serializable {
         return login;
     }
 
+    public void setLogin(String login) {
+        this.login = login;
+    }
+
     public String getPassword() {
         return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public String getPort() {
         return port;
     }
 
+    public void setPort(String port) {
+        this.port = port;
+    }
+
     public String getServerAddress() {
         return serverAddress;
     }
 
-    public String getSslEnable(){
-        return sslEnable;
-    }
-
-    public void setLogin(String login){
-        this.login = login;
-    }
-
-    public void setPassword(String password){
-        this.password = password;
-    }
-
-    public void setPort(String port){
-        this.port = port;
-    }
-
-    public void setServerAddress(String serverAddress){
+    public void setServerAddress(String serverAddress) {
         this.serverAddress = serverAddress;
     }
 
-    public void setSslEnable(String sslEnable){
+    public String getSslEnable() {
+        return sslEnable;
+    }
+
+    public void setSslEnable(String sslEnable) {
         this.sslEnable = sslEnable;
     }
 
@@ -104,20 +105,20 @@ public class User implements Serializable {
     }
 
     @Override
-    public int hashCode(){
+    public int hashCode() {
         return login.hashCode() * password.hashCode() * port.hashCode()
                 * serverAddress.hashCode() * sslEnable.hashCode();
     }
 
     @Override
-    public boolean equals(Object obj){
-        if ( this == obj ) {
+    public boolean equals(Object obj) {
+        if (this == obj) {
             return true;
         }
-        if ( !(obj instanceof User) ) {
+        if (!(obj instanceof User)) {
             return false;
         }
-        User user = (User)obj;
+        User user = (User) obj;
         return user.getLogin().equals(login) && user.getPassword().equals(password)
                 && user.getPort().equals(port) && user.getServerAddress().equals(serverAddress) && user.isSslEnabled() == isSslEnabled();
     }

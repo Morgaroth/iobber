@@ -9,11 +9,11 @@ public class BaseManagerMessagesConfiguration {
 
     private int numberOfDays;
 
-    public BaseManagerMessagesConfiguration(int numberOfDaysToSaveHistory){
+    public BaseManagerMessagesConfiguration(int numberOfDaysToSaveHistory) {
         this.numberOfDays = numberOfDaysToSaveHistory;
     }
 
-    public int getNumberOfDaysToSaveHistory(){
+    public int getNumberOfDaysToSaveHistory() {
         return numberOfDays;
     }
 

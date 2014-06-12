@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import pl.edu.agh.iobber.android.ChatManagerListener.AndroidChatManagerListenerCore;
 import pl.edu.agh.iobber.android.baseMessages.exceptions.CannotAddNewMessageToDatabase;
 import pl.edu.agh.iobber.android.baseUsers.exceptions.CannotAddNewUserToDatebase;
 import pl.edu.agh.iobber.android.baseUsers.exceptions.CannotDeleteUserFromDatabaseException;
@@ -44,6 +45,7 @@ public class XMPPManagerInstance {
     private BaseManagerMessages baseManagerMessages;
     private PacketListener packetListenerReceiver;
     private PacketListener packetListenerSent;
+    private AndroidChatManagerListenerCore chatManagerListenerCore;
 
     protected XMPPManagerInstance() {
         users = new LinkedList<User>();
@@ -75,6 +77,7 @@ public class XMPPManagerInstance {
     public LoggedUser loginUser(User user) throws ServerNotFoundException, InternetNotFoundException, UserNotExistsException, NotConnectedToTheServerException, NotValidLoginException {
         XMPPConnection xmppConnection = connectToServer(user);
 
+        addDefaultChatManagerListener(xmppConnection);
         loginUserToServer(xmppConnection, user);
         addDefaultPacketListener(xmppConnection);
         addRosterListener(xmppConnection);
@@ -83,6 +86,12 @@ public class XMPPManagerInstance {
         putNewUserToBase(user);
         return loggedUser;
 
+    }
+
+    private void addDefaultChatManagerListener(XMPPConnection xmppConnection) {
+        if (chatManagerListenerCore != null) {
+            xmppConnection.getChatManager().addChatListener(chatManagerListenerCore);
+        }
     }
 
     private void addDefaultPacketListener(XMPPConnection xmppConnection) {
@@ -251,5 +260,9 @@ public class XMPPManagerInstance {
 
     public void setBaseManager(BaseManager baseManager) {
         this.baseManager = baseManager;
+    }
+
+    public void setChatManagetListener(AndroidChatManagerListenerCore androidChatManagerListenerCore) {
+        this.chatManagerListenerCore = androidChatManagerListenerCore;
     }
 }

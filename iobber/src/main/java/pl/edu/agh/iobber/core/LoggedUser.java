@@ -111,6 +111,10 @@ public class LoggedUser implements ContactsResolver {
         baseManagerMessages.unregisterContactYouAreChattingWith(contact);
     }
 
+    public XMPPConnection getXmppConnection() {
+        return xmppConnection;
+    }
+
     public List<Contact> getContacts() {
         return contacts;
     }
@@ -127,5 +131,24 @@ public class LoggedUser implements ContactsResolver {
             }
         }
         return null;
+    }
+
+    public Conversation joinToConversation(Chat chat) {
+        Conversation conversation = Conversation.createWithoutChat(chat.getParticipant().split("/")[0], this, baseManagerMessages);
+        chat.addMessageListener(conversation.getInternalListener());
+
+        Contact contact = new Contact();
+        Roster roster = xmppConnection.getRoster();
+        Collection<RosterEntry> entries = roster.getEntries();
+        for (RosterEntry entry : entries) {
+            if (entry.getUser().equals(chat.getParticipant().split("/")[0])) {
+                contact.setRosterEntry(entry);
+            }
+        }
+
+        baseManagerMessages.registerContactYouAreChattingWith(contact);
+        conversation.setUpChat(chat);
+        activeConversations.put(contact.getXMPPIdentifier(), conversation);
+        return conversation;
     }
 }
