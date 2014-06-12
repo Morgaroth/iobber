@@ -45,7 +45,7 @@ public class XMPPManagerInstance {
     private BaseManagerMessages baseManagerMessages;
     private PacketListener packetListenerReceiver;
     private PacketListener packetListenerSent;
-    private AndroidChatManagerListenerCore chatManagerListenerCore;
+    private ChatManagerListenerCore chatManagerListenerCore;
 
     protected XMPPManagerInstance() {
         users = new LinkedList<User>();
@@ -262,7 +262,7 @@ public class XMPPManagerInstance {
         this.baseManager = baseManager;
     }
 
-    public void setChatManagetListener(AndroidChatManagerListenerCore androidChatManagerListenerCore) {
+    public void setChatManagetListener(ChatManagerListenerCore androidChatManagerListenerCore) {
         this.chatManagerListenerCore = androidChatManagerListenerCore;
     }
 }

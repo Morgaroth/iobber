@@ -43,6 +43,7 @@ import pl.edu.agh.iobber.android.navigation.NavigationDrawerFragment;
 import pl.edu.agh.iobber.android.AndroidRosterListener;
 import pl.edu.agh.iobber.core.BaseManagerMessages;
 import pl.edu.agh.iobber.core.BaseManagerMessagesConfiguration;
+import pl.edu.agh.iobber.core.ChatManagerListenerCore;
 import pl.edu.agh.iobber.core.Contact;
 import pl.edu.agh.iobber.core.Conversation;
 import pl.edu.agh.iobber.core.LoggedUser;
@@ -55,7 +56,8 @@ import static pl.edu.agh.iobber.android.LoginActivity.LOGIN_REQUEST;
 public class MainActivity extends ActionBarActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks,
         ContactsFragment.InteractionListener, FindingFragment.OnResultListener,
-        FindingResultsFragment.OnResultLister {
+        FindingResultsFragment.OnResultLister,
+        ChatManagerListenerCore {
 
     public static final String LOGGED_USER = "LOGGED_USER";
     public static final String SHARED_PREFERENCES = "MESSAGES_PREFS";
@@ -88,7 +90,7 @@ public class MainActivity extends ActionBarActivity
             logger.info(e.toString());
         }
         XMPPManager.setRosterListener(new AndroidRosterListener());
-        XMPPManager.setChatManagerListener(new AndroidChatManagerListenerCore(this));
+        XMPPManager.setChatManagerListener(this);
         LoggedUser user;
         if (savedInstanceState != null && (user = getLoggedUserOrNull(savedInstanceState)) != null) {
             logger.info(format("user %s recognized from bundle", user.getID()));
@@ -335,8 +337,8 @@ public class MainActivity extends ActionBarActivity
 
     private void startConversationWith(Contact contact) {
         Conversation conversation = loggedUser.startConversation(contact);
-        //updateNavigationDrawer();
-        //loadConversation(conversation.getName());
+        updateNavigationDrawer();
+        loadConversation(conversation.getName());
     }
 
     @Override
@@ -371,5 +373,13 @@ public class MainActivity extends ActionBarActivity
         ConversationFragment conversationFrag = getConversationOrNew(author, msg, true);
         loadFragment(conversationFrag);
         Toast.makeText(this, "Scroll to " + msg.getBody(), Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void chatCreated(Chat chat, boolean startedByMe) {
+        // reakcja na przychodzącą wiadomość
+        if (!startedByMe) {
+            joinToConversatonWith(chat);
+        }
     }
 }

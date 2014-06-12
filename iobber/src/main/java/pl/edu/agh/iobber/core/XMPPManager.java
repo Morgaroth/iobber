@@ -39,7 +39,7 @@ public class XMPPManager {
         instance.addBaseManagerMessage(androidBaseManagerMessages);
     }
 
-    public static void setChatManagerListener(AndroidChatManagerListenerCore androidChatManagerListenerCore) {
+    public static void setChatManagerListener(ChatManagerListenerCore androidChatManagerListenerCore) {
         instance.setChatManagetListener(androidChatManagerListenerCore);
     }
 }
