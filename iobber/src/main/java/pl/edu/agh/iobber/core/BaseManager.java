@@ -13,9 +13,7 @@ import pl.edu.agh.iobber.core.User;
 public interface BaseManager {
 
     void addNewUser(User user) throws CannotAddNewUserToDatebase;
-
     void deleteUser(User user) throws CannotDeleteUserFromDatabaseException;
-
     List<User> getAvailableUsers() throws CannotGetUsersFromDatabase;
 
 }

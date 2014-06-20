@@ -23,11 +23,11 @@ public class AndroidBaseManager implements BaseManager {
 
     private Dao<User, String> userDao;
 
-    public AndroidBaseManager(Dao<User, String> userDao) {
+    public AndroidBaseManager(Dao<User, String> userDao){
         this.userDao = userDao;
     }
 
-    public void addNewUser(User user) throws CannotAddNewUserToDatebase {
+    public void addNewUser(User user) throws CannotAddNewUserToDatebase{
         try {
             userDao.create(user);
             logger.info("New user is added to the database");
@@ -36,8 +36,7 @@ public class AndroidBaseManager implements BaseManager {
             throw new CannotAddNewUserToDatebase();
         }
     }
-
-    public void deleteUser(User user) throws CannotDeleteUserFromDatabaseException {
+    public void deleteUser(User user) throws CannotDeleteUserFromDatabaseException{
         try {
             userDao.delete(user);
             logger.info("User is deleted from the database");
@@ -46,8 +45,7 @@ public class AndroidBaseManager implements BaseManager {
             throw new CannotDeleteUserFromDatabaseException();
         }
     }
-
-    public List<User> getAvailableUsers() throws CannotGetUsersFromDatabase {
+    public List<User> getAvailableUsers() throws CannotGetUsersFromDatabase{
         try {
             List<User> u = userDao.queryForAll();
             logger.info("Users getted from the database");

@@ -1,8 +1,5 @@
 package pl.edu.agh.iobber.android;
 
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -11,7 +8,6 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.app.NotificationCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
@@ -47,7 +43,6 @@ import pl.edu.agh.iobber.android.navigation.NavigationDrawerFragment;
 import pl.edu.agh.iobber.android.AndroidRosterListener;
 import pl.edu.agh.iobber.core.BaseManagerMessages;
 import pl.edu.agh.iobber.core.BaseManagerMessagesConfiguration;
-import pl.edu.agh.iobber.core.ChatManagerListenerCore;
 import pl.edu.agh.iobber.core.Contact;
 import pl.edu.agh.iobber.core.Conversation;
 import pl.edu.agh.iobber.core.LoggedUser;
@@ -60,8 +55,7 @@ import static pl.edu.agh.iobber.android.LoginActivity.LOGIN_REQUEST;
 public class MainActivity extends ActionBarActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks,
         ContactsFragment.InteractionListener, FindingFragment.OnResultListener,
-        FindingResultsFragment.OnResultLister,
-        ChatManagerListenerCore {
+        FindingResultsFragment.OnResultLister {
 
     public static final String LOGGED_USER = "LOGGED_USER";
     public static final String SHARED_PREFERENCES = "MESSAGES_PREFS";
@@ -94,7 +88,7 @@ public class MainActivity extends ActionBarActivity
             logger.info(e.toString());
         }
         XMPPManager.setRosterListener(new AndroidRosterListener());
-        XMPPManager.setChatManagerListener(this);
+        XMPPManager.setChatManagerListener(new AndroidChatManagerListenerCore(this));
         LoggedUser user;
         if (savedInstanceState != null && (user = getLoggedUserOrNull(savedInstanceState)) != null) {
             logger.info(format("user %s recognized from bundle", user.getID()));
@@ -327,7 +321,7 @@ public class MainActivity extends ActionBarActivity
         loadFragment(fragment);
     }
 
-    public void joinToConversatonWith(Chat chat) {
+    public void joinToConversatonWith(Chat chat){
         final Conversation conversation = loggedUser.joinToConversation(chat);
         logger.info("Joined to conversation");
         runOnUiThread(new Runnable() {
@@ -377,28 +371,5 @@ public class MainActivity extends ActionBarActivity
         ConversationFragment conversationFrag = getConversationOrNew(author, msg, true);
         loadFragment(conversationFrag);
         Toast.makeText(this, "Scroll to " + msg.getBody(), Toast.LENGTH_LONG).show();
-    }
-
-    @Override
-    public void chatCreated(Chat chat, boolean startedByMe) {
-        logger.info(format("chat %s created by me %s", chat.getParticipant(), startedByMe));
-        if (!startedByMe) {
-            PendingIntent pi = PendingIntent.getActivity(this, 10, new Intent(), 0);
-            Notification noti = new NotificationCompat.Builder(this)
-                    .setSmallIcon(android.R.drawable.ic_lock_power_off)
-                    .setTicker("Wiadomość przyszła")
-                            //.setLargeIcon(largeIcon)
-                    .setWhen(System.currentTimeMillis())
-                    .setContentTitle("fdsagfdsgd")
-                    .setContentText("Content message")
-                    .setContentIntent(pi)
-                            //At most three action buttons can be added
-                    .setAutoCancel(true).build();
-            NotificationManager notificationManager =
-                    (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-            notificationManager.notify(1003, noti);
-            logger.info("notification exposed");
-            joinToConversatonWith(chat);
-        }
     }
 }

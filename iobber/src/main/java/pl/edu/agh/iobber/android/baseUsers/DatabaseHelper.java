@@ -23,9 +23,11 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
     private static final String DATABASE_NAME = "users.db";//twoja nazwa:)
     private static final int DATABASE_VERSION = 4;
-    private static final AtomicInteger usageCounter2 = new AtomicInteger(0);
-    private static DatabaseHelper helper2 = null;
+
     private Dao<User, String> userDao = null;
+
+    private static DatabaseHelper helper2 = null;
+    private static final AtomicInteger usageCounter2 = new AtomicInteger(0);
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
