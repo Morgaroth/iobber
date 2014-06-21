@@ -111,7 +111,7 @@ public class LoggedUser implements ContactsResolver {
         baseManagerMessages.unregisterContactYouAreChattingWith(contact);
     }
 
-    public XMPPConnection getXmppConnection() {
+    public XMPPConnection getXmppConnection(){
         return xmppConnection;
     }
 
@@ -141,7 +141,7 @@ public class LoggedUser implements ContactsResolver {
         Roster roster = xmppConnection.getRoster();
         Collection<RosterEntry> entries = roster.getEntries();
         for (RosterEntry entry : entries) {
-            if (entry.getUser().equals(chat.getParticipant().split("/")[0])) {
+            if(entry.getUser().equals(chat.getParticipant().split("/")[0])){
                 contact.setRosterEntry(entry);
             }
         }

@@ -202,7 +202,7 @@ abstract public class EndslessAdapter extends AdapterWrapper {
      * "Pending" row when new data is loaded.
      */
     public int getItemViewType(int position) {
-        //logger.info("endsless adapter -> returning view for position " + position);
+        logger.info("endsless adapter -> returning view for position " + position);
         if (keepOnAppendingAtStart.get() && position == 0) {
             return IGNORE_ITEM_VIEW_TYPE;
         }
@@ -266,7 +266,7 @@ abstract public class EndslessAdapter extends AdapterWrapper {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         if (position == 0 && keepOnAppendingAtStart.get()) {
-            //logger.info("returning begining pending view");
+            logger.info("returning begining pending view");
             if (pendingView == null) {
                 pendingView = getPendingView(parent);
                 if (runInBackground) {
@@ -284,7 +284,7 @@ abstract public class EndslessAdapter extends AdapterWrapper {
         }
 
         if (position == (super.getCount() + (keepOnAppendingAtStart.get() ? 1 : 0)) && keepOnAppendingAtEnd.get()) {
-            //logger.info("returning ending pending view");
+            logger.info("returning ending pending view");
             if (pendingView == null) {
                 pendingView = getPendingView(parent);
 

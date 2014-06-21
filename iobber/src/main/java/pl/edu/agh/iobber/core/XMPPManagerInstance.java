@@ -45,7 +45,7 @@ public class XMPPManagerInstance {
     private BaseManagerMessages baseManagerMessages;
     private PacketListener packetListenerReceiver;
     private PacketListener packetListenerSent;
-    private ChatManagerListenerCore chatManagerListenerCore;
+    private AndroidChatManagerListenerCore chatManagerListenerCore;
 
     protected XMPPManagerInstance() {
         users = new LinkedList<User>();
@@ -89,7 +89,7 @@ public class XMPPManagerInstance {
     }
 
     private void addDefaultChatManagerListener(XMPPConnection xmppConnection) {
-        if (chatManagerListenerCore != null) {
+        if(chatManagerListenerCore != null){
             xmppConnection.getChatManager().addChatListener(chatManagerListenerCore);
         }
     }
@@ -220,6 +220,7 @@ public class XMPPManagerInstance {
         if (temporaryRosterListener != null) {
             Roster roster = xmppConnection.getRoster();
             roster.addRosterListener(temporaryRosterListener);
+            roster.setSubscriptionMode(Roster.SubscriptionMode.accept_all);
         }
     }
 
@@ -262,7 +263,7 @@ public class XMPPManagerInstance {
         this.baseManager = baseManager;
     }
 
-    public void setChatManagetListener(ChatManagerListenerCore androidChatManagerListenerCore) {
+    public void setChatManagetListener(AndroidChatManagerListenerCore androidChatManagerListenerCore) {
         this.chatManagerListenerCore = androidChatManagerListenerCore;
     }
 }

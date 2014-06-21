@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<pre-dex-items>
+
+    <item
+        dex="C:\Users\HOUSE\Desktop\io2\14wr5p9\iobber\build\intermediates\pre-dexed\debug\classes-db874f12e8dc64040f0c3a8d6b51898464864ed0.jar"
+        jar="C:\Users\HOUSE\Desktop\io2\14wr5p9\build\intermediates\exploded-aar\com.android.support\appcompat-v7\19.1.0\classes.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="3499ceba05ca1f6037c6a2fad73df8f636224a28"/>
+    <item
+        dex="C:\Users\HOUSE\Desktop\io2\14wr5p9\iobber\build\intermediates\pre-dexed\debug\ormlite-android-4.48-887b9729e6dd9f9e89ec1e60579774e3fad1f2f0.jar"
+        jar="C:\Users\HOUSE\Desktop\io2\14wr5p9\iobber\libs\ormlite-android-4.48.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="afa06f539a4026c10b247386312aa67404b80a16"/>
+    <item
+        dex="C:\Users\HOUSE\Desktop\io2\14wr5p9\iobber\build\intermediates\pre-dexed\debug\ormlite-core-4.48-ba79e5e20c08a1473b6bb552b0f090d2c5773c12.jar"
+        jar="C:\Users\HOUSE\Desktop\io2\14wr5p9\iobber\libs\ormlite-core-4.48.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="e579bd2905d0399af5029aaaf9817d5fa0ca88a5"/>
+    <item
+        dex="C:\Users\HOUSE\Desktop\io2\14wr5p9\iobber\build\intermediates\pre-dexed\debug\classes-52e1e0b7d902d9b2b0875fe37e48f650fffd9fb3.jar"
+        jar="C:\Users\HOUSE\Desktop\io2\14wr5p9\build\intermediates\exploded-aar\com.android.support\gridlayout-v7\19.1.0\classes.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="af4cc326e6cd92f88db12298767e521743aedd36"/>
+    <item
+        dex="C:\Users\HOUSE\Desktop\io2\14wr5p9\iobber\build\intermediates\pre-dexed\debug\asmack-android-19-0.8.10-0b1444193aa9c44da59df7b94c58315b20770afd.jar"
+        jar="C:\Users\HOUSE\Desktop\io2\14wr5p9\iobber\libs\asmack-android-19-0.8.10.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="a97f7acb22f084f8b7679c190dd235f31d7f3e7b"/>
+    <item
+        dex="C:\Users\HOUSE\Desktop\io2\14wr5p9\iobber\build\intermediates\pre-dexed\debug\support-v4-19.1.0-2e116a2f2ffa865698308aaa39a156ac2f3e60ad.jar"
+        jar="C:\android-studio\sdk\extras\android\m2repository\com\android\support\support-v4\19.1.0\support-v4-19.1.0.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="85f201b380937e61a9dce6ca90ccf6872abbfb67"/>
+    <item
+        dex="C:\Users\HOUSE\Desktop\io2\14wr5p9\iobber\build\intermediates\pre-dexed\debug\classes-aab1e01758f016052a8ac5dc62d372d8b1c9b4e2.jar"
+        jar="C:\Users\HOUSE\Desktop\io2\14wr5p9\build\intermediates\exploded-aar\com.commonsware.cwac\adapter\1.0.1\classes.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="80d105e9d27353870ab793ba2222e9e0c832e528"/>
+
+</pre-dex-items>

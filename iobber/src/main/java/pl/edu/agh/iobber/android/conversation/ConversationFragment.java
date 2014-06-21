@@ -156,7 +156,6 @@ public class ConversationFragment extends ListFragment implements MsgListener {
 
     private void scrollAdapterDown() {
         if (adapter != null) {
-            logger.info("forced scroll down adapter");
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
