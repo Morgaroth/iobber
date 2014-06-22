@@ -33,7 +33,7 @@ public class FindingResultsFragment extends ListFragment {
         this.messages.clear();
         int count = messages.size() / 3;
         for (int i = 0; i < count; ++i) {
-            this.messages.add(new Tuple(messages.get(i), messages.get(i + 1), messages.get(i + 2)));
+            this.messages.add(new Tuple(messages.get(i * 3), messages.get(i * 3 + 1), messages.get(i * 3 + 2)));
         }
     }
 

@@ -366,7 +366,6 @@ public class AndroidBaseManagerMessages implements BaseManagerMessages {
                 e.printStackTrace();
             }
         }
-
         return returnList;
     }
 
