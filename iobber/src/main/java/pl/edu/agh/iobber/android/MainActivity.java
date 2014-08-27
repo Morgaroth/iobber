@@ -19,6 +19,7 @@ import org.jivesoftware.smack.Chat;
 import org.jivesoftware.smack.Roster;
 import org.jivesoftware.smack.RosterEntry;
 import org.jivesoftware.smack.XMPPConnection;
+import org.jivesoftware.smackx.muc.MultiUserChat;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -36,6 +37,7 @@ import pl.edu.agh.iobber.android.baseMessages.DatabaseHelperMessages;
 import pl.edu.agh.iobber.android.baseUsers.AndroidBaseManager;
 import pl.edu.agh.iobber.android.baseUsers.DatabaseHelper;
 import pl.edu.agh.iobber.android.contacts.ContactsFragment;
+import pl.edu.agh.iobber.android.conversation.AndroidInvitationListener;
 import pl.edu.agh.iobber.android.conversation.ConversationFragment;
 import pl.edu.agh.iobber.android.finding.FindingFragment;
 import pl.edu.agh.iobber.android.finding.FindingResultsFragment;

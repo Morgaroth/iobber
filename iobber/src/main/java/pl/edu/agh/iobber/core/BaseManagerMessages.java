@@ -1,16 +1,16 @@
 package pl.edu.agh.iobber.core;
 
-import org.jivesoftware.smack.PacketListener;
+    import org.jivesoftware.smack.PacketListener;
 
-import java.util.List;
+    import java.util.List;
 
-import pl.edu.agh.iobber.android.baseMessages.exceptions.CannotAddNewMessageToDatabase;
-import pl.edu.agh.iobber.core.SimpleMessage;
-import pl.edu.agh.iobber.core.exceptions.CannotFindMessagesInTheDatabaseException;
-import pl.edu.agh.iobber.core.exceptions.CannotGetMessagesFromTheDatabaseException;
-import pl.edu.agh.iobber.core.exceptions.CannotUpdateTheDatabasseException;
+    import pl.edu.agh.iobber.android.baseMessages.exceptions.CannotAddNewMessageToDatabase;
+    import pl.edu.agh.iobber.core.SimpleMessage;
+    import pl.edu.agh.iobber.core.exceptions.CannotFindMessagesInTheDatabaseException;
+    import pl.edu.agh.iobber.core.exceptions.CannotGetMessagesFromTheDatabaseException;
+    import pl.edu.agh.iobber.core.exceptions.CannotUpdateTheDatabasseException;
 
-public interface BaseManagerMessages {
+    public interface BaseManagerMessages {
 
     void addNewMessage(SimpleMessage simpleMessage) throws CannotAddNewMessageToDatabase;
 

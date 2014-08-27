@@ -6,6 +6,7 @@ import org.jivesoftware.smack.Roster;
 import org.jivesoftware.smack.RosterEntry;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
+import org.jivesoftware.smackx.muc.MultiUserChat;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -13,6 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Logger;
 
+import pl.edu.agh.iobber.android.conversation.AndroidInvitationListener;
 import pl.edu.agh.iobber.core.exceptions.IObberException;
 
 public class LoggedUser implements ContactsResolver {
@@ -27,6 +29,7 @@ public class LoggedUser implements ContactsResolver {
     private String ID;
     //private List<Contact> contacts = Arrays.asList(new Contact("mietek"), new Contact("wacek"), new Contact("leonidas"), new Contact("Hania"));
     private List<Contact> contacts;
+    private AndroidInvitationListener androidInvitationListener;
 
     public LoggedUser(User user, String ID, XMPPConnection xmppConnection, BaseManagerMessages baseManagerMessages) {
         this.user = user;
@@ -35,6 +38,8 @@ public class LoggedUser implements ContactsResolver {
         this.baseManagerMessages = baseManagerMessages;
         logged = false;
         contacts = new ArrayList<Contact>();
+        androidInvitationListener = new AndroidInvitationListener();
+        MultiUserChat.addInvitationListener(xmppConnection, androidInvitationListener);
         getConctactFromServer();
     }
 
