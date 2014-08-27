@@ -173,7 +173,7 @@ public class AndroidBaseManagerMessages implements BaseManagerMessages {
     }
 
     @Override
-    public SimpleMessage getUnreadedLastMessageForPerson(String title) {
+    public SimpleMessage getUnreadedLastMessageForPerson(String title, String room) {
         SimpleMessage sim;
         synchronized (obj) {
             if (messagesForConversations.get(title).size() > 0) {
@@ -186,7 +186,7 @@ public class AndroidBaseManagerMessages implements BaseManagerMessages {
     }
 
     @Override
-    public int countUnreadedMessagesForPerson(String title) {
+    public int countUnreadedMessagesForPerson(String title, String room) {
         int number;
         synchronized (obj) {
             number = messagesForConversations.get(title).size();

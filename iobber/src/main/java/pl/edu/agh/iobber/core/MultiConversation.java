@@ -18,6 +18,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Logger;
 
+import pl.edu.agh.iobber.android.baseMessages.exceptions.CannotAddNewMessageToDatabase;
 import pl.edu.agh.iobber.core.exceptions.CannotChangeSubjectOfTheRoomException;
 import pl.edu.agh.iobber.core.exceptions.CannotConfigurePrivateRoomException;
 import pl.edu.agh.iobber.core.exceptions.CannotCreateMultiUSerChatException;
@@ -35,7 +36,8 @@ import pl.edu.agh.iobber.core.exceptions.CannotSendMessageToMultiUserChatExcepti
 import static java.lang.String.format;
 
 //any informations and tips -> http://www.igniterealtime.org/builds/smack/dailybuilds/documentation/extensions/muc.html
-
+//pobieranie wiadomosci dla danej konwersacji odbywa sie poprzez metode nextMessage() albo pollMessage() klasy MultiUserChat
+//nie da sie latwo zrobic by poprzez pakiety sledzic ktora wiadomosc nalezy do ktorego pokoju :/
 public class MultiConversation implements MsgListener{
 
     public static final String ROOM_TYPE_INSTANT = "Instant room";
@@ -51,12 +53,14 @@ public class MultiConversation implements MsgListener{
     private XMPPConnection xmppConnection;
     private Form form;
     private String ownerOfPrivateRoom;
+    private BaseManagerMessages baseManagerMessages;
 
-    public MultiConversation(XMPPConnection conn, String nameOfTheRoom, String nickname){
+    public MultiConversation(XMPPConnection conn, String nameOfTheRoom, String nickname, BaseManagerMessages baseManagerMessages){
         logger.info("MultiConversation constructor induced");
         this.nickname = nickname;
         this.xmppConnection = conn;
         this.nameOfTheRoom = nameOfTheRoom;
+        this.baseManagerMessages = baseManagerMessages;
     }
 
     public void setBaseManager(MultiUserBaseManager multiUserBaseManager){
@@ -237,6 +241,24 @@ public class MultiConversation implements MsgListener{
             logger.info("cannot revoke moderator for " + name + " " + e.toString());
             throw new CannotRevokeModeratorException(e);
         }
+    }
+
+    public Msg getLastMessage() {
+        SimpleMessage simpleMessage = baseManagerMessages.getUnreadedLastMessageForPerson(nickname, nameOfTheRoom);
+        MsgImpl msg = new MsgImpl(simpleMessage.getBody(), new SimpleContact(simpleMessage.getFrom()));
+        return msg;
+    }
+
+    public int unreadedMessages() {
+        return baseManagerMessages.countUnreadedMessagesForPerson(nickname, nameOfTheRoom);
+    }
+
+    //taki hack. Wychodzimy z zalozenia ze zawsze sa przeczytane widomosci wiec je tylko zapisujemy.
+    //Sami musimy wywoływać tą funkcje wtedy gdy chcemy zapisać wiadomość wysyłaną bądź odbieraną!!
+    public void saveMessage(SimpleMessage simpleMessage) throws CannotAddNewMessageToDatabase {
+        simpleMessage.setNameOfRoom(nameOfTheRoom);
+        simpleMessage.setIsReaded(true);
+        baseManagerMessages.addNewSentMessage(simpleMessage);
     }
 
     @Override

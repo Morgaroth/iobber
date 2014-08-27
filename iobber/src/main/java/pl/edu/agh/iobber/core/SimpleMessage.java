@@ -3,6 +3,9 @@ package pl.edu.agh.iobber.core;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @DatabaseTable(tableName = "messages")
 public class SimpleMessage {
 
@@ -12,6 +15,7 @@ public class SimpleMessage {
     public static final String DATE_FIELD_MESSAGE = "date";
     public static final String BODY_FIELD_MESSAGE = "body";
     public static final String ISREADED_FIELD_MESSAGE = "isReaded";
+    public static final String NAME_OF_ROOM_FIELD_MESSAGE = "nameOfRoom";
 
     @DatabaseField(generatedId = true, useGetSet = true, columnName = ID_FIELD_MESSAGE)
     private Integer id;
@@ -31,7 +35,11 @@ public class SimpleMessage {
     @DatabaseField(useGetSet = true, columnName = ISREADED_FIELD_MESSAGE)
     private boolean isReaded;
 
+    @DatabaseField(useGetSet = true, columnName = NAME_OF_ROOM_FIELD_MESSAGE)
+    private String nameOfRoom;
+
     public SimpleMessage() {
+        nameOfRoom = "";
     }
 
     public SimpleMessage from(String from) {
@@ -56,6 +64,11 @@ public class SimpleMessage {
 
     public SimpleMessage isReaded(boolean isReaded) {
         this.isReaded = isReaded;
+        return this;
+    }
+
+    public SimpleMessage nameOfRoom(String nameOfRoom) {
+        this.nameOfRoom = nameOfRoom;
         return this;
     }
 
@@ -107,6 +120,10 @@ public class SimpleMessage {
         this.isReaded = isReaded;
     }
 
+    public String getNameOfRoom(){return nameOfRoom;}
+
+    public void setNameOfRoom(String nameOfRoom){this.nameOfRoom = nameOfRoom;}
+
     @Override
     public boolean equals(Object o) {
         if (o == null) return false;
@@ -117,7 +134,8 @@ public class SimpleMessage {
                 this.getIsReaded() == other.getIsReaded() &&
                 this.getBody().equals(other.getBody()) &&
                 this.getTo().equals(other.getTo()) &&
-                this.getDate().equals(other.getDate());
+                this.getDate().equals(other.getDate()) &&
+                this.getNameOfRoom().equals(other.getNameOfRoom());
     }
 
     @Override
@@ -126,7 +144,8 @@ public class SimpleMessage {
                 getBody().hashCode() * 7 +
                 getTo().hashCode() * 11 +
                 getDate().hashCode() * 13 +
-                (getIsReaded() == true ? 1 : 2);
+                (getIsReaded() == true ? 1 : 2) +
+                getNameOfRoom().hashCode() * 17;
     }
 
     public boolean isStub() {
@@ -140,6 +159,7 @@ public class SimpleMessage {
                 ", from='" + from + '\'' +
                 ", to='" + to + '\'' +
                 ", date='" + date + '\'' +
+                ", nameOfRoom='" + nameOfRoom + '\'' +
                 ", body='" + body + '\'' +
                 '}';
     }

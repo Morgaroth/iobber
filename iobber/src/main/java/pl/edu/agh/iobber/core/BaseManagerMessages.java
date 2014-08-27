@@ -20,9 +20,9 @@ package pl.edu.agh.iobber.core;
 
     List<SimpleMessage> getLastNMessagesForPerson(String xmppUserID, int numberOfMessages) throws CannotGetMessagesFromTheDatabaseException;
 
-    SimpleMessage getUnreadedLastMessageForPerson(String title);
+    SimpleMessage getUnreadedLastMessageForPerson(String title, String room);
 
-    int countUnreadedMessagesForPerson(String title);
+    int countUnreadedMessagesForPerson(String title, String room);
 
     void markMessageAsReaded(SimpleMessage simpleMessage) throws CannotUpdateTheDatabasseException;
 

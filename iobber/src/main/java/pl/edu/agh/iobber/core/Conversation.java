@@ -102,7 +102,7 @@ public class Conversation implements MsgListener {
     }
 
     public Msg getLastMessage() {
-        SimpleMessage simpleMessage = baseManagerMessages.getUnreadedLastMessageForPerson(title);
+        SimpleMessage simpleMessage = baseManagerMessages.getUnreadedLastMessageForPerson(title, "");
         MsgImpl msg = new MsgImpl(simpleMessage.getBody(), new SimpleContact(simpleMessage.getFrom()));
         return msg;
     }
@@ -116,7 +116,7 @@ public class Conversation implements MsgListener {
     }
 
     public int unreadedMessages() {
-        return baseManagerMessages.countUnreadedMessagesForPerson(title);
+        return baseManagerMessages.countUnreadedMessagesForPerson(title, "");
     }
 
     @Override
