@@ -320,10 +320,11 @@ public class MainActivity extends ActionBarActivity
     public void onContactLongClick(Contact item) {
         FindingFragment fragment = getOrCreateFindingFragment();
         fragment.setContact(item);
+        logger.severe(format("finding for %s", item.getXMPPIdentifier()));
         loadFragment(fragment);
     }
 
-    public void joinToConversatonWith(Chat chat){
+    public void joinToConversatonWith(Chat chat) {
         final Conversation conversation = loggedUser.joinToConversation(chat);
         logger.info("Joined to conversation");
         runOnUiThread(new Runnable() {
