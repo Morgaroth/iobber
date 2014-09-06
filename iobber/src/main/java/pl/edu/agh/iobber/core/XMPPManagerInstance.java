@@ -8,6 +8,7 @@ import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.PacketListener;
 import org.jivesoftware.smack.Roster;
 import org.jivesoftware.smack.RosterListener;
+import org.jivesoftware.smack.SmackConfiguration;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.filter.PacketFilter;
@@ -36,7 +37,7 @@ import pl.edu.agh.iobber.core.exceptions.ServerNotFoundException;
 import pl.edu.agh.iobber.core.exceptions.UserNotExistsException;
 
 public class XMPPManagerInstance {
-
+    private static final int PACKET_REPLY_TIMEOUT = 3000;
     private Map<String, LoggedUser> loggedUsers;
     private BaseManager baseManager;
     private List<User> users;
@@ -89,7 +90,7 @@ public class XMPPManagerInstance {
     }
 
     private void addDefaultChatManagerListener(XMPPConnection xmppConnection) {
-        if(chatManagerListenerCore != null){
+        if (chatManagerListenerCore != null) {
             xmppConnection.getChatManager().addChatListener(chatManagerListenerCore);
         }
     }
@@ -158,14 +159,15 @@ public class XMPPManagerInstance {
         boolean authenticationSASL = user.isSslEnabled();
         String login = user.getLogin();
 
-        if (login.contains("@") == false) {
+        if (!login.contains("@")) {
             throw new NotValidLoginException();
         }
         String service = login.split("@")[1];
 
         ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(server, port, service);
         connectionConfiguration.setReconnectionAllowed(true);
-        //connectionConfiguration.setSASLAuthenticationEnabled(authenticationSASL);
+        connectionConfiguration.setSASLAuthenticationEnabled(authenticationSASL);
+        connectionConfiguration.setSecurityMode(ConnectionConfiguration.SecurityMode.required);
         //connectionConfiguration.setSelfSignedCertificateEnabled(false);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
@@ -173,9 +175,8 @@ public class XMPPManagerInstance {
             connectionConfiguration.setTruststoreType("AndroidCAStore");
             connectionConfiguration.setTruststorePassword(null);
             connectionConfiguration.setTruststorePath(null);
-
         } else {
-            logger.severe("-------------------------------------------------------------------");
+            logger.severe("--------------------------------------------------------------------");
             connectionConfiguration.setTruststoreType("BKS");
             String path = System.getProperty("javax.net.ssl.trustStore");
             if (path == null)
@@ -184,6 +185,8 @@ public class XMPPManagerInstance {
                         + "cacerts.bks";
             connectionConfiguration.setTruststorePath(path);
         }
+
+        SmackConfiguration.setPacketReplyTimeout(PACKET_REPLY_TIMEOUT);
 
         final XMPPConnection temporaryXmppConnection = new XMPPConnection(connectionConfiguration);
         try {

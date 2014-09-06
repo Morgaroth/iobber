@@ -1,4 +1,12 @@
-apply plugin: 'android'
+apply plugin: 'com.android.application'
+apply plugin: 'idea'
+
+idea {
+    module {
+        downloadJavadoc = true
+        downloadSources = true
+    }
+}
 
 android {
     compileSdkVersion 19
@@ -25,7 +33,13 @@ repositories {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'], exclude: ['asmack-android-8*'])
+    compile fileTree(dir: 'libs',
+            include: [
+                    'asmack-android-19*',
+                    'dnsjava*',
+                    'ormlite*'
+            ]
+    )
     compile 'com.android.support:appcompat-v7:19.1.0'
     compile 'com.android.support:gridlayout-v7:19.1.0'
     compile 'com.android.support:support-v4:19.1.0'
