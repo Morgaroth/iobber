@@ -3,7 +3,6 @@ package pl.edu.agh.iobber.core;
 import android.os.AsyncTask;
 import android.os.Build;
 
-import org.apache.harmony.javax.security.sasl.SaslException;
 import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.PacketListener;
 import org.jivesoftware.smack.Roster;
@@ -16,7 +15,6 @@ import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Packet;
 
 import java.io.File;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -47,10 +45,16 @@ public class XMPPManagerInstance {
     private PacketListener packetListenerReceiver;
     private PacketListener packetListenerSent;
     private AndroidChatManagerListenerCore chatManagerListenerCore;
+    private XMPPConnection xmppConnection;
+    private String serverDomainName;
 
     protected XMPPManagerInstance() {
         users = new LinkedList<User>();
         loggedUsers = new HashMap<String, LoggedUser>();
+    }
+
+    public String getServerDomainName() {
+        return serverDomainName;
     }
 
     public List<User> getAvailableUsersToConnect() {
@@ -76,7 +80,7 @@ public class XMPPManagerInstance {
     }
 
     public LoggedUser loginUser(User user) throws ServerNotFoundException, InternetNotFoundException, UserNotExistsException, NotConnectedToTheServerException, NotValidLoginException {
-        XMPPConnection xmppConnection = connectToServer(user);
+        xmppConnection = connectToServer(user);
 
         addDefaultChatManagerListener(xmppConnection);
         loginUserToServer(xmppConnection, user);
@@ -162,9 +166,9 @@ public class XMPPManagerInstance {
         if (!login.contains("@")) {
             throw new NotValidLoginException();
         }
-        String service = login.split("@")[1];
+        serverDomainName = login.split("@")[1];
 
-        ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(server, port, service);
+        ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(server, port, serverDomainName);
         connectionConfiguration.setReconnectionAllowed(true);
         connectionConfiguration.setSASLAuthenticationEnabled(authenticationSASL);
         connectionConfiguration.setSecurityMode(ConnectionConfiguration.SecurityMode.required);

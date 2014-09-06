@@ -212,4 +212,7 @@ public class ConversationFragment extends ListFragment implements MsgListener {
     }
 
 
+    public Conversation getDelegate() {
+        return delegate;
+    }
 }

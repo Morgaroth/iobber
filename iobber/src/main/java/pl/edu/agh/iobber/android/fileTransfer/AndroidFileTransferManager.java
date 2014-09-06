@@ -10,7 +10,10 @@ import org.jivesoftware.smackx.filetransfer.OutgoingFileTransfer;
 import java.io.File;
 import java.util.logging.Logger;
 
+import pl.edu.agh.iobber.android.GlobalVars;
 import pl.edu.agh.iobber.core.exceptions.CannotSendFileToUserException;
+
+import static java.lang.String.format;
 
 //in order to get some informations, pease visit this site -> https://www.igniterealtime.org/builds/smack/docs/latest/documentation/extensions/filetransfer.html
 
@@ -25,7 +28,7 @@ public class AndroidFileTransferManager {
     private OutgoingFileTransfer transfer;
     private AndroidFileTransferListener androidFileTransferListener;
 
-    public AndroidFileTransferManager(XMPPConnection xmppConnection){
+    public AndroidFileTransferManager(XMPPConnection xmppConnection) {
         logger.info("New AndroidFileTransferManager is created");
         comment = "";
         androidFileTransferListener = null;
@@ -33,23 +36,26 @@ public class AndroidFileTransferManager {
         fileTransferManager = new FileTransferManager(xmppConnection);
     }
 
-    public void setDestination(String destination){
+    public AndroidFileTransferManager setDestinationUser(String destination) {
         logger.info("Destination for sending file is set");
         this.destination = destination;
+        return this;
     }
 
-    public void setFilepathToTransferedFile(String filepath){
+    public AndroidFileTransferManager setFilepathToTransferedFile(String filepath) {
         logger.info("Filepath to the file is set");
         this.filepath = filepath;
+        return this;
     }
 
-    public void setCommentToTransferedFile(String comment){
+    public void setCommentToTransferedFile(String comment) {
         logger.info("Comment for transfered file is set");
         this.comment = comment;
     }
 
     public void sendFile() throws CannotSendFileToUserException {
-        transfer = fileTransferManager.createOutgoingFileTransfer(destination);
+
+        transfer = fileTransferManager.createOutgoingFileTransfer(format("%s@%s", destination, GlobalVars.instance.xmppManager.getServerDomainName()));
         try {
             transfer.sendFile(new File(filepath), comment);
             logger.info("The file is going to be send");
@@ -59,40 +65,41 @@ public class AndroidFileTransferManager {
         }
     }
 
-    public void setFileTransferListener(AndroidFileTransferListener fileTransferListener){
+    public AndroidFileTransferManager setFileTransferListener(AndroidFileTransferListener fileTransferListener) {
         fileTransferManager.addFileTransferListener(fileTransferListener);
         androidFileTransferListener = fileTransferListener;
+        return this;
     }
 
-    public FileTransfer.Status getStatusOfIncomingIleTransfer(){
+    public FileTransfer.Status getStatusOfIncomingIleTransfer() {
         return androidFileTransferListener.getStatus();
     }
 
-    public double getProgressOfIncomingIleTransfer(){
+    public double getProgressOfIncomingIleTransfer() {
         return androidFileTransferListener.getProgress();
     }
 
-    public boolean isDoneOfIncomingIleTransfer(){
+    public boolean isDoneOfIncomingIleTransfer() {
         return androidFileTransferListener.isDone();
     }
 
-    public FileTransfer.Error getErrorOfIncomingIleTransfer(){
+    public FileTransfer.Error getErrorOfIncomingIleTransfer() {
         return androidFileTransferListener.getError();
     }
 
-    public FileTransfer.Status getStatusOfOutgoingIleTransfer(){
+    public FileTransfer.Status getStatusOfOutgoingIleTransfer() {
         return transfer.getStatus();
     }
 
-    public double getProgressOfOutgoingIleTransfer(){
+    public double getProgressOfOutgoingIleTransfer() {
         return transfer.getProgress();
     }
 
-    public boolean isDoneOfOutgoingIleTransfer(){
+    public boolean isDoneOfOutgoingIleTransfer() {
         return transfer.isDone();
     }
 
-    public FileTransfer.Error getErrorOfOutgoingIleTransfer(){
+    public FileTransfer.Error getErrorOfOutgoingIleTransfer() {
         return transfer.getError();
     }
 }

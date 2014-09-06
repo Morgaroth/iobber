@@ -39,6 +39,8 @@ import pl.edu.agh.iobber.android.baseUsers.DatabaseHelper;
 import pl.edu.agh.iobber.android.contacts.ContactsFragment;
 import pl.edu.agh.iobber.android.conversation.AndroidInvitationListener;
 import pl.edu.agh.iobber.android.conversation.ConversationFragment;
+import pl.edu.agh.iobber.android.fileTransfer.AndroidFileTransferManager;
+import pl.edu.agh.iobber.android.fileTransfer.FileTransferFragment;
 import pl.edu.agh.iobber.android.finding.FindingFragment;
 import pl.edu.agh.iobber.android.finding.FindingResultsFragment;
 import pl.edu.agh.iobber.android.navigation.NavigationDrawerFragment;
@@ -73,6 +75,7 @@ public class MainActivity extends ActionBarActivity
     private FindingFragment findingFragment;
     private FindingResultsFragment findingResultsFragment;
     private Stack<Fragment> fragmentsStack = new Stack<Fragment>();
+    private FileTransferFragment sendFileFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -158,20 +161,28 @@ public class MainActivity extends ActionBarActivity
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == LOGIN_REQUEST) {
-            if (resultCode == RESULT_OK) {
-                String userID = data.getStringExtra(LoginActivity.USER);
-                loggedUser = loadUserFromID(userID);
-                setUpContent();
-                logger.info(format("LoginActivity results OK"));
-                Toast.makeText(this, "Hurra", Toast.LENGTH_LONG).show();
-            }
-            if (resultCode == RESULT_CANCELED) {
-                logger.info("Login activity results CANCELLED !");
-                // TODO przejscie do jakiegoś pierwszego ekranu
-                //  TODO Czy to kiedy kolwiek nastąpi?
-                Toast.makeText(this, R.string.Login_cancelled, Toast.LENGTH_LONG).show();
-            }
+        logger.info("MainActivity received result requestCode=" + requestCode + ", resultCode=" + resultCode + ", data=" + data.toString());
+        switch (requestCode) {
+            case LOGIN_REQUEST:
+                if (resultCode == RESULT_OK) {
+                    String userID = data.getStringExtra(LoginActivity.USER);
+                    loggedUser = loadUserFromID(userID);
+                    setUpContent();
+                    logger.info(format("LoginActivity results OK"));
+                    Toast.makeText(this, "Hurra", Toast.LENGTH_LONG).show();
+                }
+                if (resultCode == RESULT_CANCELED) {
+                    logger.info("Login activity results CANCELLED !");
+                    // TODO przejscie do jakiegoś pierwszego ekranu
+                    //  TODO Czy to kiedy kolwiek nastąpi?
+                    Toast.makeText(this, R.string.Login_cancelled, Toast.LENGTH_LONG).show();
+                }
+                break;
+            case FileTransferFragment.ACTIVITY_CHOOSE_FILE:
+                sendFileFragment.fileChosen(requestCode, resultCode, data);
+                break;
+            default:
+                super.onActivityResult(requestCode, resultCode, data);
         }
     }
 
@@ -219,6 +230,10 @@ public class MainActivity extends ActionBarActivity
             case R.id.action_show_contacts:
                 loadContactsFragment();
                 return true;
+            case R.id.action_send_file:
+                logger.info("received request to send file");
+                loadFileTransferFragment();
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -233,6 +248,7 @@ public class MainActivity extends ActionBarActivity
     private void updateNavigationDrawer() {
         navigationDrawerFragment.updateConversationsList(new LinkedList<Conversation>(loggedUser.getActiveConversations()));
     }
+
 
     @Override
     public void onNavigationDrawerItemSelected(String title) {
@@ -286,6 +302,21 @@ public class MainActivity extends ActionBarActivity
         }, 1);
         contactsLoaded = true;
         logger.info("contacts loaded");
+    }
+
+    private void loadFileTransferFragment() {
+        ConversationFragment convFrag;
+        try {
+            convFrag = (ConversationFragment) fragmentsStack.peek();
+            if (sendFileFragment == null) {
+                sendFileFragment = FileTransferFragment.newInstance(convFrag.getDelegate());
+            }
+            loadFragment(sendFileFragment);
+            logger.info("File transfer fragment loaded");
+        } catch (ClassCastException e) {
+            logger.info("casting: " + e.getMessage());
+            Toast.makeText(this, "Click send file from conversation window", Toast.LENGTH_LONG).show();
+        }
     }
 
     private ConversationFragment getConversationOrNew(String title) {
@@ -353,6 +384,7 @@ public class MainActivity extends ActionBarActivity
             loadFragment(fragmentsStack.peek(), false);
         }
     }
+
 
     @Override
     public void onResult(String author, List<SimpleMessage> messages) {

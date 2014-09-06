@@ -103,7 +103,7 @@ public class LoggedUser implements ContactsResolver {
             return activeConversations.get(contact.getXMPPIdentifier());
         } else {
             ChatManager chatManager = xmppConnection.getChatManager();
-            Conversation conversation = Conversation.createWithoutChat(contact.getXMPPIdentifier(), this, baseManagerMessages);
+            Conversation conversation = Conversation.createWithoutChat(contact.getXMPPIdentifier(), this, baseManagerMessages, xmppConnection);
             Chat chat = chatManager.createChat(contact.getRosterEntry().getUser(), conversation.getInternalListener());
             baseManagerMessages.registerContactYouAreChattingWith(contact);
             conversation.setUpChat(chat);
@@ -116,7 +116,7 @@ public class LoggedUser implements ContactsResolver {
         baseManagerMessages.unregisterContactYouAreChattingWith(contact);
     }
 
-    public XMPPConnection getXmppConnection(){
+    public XMPPConnection getXmppConnection() {
         return xmppConnection;
     }
 
@@ -139,14 +139,14 @@ public class LoggedUser implements ContactsResolver {
     }
 
     public Conversation joinToConversation(Chat chat) {
-        Conversation conversation = Conversation.createWithoutChat(chat.getParticipant().split("/")[0], this, baseManagerMessages);
+        Conversation conversation = Conversation.createWithoutChat(chat.getParticipant().split("/")[0], this, baseManagerMessages, xmppConnection);
         chat.addMessageListener(conversation.getInternalListener());
 
         Contact contact = new Contact();
         Roster roster = xmppConnection.getRoster();
         Collection<RosterEntry> entries = roster.getEntries();
         for (RosterEntry entry : entries) {
-            if(entry.getUser().equals(chat.getParticipant().split("/")[0])){
+            if (entry.getUser().equals(chat.getParticipant().split("/")[0])) {
                 contact.setRosterEntry(entry);
             }
         }

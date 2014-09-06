@@ -35,7 +35,7 @@ repositories {
 dependencies {
     compile fileTree(dir: 'libs',
             include: [
-                    'asmack-android-19*',
+                    'asmack-android-19-0.8*',
                     'dnsjava*',
                     'ormlite*'
             ]

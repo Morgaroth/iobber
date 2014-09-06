@@ -47,5 +47,9 @@
     <string name="author_fotn_size">Author font size</string>
     <string name="settings">settings</string>
     <string name="spinner">spinner</string>
+    <string name="choose_file">Choose file</string>
+    <string name="send">Send</string>
+    <string name="no_fie_chosen">No file chosen</string>
+    <string name="send_file">Send file</string>
 
 </resources>
