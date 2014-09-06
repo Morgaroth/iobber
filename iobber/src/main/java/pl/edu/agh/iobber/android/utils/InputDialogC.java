@@ -1,4 +1,4 @@
-package pl.morgaroth.utils;
+package pl.edu.agh.iobber.android.utils;
 
 import android.app.AlertDialog;
 import android.content.Context;

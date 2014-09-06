@@ -11,7 +11,7 @@ import java.util.logging.Logger;
 import pl.edu.agh.iobber.R;
 import pl.edu.agh.iobber.core.Conversation;
 import pl.edu.agh.iobber.core.Msg;
-import pl.morgaroth.utils.CustomListAdapter;
+import pl.edu.agh.iobber.android.utils.CustomListAdapter;
 
 public class NavigationListAdapter extends CustomListAdapter<Conversation> {
     private Logger logger = Logger.getLogger(NavigationListAdapter.class.getSimpleName());

@@ -12,7 +12,7 @@ import java.util.logging.Logger;
 
 import pl.edu.agh.iobber.R;
 import pl.edu.agh.iobber.core.SimpleMessage;
-import pl.morgaroth.utils.CustomListAdapter;
+import pl.edu.agh.iobber.android.utils.CustomListAdapter;
 
 public class FindingListAdapter extends CustomListAdapter<Tuple> {
     public static final SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss dd.MM.yyyy", Locale.US);

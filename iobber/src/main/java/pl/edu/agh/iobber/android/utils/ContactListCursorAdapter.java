@@ -1,16 +1,4 @@
-package pl.morgaroth.utils;
-
-import android.content.Context;
-import android.database.Cursor;
-import android.provider.Contacts;
-import android.support.v4.widget.SimpleCursorAdapter;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Filterable;
-import android.widget.TextView;
-
-import pl.edu.agh.iobber.R;
+package pl.edu.agh.iobber.android.utils;
 
 //public class ContactListCursorAdapter extends SimpleCursorAdapter implements Filterable {
 //

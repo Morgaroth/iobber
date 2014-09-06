@@ -9,7 +9,7 @@ import java.util.List;
 
 import pl.edu.agh.iobber.R;
 import pl.edu.agh.iobber.core.Contact;
-import pl.morgaroth.utils.CustomListAdapter;
+import pl.edu.agh.iobber.android.utils.CustomListAdapter;
 
 public class ContactListAdapter extends CustomListAdapter<Contact> {
     public ContactListAdapter(Context context) {

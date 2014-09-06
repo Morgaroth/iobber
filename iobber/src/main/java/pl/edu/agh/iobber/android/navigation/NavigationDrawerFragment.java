@@ -19,7 +19,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -27,7 +26,7 @@ import java.util.List;
 
 import pl.edu.agh.iobber.R;
 import pl.edu.agh.iobber.core.Conversation;
-import pl.morgaroth.utils.LazyListAdapter;
+import pl.edu.agh.iobber.android.utils.LazyListAdapter;
 
 import static pl.edu.agh.iobber.android.Helpers.closeDrawerCorrectly;
 

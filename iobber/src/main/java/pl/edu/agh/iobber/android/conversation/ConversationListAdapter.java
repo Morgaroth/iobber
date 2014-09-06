@@ -11,9 +11,8 @@ import java.util.Locale;
 import java.util.logging.Logger;
 
 import pl.edu.agh.iobber.R;
-import pl.edu.agh.iobber.core.Msg;
 import pl.edu.agh.iobber.core.SimpleMessage;
-import pl.morgaroth.utils.CustomListAdapter;
+import pl.edu.agh.iobber.android.utils.CustomListAdapter;
 
 import static java.lang.String.format;
 
