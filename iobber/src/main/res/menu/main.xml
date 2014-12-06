@@ -1,0 +1,26 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="pl.edu.agh.iobber.android.MainActivity">
+    <item
+        android:id="@+id/action_show_contacts"
+        android:icon="@drawable/contacts"
+        android:title="@string/contacts"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_find"
+        android:icon="@android:drawable/ic_search_category_default"
+        android:title="@string/find"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_settings"
+        android:icon="@drawable/ic_drawer"
+        android:title="@string/settings"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_send_file"
+        android:icon="@android:drawable/ic_menu_upload"
+        android:title="@string/send_file"
+        app:showAsAction="ifRoom" />
+
+</menu>
